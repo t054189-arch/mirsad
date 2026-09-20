@@ -147,30 +147,33 @@ npm run lint    # eslint
 
 ## Deployment
 
-Live: <https://mirsad-alpha.vercel.app>
+**This app is not currently deployed.** <https://mirsad-alpha.vercel.app> serves
+the static Arabic site from `claude/festive-knuth-tk4hqb` instead — that is the
+public face of the project, chosen deliberately.
 
-The Vercel project **mirsad** is set up and deployed, with both environment
-variables configured for Production, Preview and Development.
+The Vercel project **mirsad** is therefore configured for a static build, not
+for Next.js. Deploying this app needs either a second Vercel project, or the
+existing one switched back to `framework: nextjs`. Its two Supabase environment
+variables are still set for Production, Preview and Development, so either route
+works without further setup.
 
-### Pushes do not deploy yet
+The Supabase project is shared and unaffected: the schema, storage buckets and
+policies in `supabase/migrations/` are live regardless of what Vercel serves.
 
-The project is **not connected to this repository**, so nothing redeploys when
-you push. The current production deployment was uploaded directly.
+### Vercel still cannot build from Git
 
-Making the repository public was not enough. Vercel can read the repository's
-metadata — it resolves commits and branches fine — but fetching the source for a
-build fails with `git_info_fail`, because Vercel's GitHub App is not installed
-on the `t054189-arch` account. It is installed on `wduwaisan`, which only covers
-that account's own repositories.
+Vercel's GitHub App is not installed on the `t054189-arch` account — it is
+installed on `wduwaisan`, which only covers that account's own repositories.
+Making this repository public was not enough: Vercel resolves commits and
+branches fine, but fetching the source for a build fails with `git_info_fail`.
 
-Installing a GitHub App needs admin rights on the account that owns the
-repository, so **the owner of `t054189-arch` has to do this** — collaborators
-with push access cannot.
+Until that is fixed, deployments are uploaded by hand rather than triggered by
+pushes. Installing the App needs admin rights on the account that owns the
+repository, so the owner of `t054189-arch` has to do it:
 
 1. Open the mirsad project on Vercel → **Settings → Git**.
 2. Choose **Connect Git Repository** and pick `t054189-arch/mirsad`.
 3. Approve installing the Vercel GitHub App on `t054189-arch`, granting it
    access to the `mirsad` repository.
 
-After that, pushes to `main` deploy to production and every other branch gets a
-preview URL.
+After that, pushes deploy on their own and previews come back per branch.
