@@ -596,3 +596,26 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
 .tline__p{ font-size:.76rem; font-weight:600; color:var(--accent); letter-spacing:.03em; }
 .tline b{ font-size:1rem; }
 .tline li > span:last-child{ color:var(--ink-soft); font-size:.92rem; max-width:64ch; }
+
+/* ---------- بطاقة الحساب التجريبي ---------- */
+.demo{
+  margin-top:20px; padding:16px 18px;
+  background:var(--surface-2); border:1px dashed var(--line);
+  border-radius:12px;
+}
+.demo__h{
+  margin:0 0 10px; font-size:.78rem; font-weight:700;
+  letter-spacing:.04em; color:var(--accent);
+}
+.demo__row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding-block:5px; font-size:.82rem; color:var(--ink-soft);
+}
+.demo__row code{
+  font-family:"Space Grotesk",ui-monospace,monospace;
+  font-size:.82rem; color:var(--ink);
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:6px; padding:3px 9px;
+  direction:ltr; unicode-bidi:isolate;
+}
+.demo__btn{ width:100%; margin-top:12px; padding-block:11px; font-size:.86rem; }

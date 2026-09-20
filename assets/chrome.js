@@ -64,6 +64,7 @@
     var label = document.getElementById('langLabel');
     if (label) label.textContent = next === 'en' ? 'ع' : 'EN';
     save(K.lang, next);
+    if (whoSync) whoSync();
     if (window.MirsaadScene) window.MirsaadScene.refresh();
   }
   applyLang(lang);
@@ -72,12 +73,19 @@
   if (langBtn) langBtn.addEventListener('click', function () { applyLang(lang === 'en' ? 'ar' : 'en'); });
 
   /* ---------- هوية من سجّل دخوله ---------- */
+  var whoSync = null;
   var who = document.getElementById('whoAmI');
   if (who && window.MirsaadSession) {
     var s = window.MirsaadSession();
     if (s) {
-      who.querySelector('b').textContent = s.email;
+      var shown = (root.lang === 'en' ? s.nameEn : s.name) || s.email;
+      who.querySelector('b').textContent = shown;
       who.setAttribute('title', s.email);
+      // الاسم يتبع اللغة أيضًا
+      whoSync = function () {
+        who.querySelector('b').textContent =
+          (document.documentElement.lang === 'en' ? s.nameEn : s.name) || s.email;
+      };
     }
   }
 

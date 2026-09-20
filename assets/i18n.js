@@ -117,7 +117,11 @@ window.MIRSAAD_EN = {
   'sd.alerts': 'Notifications',
   'sd.about': 'About',
   'a.logout': 'Sign out',
-  'a.demoNote': 'Demo build: no server verifies the account, and the session is kept in your browser only.',
+  'a.demoNote': 'Demo build: the check runs in the browser, not on a server, and the session is kept in your browser only.',
+  'a.demoH': 'Demo account',
+  'a.demoGo': 'Sign in with the demo account',
+  'e.noAccount': 'No account with that email \u2014 use the demo account below.',
+  'e.wrongPass': 'Incorrect password.',
 
   'pg.homeLead': 'A quick look at your office\u2019s structures and what is waiting on you.',
   'pg.stAssets': 'registered structures',
