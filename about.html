@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-mode="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title data-i18n="sc.about">عن المشروع — مِرصاد</title>
+<meta name="theme-color" content="#181613" />
+<meta name="robots" content="noindex" />
+<script src="assets/boot.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="shellpage">
+
+<div class="blueprint" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="topbar__brand" href="home.html" aria-label="مرصاد">
+    <span class="topbar__mark" aria-hidden="true">
+      <svg viewBox="0 0 100 52" width="30" height="16">
+        <g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+          <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+          <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+          <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+          <path d="M50 5 C 24 5, 6 20, 6 48"/>
+        </g>
+      </svg>
+    </span>
+    <span class="topbar__lock">
+      <span class="topbar__ar" data-i18n="brand.name">مرصاد</span>
+      <span class="topbar__en" data-i18n="brand.sub">MIRSAAD</span>
+    </span>
+  </a>
+
+  <h1 class="topbar__page" data-i18n="sc.about">عن المشروع</h1>
+
+  <div class="topbar__tools">
+    <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b></span>
+
+    <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
+      <span id="langLabel">EN</span>
+    </button>
+
+    <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
+      <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+              fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="iconbtn" id="outBtn" data-i18n-attr="aria-label:a.logout" aria-label="تسجيل الخروج">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M15 5.5V4a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 4v16a1.5 1.5 0 0 0 1.5 1.5h8A1.5 1.5 0 0 0 15 20v-1.5"
+              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M9.5 12h11m0 0-3.2-3.2M20.5 12l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="navtoggle" id="sideToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="أقسام مرصاد">
+      <a class="sidenav__item" href="home.html"><i aria-hidden="true"></i><span data-i18n="sd.home">الرئيسية</span></a>
+      <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
+      <a class="sidenav__item" href="inspection.html"><i aria-hidden="true"></i><span data-i18n="sd.insp">فحص جديد</span></a>
+      <a class="sidenav__item" href="results.html"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
+      <a class="sidenav__item" href="record.html"><i aria-hidden="true"></i><span data-i18n="sd.rep">السجلات</span></a>
+      <a class="sidenav__item" href="alerts.html"><i aria-hidden="true"></i><span data-i18n="sd.alerts">الإشعارات</span></a>
+      <a class="sidenav__item is-on" href="about.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.about">عن المشروع</span></a>
+  </nav>
+
+  <main class="page" id="page">
+<p class="page__lead" data-i18n="i.intro">
+  مرصاد منصة ذكية وآمنة مخصصة للمكاتب الهندسية، تساعد المهندسين على إدارة ومتابعة
+  عمليات فحص المنشآت والبنية التحتية — من أول زيارة وحتى كل زيارة قادمة.
+</p>
+
+<h2 class="page__h" data-i18n="p.h">المشكلة</h2>
+<p class="page__body" data-i18n="p.b1">
+  كل زيارة ميدانية تنتهي إلى مجلد صور، وتقرير Word، وملاحظات على الهاتف، وربما ملف Excel.
+  وعند الفحص التالي يبدأ المهندس من الصفر: يبحث عن تقرير السنة الماضية، ويحاول أن يتذكر
+  هل كان هذا التشقق موجودًا؟ وهل اتسع؟ ومن اعتمد المعالجة السابقة؟
+</p>
+<p class="page__body" data-i18n="p.b2">
+  النتيجة أن <strong>تاريخ المنشأة يضيع</strong>، ويتحول الفحص إلى لقطة منفصلة
+  بدل أن يكون حلقة في سلسلة.
+</p>
+
+<h2 class="page__h" data-i18n="i.h">الفكرة</h2>
+<div class="cards">
+  <div class="card2 card2--flat">
+    <b data-i18n="i.t1">سجل رقمي مستمر</b>
+    <span data-i18n="i.d1">كل فحص يُضاف إلى سجل المنشأة نفسه، فتصبح المنشأة كيانًا له تاريخ قابل للبحث والمقارنة.</span>
+  </div>
+  <div class="card2 card2--flat">
+    <b data-i18n="i.t2">وكيل ذكي يعمل قبل المهندس</b>
+    <span data-i18n="i.d2">يحلل بيانات الفحص، ويبحث في تاريخ المنشأة، ويقارن الحالي بالسابق، ويستخرج ما يستحق الانتباه.</span>
+  </div>
+  <div class="card2 card2--flat">
+    <b data-i18n="i.t3">المهندس هو المعتمِد</b>
+    <span data-i18n="i.d3">الوكيل يقترح، والمهندس يراجع ويعتمد أو يرفض. لا شيء يدخل السجل دون مراجعة بشرية.</span>
+  </div>
+  <div class="card2 card2--flat">
+    <b data-i18n="i.t4">تتطوّر مع الزمن</b>
+    <span data-i18n="i.d4">ما يعتمده المهندس اليوم يصبح جزءًا من التاريخ الذي يستخدمه الوكيل في الفحص القادم.</span>
+  </div>
+</div>
+
+<div class="panes">
+  <section class="pane">
+    <h2 class="pane__h"><span class="badge badge--no" data-i18n="i.no">ليست</span> <span data-i18n="i.noH">مجرد أداة</span></h2>
+    <ul class="bullets">
+      <li data-i18n="i.n1">ليست أداة لاكتشاف التشققات فقط.</li>
+      <li data-i18n="i.n2">ليست Chatbot يجيب على أسئلة عامة.</li>
+      <li data-i18n="i.n3">ليست أرشيفًا ساكنًا للملفات.</li>
+    </ul>
+  </section>
+  <section class="pane pane--yes">
+    <h2 class="pane__h"><span class="badge badge--yes" data-i18n="i.yes">هي</span> <span data-i18n="i.yesH">نظام كامل</span></h2>
+    <ul class="bullets bullets--yes">
+      <li data-i18n="i.y1">نظام لإدارة دورة فحص المنشأة بشكل مستمر.</li>
+      <li data-i18n="i.y2">ذاكرة تراكمية لكل منشأة تُغذّي الفحص القادم.</li>
+      <li data-i18n="i.y3">مسار واضح: إدخال ← تحليل ← مراجعة ← اعتماد.</li>
+    </ul>
+  </section>
+</div>
+
+<h2 class="page__h" data-i18n="r.h">سجل المنشأة — كيف يتراكم</h2>
+<p class="page__body" data-i18n="r.intro">
+  خط زمني واحد لكل منشأة. كل نقطة عليه فحص كامل بمدخلاته وملاحظاته المعتمدة وقرارات المهندس.
+</p>
+<ol class="tline">
+  <li>
+    <span class="tline__d" aria-hidden="true"></span>
+    <span class="tline__p" data-i18n="r.p1">الفحص الأول</span>
+    <b data-i18n="r.t1">تأسيس السجل</b>
+    <span data-i18n="r.d1">توثيق الحالة المرجعية للمنشأة: الصور الأساسية، العناصر الإنشائية، ونقطة البداية للمقارنة.</span>
+  </li>
+  <li>
+    <span class="tline__d" aria-hidden="true"></span>
+    <span class="tline__p" data-i18n="r.p2">الفحص الدوري</span>
+    <b data-i18n="r.t2">مقارنة وتحديث</b>
+    <span data-i18n="r.d2">يقارن الوكيل بالحالة المرجعية وبكل فحص تالٍ، ويعرض الفروقات بدل عرض البيانات الخام.</span>
+  </li>
+  <li>
+    <span class="tline__d" aria-hidden="true"></span>
+    <span class="tline__p" data-i18n="r.p3">بعد المعالجة</span>
+    <b data-i18n="r.t3">إغلاق الملاحظات</b>
+    <span data-i18n="r.d3">تُوثَّق المعالجة ومن اعتمدها ومتى، فيعرف الفحص القادم ما الذي عولج وما الذي عاد للظهور.</span>
+  </li>
+  <li>
+    <span class="tline__d" aria-hidden="true"></span>
+    <span class="tline__p" data-i18n="r.p4">الفحص القادم</span>
+    <b data-i18n="r.t4">ذاكرة أغنى</b>
+    <span data-i18n="r.d4">كلما زاد عدد الفحوصات، أصبح تحليل الوكيل أدق لأن تاريخ المنشأة صار أطول وأوضح.</span>
+  </li>
+</ol>
+
+<h2 class="page__h" data-i18n="s.h">الأمان والمسؤولية</h2>
+<div class="cards">
+  <div class="card2 card2--flat">
+    <b data-i18n="s.t1">بيانات المكتب الهندسي</b>
+    <span data-i18n="s.d1">كل منشأة تتبع مكتبها، والوصول محدد بالصلاحيات: من يُدخل، من يراجع، ومن يعتمد.</span>
+  </div>
+  <div class="card2 card2--flat">
+    <b data-i18n="s.t2">سجل غير قابل للضياع</b>
+    <span data-i18n="s.d2">كل قرار يُحفظ بتاريخه وصاحبه، فيبقى المسار الهندسي قابلًا للمراجعة والتدقيق لاحقًا.</span>
+  </div>
+  <div class="card2 card2--flat">
+    <b data-i18n="s.t3">الوكيل مساعد لا بديل</b>
+    <span data-i18n="s.d3">لا يعتمد الوكيل شيئًا بنفسه. مخرجاته اقتراحات موثّقة المصدر، والقرار الهندسي يبقى للمهندس.</span>
+  </div>
+</div>
+
+<div class="quote">
+  <p class="quote__ar" data-i18n="c.quote">« البنية التحتية أكثر أمانًا .. بقرارات أذكى »</p>
+  <p class="quote__en">SMART INSPECTIONS &nbsp;·&nbsp; SAFER TOMORROWS</p>
+</div>
+
+  </main>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+</body>
+</html>

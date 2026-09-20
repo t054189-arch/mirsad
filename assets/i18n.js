@@ -7,40 +7,17 @@ window.MIRSAAD_EN = {
   /* الهوية والتنقل */
   'brand.name': 'MIRSAAD',
   'brand.sub': 'مرصاد',
-  'nav.problem': 'Problem',
-  'nav.idea': 'Idea',
-  'nav.journey': 'User journey',
-  'nav.findings': 'Findings',
-  'nav.record': 'Asset record',
-  'nav.security': 'Security',
-  'intro.skip': 'Skip intro',
   'a11y.lang': 'Switch to Arabic',
   'a11y.mode': 'Toggle light and dark mode',
   'a11y.menu': 'Open menu',
 
   /* الواجهة */
   'hero.tag': 'We inspect today .. to build a safer tomorrow',
-  'hero.tagEn': 'SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW',
-  'hero.sub': 'A secure, intelligent platform for engineering offices. Instead of every inspection ending as a scattered pile of photos, reports and files, Mirsaad gathers a structure’s data into <strong>one continuous digital record</strong> — and an AI agent analyses the current inspection against the structure’s own history before it ever reaches the engineer.',
-  'hero.cta1': 'The user journey',
-  'hero.cta2': 'What is Mirsaad?',
-  'hero.s1': 'screens in an inspection',
-  'hero.s2v': 'AI agent',
-  'hero.s2': 'automatic analysis and comparison',
-  'hero.s3v': 'The engineer',
-  'hero.s3': 'always has the final decision',
 
   /* المشكلة */
   'p.h': 'The problem',
-  'p.lead': 'Inspection today lives in scattered files.',
   'p.b1': 'Every site visit ends as a folder of photos, a Word report, notes on a phone, and maybe a spreadsheet. At the next inspection the engineer starts from zero: hunting for last year’s report, trying to remember whether this crack was already there, whether it has widened, and who signed off the previous repair.',
   'p.b2': 'The result is that <strong>the structure’s history is lost</strong>, and each inspection becomes an isolated snapshot instead of a link in a chain.',
-  'p.k1': 'Photos',            'p.v1': 'unlinked folders',
-  'p.k2': 'Reports',           'p.v2': 'multiple conflicting copies',
-  'p.k3': 'Notes',             'p.v3': 'outside the system',
-  'p.k4': 'Comparison',        'p.v4': 'manual, relying on memory',
-  'p.k5': 'History',           'p.v5': 'not searchable',
-  'seam.note': 'A crack that gets repaired is never erased from the record — its trace stays part of the structure’s history.',
 
   /* الفكرة */
   'i.h': 'The idea',
@@ -63,25 +40,20 @@ window.MIRSAAD_EN = {
   'i.y3': 'A clear path: capture → analyse → review → approve.',
 
   /* رحلة المستخدم — النموذج التفاعلي */
-  'j.h': 'The user journey',
-  'j.intro': 'From sign-in to the final notification — nine real screens, and the buttons inside them actually navigate. Try it yourself.',
-  'j.loop': 'What the record screen saves is what the agent reads on the analysis screen of the next inspection — hit \u201cStart a new inspection\u201d and close the loop yourself.',
 
   /* الواجهات المصغّرة */
   'm2.a': 'Search for a structure…',
   'm2.b': 'Jaber Bridge',  'm2.c': 'Ministry of Public Works',
   'm2.d': 'Office building','m2.e': 'Kuwait City',
   'm2.f': 'Highway',        'm2.g': 'Maintenance sector',
-  'm3.a': 'Basic data', 'm3.b': 'Measurements', 'm3.c': 'Notes',
+  'm3.a': 'Basic data',
   'm3.d': 'Structure', 'm3.e': 'Inspection date', 'm3.f': 'Inspection type',
-  'm3.g': 'Routine inspection', 'm3.h': 'Next',
-  'm4.a': 'Photos', 'm4.b': 'Reports', 'm4.c': 'Drag files here',
+  'm3.g': 'Routine inspection', 'm4.c': 'Drag files here',
   'm5.a': 'Analysing…',
   'm5.b': 'Analysing images with AI',
   'm5.c': 'Searching the asset record',
   'm5.d': 'Comparing against previous inspections',
-  'm5.e': 'Identifying possible findings',
-  'm6.a': 'Analysis results', 'm6.b': 'Confidence 87%',
+  'm5.e': 'Identifying possible findings', 'm6.b': 'Confidence 87%',
   'm6.c': 'Possible crack',   'm6.d': 'Pier no. 2',
   'm6.e': 'Surface corrosion','m6.f': 'Underside',
   'm6.g': 'No issue',         'm6.h': 'Upper section',
@@ -98,7 +70,6 @@ window.MIRSAAD_EN = {
   'lv.hi': 'High', 'lv.mid': 'Medium', 'lv.ok': 'Clear',
 
   /* شاشات النموذج */
-  'sc.live': 'Interactive demo',
   'sc.signin': 'Sign in',
   'sc.assets': 'Structures',
   'sc.data': 'New inspection',
@@ -113,14 +84,12 @@ window.MIRSAAD_EN = {
   'sd.assets': 'Structures',
   'sd.insp': 'Inspections',
   'sd.rep': 'Reports',
-  'sd.set': 'Settings',
 
   'a.welcome': 'Welcome back',
   'a.welcomeSub': 'Sign in to continue your structures\u2019 inspections.',
   'a.email': 'Email address',
   'a.pass': 'Password',
   'a.remember': 'Remember me',
-  'a.noacct': 'No account? Create a new one',
   'a.newAsset': '+ New structure',
   'a.last': 'Last inspection',
   'a.engineer': 'Responsible engineer',
@@ -140,24 +109,46 @@ window.MIRSAAD_EN = {
   'a.finish': 'Finish inspection',
   'a.loopNote': 'What was just saved is what the AI agent will read at the next inspection.',
   'a.next': 'Start a new inspection',
-  'a.prev': 'Previous screen',
-  'a.next2': 'Next screen',
+
+  /* الصفحات */
+  'sc.home': 'Home',
+  'sc.about': 'About the project',
+  'sd.results': 'Results',
+  'sd.alerts': 'Notifications',
+  'sd.about': 'About',
+  'a.logout': 'Sign out',
+  'a.demoNote': 'Demo build: no server verifies the account, and the session is kept in your browser only.',
+
+  'pg.homeLead': 'A quick look at your office\u2019s structures and what is waiting on you.',
+  'pg.stAssets': 'registered structures',
+  'pg.stMonth': 'inspections this month',
+  'pg.stWait': 'findings awaiting review',
+  'pg.stAcc': 'average analysis confidence',
+  'pg.stAccV': '87%',
+  'pg.quick': 'Start here',
+  'pg.cAssets': 'Browse your office\u2019s structures and open one to begin an inspection.',
+  'pg.cInsp': 'Enter the visit details and upload the photos and reports.',
+  'pg.cRes': 'Review what the AI agent found, then approve or reject it.',
+  'pg.recent': 'Recent activity',
+  'pg.assetsLead': 'Each structure is an entity with a continuous record \u2014 open one to start a new inspection.',
+  'pg.open1': '1 open finding',
+  'pg.open2': '2 open findings',
+  'pg.clear': 'no findings',
+  'pg.inspLead': 'Visit details for',
+  'pg.resLead': 'What the AI agent found in the Jaber Bridge inspection, ordered by priority.',
+  'pg.thisInsp': 'This inspection',
+  'pg.alertsLead': 'What the AI agent sent after your review.',
+
+  /* رسائل التحقق من النموذج */
+  'e.required': 'Enter your email address.',
+  'e.format': 'That email format is not valid \u2014 e.g. name@company.com',
+  'e.throwaway': 'Use a real address, not a disposable one.',
+  'e.passReq': 'Enter your password.',
+  'e.passShort': 'Password must be at least 8 characters.',
+  'e.store': 'Could not save the session \u2014 enable browser storage.',
 
   /* الملاحظات */
-  'f.h': 'Findings',
-  'f.intro': 'A finding is never a bare alert — it is tied to its location on the structure, to its history, and to why it is showing up now. And every finding waits on the engineer’s decision.',
-  'f.tag1': 'High priority', 'f.tag2': 'To monitor', 'f.tag3': 'Approved',
-  'f.t1': 'Crack widening at pier no. 2',
   'f.prev': 'Previous inspection', 'f.curr': 'Current inspection',
-  'f.d1': 'The agent linked this to a crack recorded in an earlier inspection and detected a change in width over the interval between visits.',
-  'f.t2': 'Recurring surface corrosion — underside',
-  'f.rep': 'Recurrence', 'f.rep3': '3 consecutive inspections',
-  'f.d2': 'It appeared in three consecutive visits despite the repair logged in the record, pointing to a source that was never addressed.',
-  'f.t3': 'Rebar corrosion — repaired',
-  'f.st': 'Status', 'f.closed': 'Closed after verification',
-  'f.d3': 'The engineer approved closing the finding after field verification, and the decision entered the asset record as a permanent reference.',
-  'f.wait': 'Awaiting engineer review',
-  'f.saved': 'Saved to the asset record',
 
   /* سجل المنشأة */
   'r.h': 'The asset record',
@@ -182,8 +173,4 @@ window.MIRSAAD_EN = {
 
   /* الخاتمة */
   'c.quote': '« Safer infrastructure .. through smarter decisions »',
-  'c.body': 'From data entry, to the agent’s analysis, to the engineer’s review, to the asset record that feeds the next inspection.',
-  'c.cta': 'Replay the journey from the start',
-  'foot.txt': 'MIRSAAD · مرصاد — inspection lifecycle management for structures',
-  'foot.top': 'Back to top ↑'
 };

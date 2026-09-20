@@ -3,685 +3,91 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>مِرصاد · MIRSAAD — نفحص اليوم لنبني غدًا أكثر أمانًا</title>
-<meta name="description" content="مرصاد منصة ذكية وآمنة للمكاتب الهندسية: سجل رقمي مستمر للمنشأة، ووكيل ذكي يحلل الفحص ويقارنه بتاريخ المنشأة ويستخرج الملاحظات لمراجعة المهندس." />
+<title>تسجيل الدخول — مِرصاد · MIRSAAD</title>
+<meta name="description" content="مرصاد — منصة ذكية وآمنة لإدارة دورة فحص المنشآت للمكاتب الهندسية." />
 <meta name="theme-color" content="#181613" />
-
-<!-- يضبط الوضع واللغة قبل أول رسم، فلا تومض الصفحة -->
-<script>
-(function(){
-  var d=document.documentElement;
-  function get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-  var mode=get('mirsaad-mode')||'auto';
-  var lang=get('mirsaad-lang')||'ar';
-  var dark=mode==='dark'||(mode==='auto'&&!window.matchMedia('(prefers-color-scheme: light)').matches);
-  d.setAttribute('data-mode',dark?'dark':'light');
-  d.setAttribute('lang',lang);
-  d.setAttribute('dir',lang==='en'?'ltr':'rtl');
-  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('has-intro');
-})();
-</script>
-
+<script src="assets/boot.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body>
+<body class="gate">
 
-<!-- الخلفية ثلاثية الأبعاد -->
 <canvas class="scene" id="scene" aria-hidden="true"></canvas>
 <div class="blueprint" aria-hidden="true"></div>
 <div class="dawnglow" aria-hidden="true"></div>
 
-<!-- المدخل السينمائي -->
-<div class="intro" id="intro">
-  <div class="intro__inner">
-    <svg class="intro__dome" viewBox="0 0 100 52" aria-hidden="true">
-      <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+<div class="gate__tools">
+  <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
+    <span id="langLabel">EN</span>
+  </button>
+  <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
+    <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+            fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<main class="gate__wrap">
+  <section class="gate__brand">
+    <svg class="gate__dome" viewBox="0 0 100 52" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
         <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
         <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
         <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
         <path d="M50 5 C 24 5, 6 20, 6 48"/>
       </g>
     </svg>
-    <p class="intro__ar">مرصاد</p>
-    <p class="intro__en">MIRSAAD</p>
-    <p class="intro__tag" data-i18n="hero.tag">نفحص اليوم .. لنبني غدًا أكثر أمانًا</p>
-  </div>
-  <button class="intro__skip" id="introSkip" data-i18n="intro.skip">تخطّي المقدمة</button>
-</div>
-
-<header class="nav" id="nav">
-  <a class="nav__brand" href="#home" aria-label="مرصاد">
-    <span class="nav__mark" aria-hidden="true">
-      <svg viewBox="0 0 100 52" width="34" height="18">
-        <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
-          <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
-          <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
-          <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
-          <path d="M50 5 C 24 5, 6 20, 6 48"/>
-        </g>
-      </svg>
-    </span>
-    <span class="nav__lockup">
-      <span class="nav__ar" data-i18n="brand.name">مرصاد</span>
-      <span class="nav__en" data-i18n="brand.sub">MIRSAAD</span>
-    </span>
-  </a>
-
-  <nav class="nav__links" aria-label="التنقل">
-    <a href="#problem"  data-i18n="nav.problem">المشكلة</a>
-    <a href="#idea"     data-i18n="nav.idea">الفكرة</a>
-    <a href="#journey"  data-i18n="nav.journey">رحلة المستخدم</a>
-    <a href="#findings" data-i18n="nav.findings">الملاحظات</a>
-    <a href="#record"   data-i18n="nav.record">سجل المنشأة</a>
-    <a href="#security" data-i18n="nav.security">الأمان</a>
-  </nav>
-
-  <div class="nav__tools">
-    <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
-      <span id="langLabel">EN</span>
-    </button>
-
-    <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
-      <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
-        <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
-        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
-              fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-      </svg>
-      <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
-        <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-      </svg>
-    </button>
-
-    <button class="nav__toggle" id="navToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-
-</header>
-
-<main>
-
-  <!-- HERO -->
-  <section class="hero" id="home">
-    <div class="hero__inner">
-      <div class="hero__lockup reveal">
-        <svg class="hero__dome" viewBox="0 0 100 52" aria-hidden="true">
-          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
-            <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
-            <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
-            <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
-            <path d="M50 5 C 24 5, 6 20, 6 48"/>
-          </g>
-        </svg>
-      </div>
-
-      <h1 class="hero__title"><span class="line"><span data-i18n="brand.name">مرصاد</span></span></h1>
-      <p class="hero__en reveal" data-i18n="brand.sub">MIRSAAD</p>
-
-      <p class="hero__tag reveal" data-delay="1" data-i18n="hero.tag">نفحص اليوم .. لنبني غدًا أكثر أمانًا</p>
-      <p class="hero__tag-en reveal" data-delay="1" data-i18n="hero.tagEn">SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW</p>
-
-      <p class="hero__sub reveal" data-delay="2" data-i18n="hero.sub">
-        منصة ذكية وآمنة للمكاتب الهندسية. بدل أن تكون كل عملية فحص مجموعة منفصلة من
-        الصور والتقارير والملفات، تجمع مرصاد بيانات المنشأة في
-        <strong>سجل رقمي مستمر</strong> — ويعمل الوكيل الذكي على تحليل الفحص الحالي
-        ومقارنته بتاريخ المنشأة قبل أن يصل إلى المهندس.
-      </p>
-
-      <div class="hero__actions reveal" data-delay="3">
-        <a class="btn btn--solid" href="#journey"><span data-i18n="hero.cta1">رحلة المستخدم</span> <span class="arrow" aria-hidden="true">←</span></a>
-        <a class="btn btn--ghost" href="#idea" data-i18n="hero.cta2">ما هي مرصاد؟</a>
-      </div>
-
-      <ul class="hero__stats reveal" data-delay="4">
-        <li><strong data-count="9">0</strong><span data-i18n="hero.s1">شاشات في رحلة الفحص</span></li>
-        <li><strong data-i18n="hero.s2v">وكيل ذكي</strong><span data-i18n="hero.s2">تحليل ومقارنة تلقائية</span></li>
-        <li><strong data-i18n="hero.s3v">المهندس</strong><span data-i18n="hero.s3">القرار النهائي دائمًا</span></li>
-      </ul>
-    </div>
-
-    <div class="bridge" aria-hidden="true">
-      <svg viewBox="0 0 1400 210" preserveAspectRatio="xMidYMax slice">
-        <g class="bridge__far">
-          <path d="M0 176 H1400" />
-          <g class="bridge__piers">
-            <path d="M40 176 V205"/><path d="M120 176 V205"/><path d="M200 176 V205"/>
-            <path d="M280 176 V205"/><path d="M360 175 V205"/><path d="M440 173 V205"/>
-            <path d="M520 170 V205"/><path d="M600 165 V205"/><path d="M680 158 V205"/>
-            <path d="M980 158 V205"/><path d="M1060 165 V205"/><path d="M1140 170 V205"/>
-            <path d="M1220 173 V205"/><path d="M1300 175 V205"/><path d="M1380 176 V205"/>
-          </g>
-        </g>
-        <g class="bridge__deck">
-          <path d="M0 176 C 320 176, 560 140, 830 118 C 1100 140, 1200 168, 1400 176"/>
-        </g>
-        <g class="bridge__pylon">
-          <path d="M830 118 V30"/>
-          <path d="M830 34 L700 132 M830 34 L745 126 M830 34 L790 121"/>
-          <path d="M830 34 L960 132 M830 34 L915 126 M830 34 L870 121"/>
-        </g>
-      </svg>
-    </div>
+    <p class="gate__ar">مرصاد</p>
+    <p class="gate__en">MIRSAAD</p>
+    <p class="gate__tag" data-i18n="hero.tag">نفحص اليوم .. لنبني غدًا أكثر أمانًا</p>
+    <p class="gate__tagen">SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW</p>
   </section>
 
-  <!-- المشكلة -->
-  <section class="section" id="problem">
-    <div class="section__head reveal">
-      <span class="section__num">01</span>
-      <h2 data-i18n="p.h">المشكلة</h2>
-      <div class="rule"></div>
-    </div>
+  <section class="gate__card">
+    <h2 data-i18n="a.welcome">مرحبًا بعودتك</h2>
+    <p class="gate__sub" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
 
-    <div class="about">
-      <div class="about__text reveal" data-delay="1">
-        <p class="lead" data-i18n="p.lead">الفحص اليوم يعيش في ملفات متفرقة.</p>
-        <p data-i18n="p.b1">
-          كل زيارة ميدانية تنتهي إلى مجلد صور، وتقرير Word، وملاحظات على الهاتف، وربما ملف Excel.
-          وعند الفحص التالي يبدأ المهندس من الصفر: يبحث عن تقرير السنة الماضية، ويحاول أن يتذكر
-          هل كان هذا التشقق موجودًا؟ وهل اتسع؟ ومن اعتمد المعالجة السابقة؟
-        </p>
-        <p data-i18n="p.b2">
-          النتيجة أن <strong>تاريخ المنشأة يضيع</strong>، ويتحول الفحص إلى لقطة منفصلة
-          بدل أن يكون حلقة في سلسلة.
-        </p>
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email" data-i18n="a.email">البريد الإلكتروني</label>
+        <input id="email" name="email" type="email" inputmode="email"
+               autocomplete="email" spellcheck="false"
+               placeholder="name@company.com" aria-describedby="emailErr" required />
+        <p class="field__err" id="emailErr" role="alert"></p>
       </div>
 
-      <div class="about__card reveal" data-delay="2">
-        <div class="card">
-          <div class="card__bar"><span></span><span></span><span></span></div>
-          <dl class="specs">
-            <div><dt data-i18n="p.k1">الصور</dt><dd data-i18n="p.v1">مجلدات غير مرتبطة</dd></div>
-            <div><dt data-i18n="p.k2">التقارير</dt><dd data-i18n="p.v2">نسخ متعددة ومتضاربة</dd></div>
-            <div><dt data-i18n="p.k3">الملاحظات</dt><dd data-i18n="p.v3">خارج النظام</dd></div>
-            <div><dt data-i18n="p.k4">المقارنة</dt><dd data-i18n="p.v4">يدوية وتعتمد على الذاكرة</dd></div>
-            <div><dt data-i18n="p.k5">التاريخ</dt><dd data-i18n="p.v5">غير قابل للبحث</dd></div>
-          </dl>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="seam reveal" aria-hidden="true">
-    <svg viewBox="0 0 1200 44" preserveAspectRatio="none">
-      <path class="seam__hair" d="M0 22 H1200"/>
-      <path class="seam__gold" d="M0 22 H104 L146 7 L192 33 L246 9 L300 30 L356 12 L410 28 L468 5 L526 31 L586 13 L644 29 L704 8 L766 27 L826 14 L888 30 L946 11 L1004 28 L1060 16 L1112 25 H1200"/>
-    </svg>
-  </div>
-  <p class="seam__note reveal" data-i18n="seam.note">الشرخ الذي يُعالَج لا يُمحى من السجل — يبقى أثره جزءًا من تاريخ المنشأة.</p>
-
-  <!-- الفكرة -->
-  <section class="section section--alt" id="idea">
-    <div class="section__head reveal">
-      <span class="section__num">02</span>
-      <h2 data-i18n="i.h">الفكرة</h2>
-      <div class="rule"></div>
-    </div>
-
-    <p class="section__intro reveal" data-i18n="i.intro">
-      مرصاد منصة ذكية وآمنة مخصصة للمكاتب الهندسية، تساعد المهندسين على إدارة ومتابعة
-      عمليات فحص المنشآت والبنية التحتية — من أول زيارة وحتى كل زيارة قادمة.
-    </p>
-
-    <div class="grid">
-      <article class="tile reveal" data-delay="1">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M4 20V6a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M15 4v5h5M8 13h8M8 17h5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 data-i18n="i.t1">سجل رقمي مستمر</h3>
-        <p data-i18n="i.d1">كل فحص يُضاف إلى سجل المنشأة نفسه، فتصبح المنشأة كيانًا له تاريخ قابل للبحث والمقارنة.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="2">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <rect x="4" y="5.5" width="16" height="14" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="9.5" cy="11.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="11.5" r="1.2" fill="currentColor"/>
-            <path d="M9.2 15.8h5.6M12 5.5V2.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 data-i18n="i.t2">وكيل ذكي يعمل قبل المهندس</h3>
-        <p data-i18n="i.d2">يحلل بيانات الفحص، ويبحث في تاريخ المنشأة، ويقارن الحالي بالسابق، ويستخرج ما يستحق الانتباه.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="3">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M12 3.2 4.6 6.3v5c0 4.4 3 8.2 7.4 9.5 4.4-1.3 7.4-5.1 7.4-9.5v-5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="m9 12 2.2 2.2L15.3 10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 data-i18n="i.t3">المهندس هو المعتمِد</h3>
-        <p data-i18n="i.d3">الوكيل يقترح، والمهندس يراجع ويعتمد أو يرفض. لا شيء يدخل السجل دون مراجعة بشرية.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="4">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M3.5 18.5 9 13l3.2 3.2L20.5 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M15.6 8h4.9v4.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 data-i18n="i.t4">تتطوّر مع الزمن</h3>
-        <p data-i18n="i.d4">ما يعتمده المهندس اليوم يصبح جزءًا من التاريخ الذي يستخدمه الوكيل في الفحص القادم.</p>
-      </article>
-    </div>
-
-    <div class="contrast">
-      <div class="contrast__col contrast__col--no reveal" data-delay="1">
-        <h3><span class="badge badge--no" data-i18n="i.no">ليست</span> <span data-i18n="i.noH">مجرد أداة</span></h3>
-        <ul>
-          <li data-i18n="i.n1">ليست أداة لاكتشاف التشققات فقط.</li>
-          <li data-i18n="i.n2">ليست Chatbot يجيب على أسئلة عامة.</li>
-          <li data-i18n="i.n3">ليست أرشيفًا ساكنًا للملفات.</li>
-        </ul>
-      </div>
-      <div class="contrast__col contrast__col--yes reveal" data-delay="2">
-        <h3><span class="badge badge--yes" data-i18n="i.yes">هي</span> <span data-i18n="i.yesH">نظام كامل</span></h3>
-        <ul>
-          <li data-i18n="i.y1">نظام لإدارة دورة فحص المنشأة بشكل مستمر.</li>
-          <li data-i18n="i.y2">ذاكرة تراكمية لكل منشأة تُغذّي الفحص القادم.</li>
-          <li data-i18n="i.y3">مسار واضح: إدخال ← تحليل ← مراجعة ← اعتماد.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- رحلة المستخدم -->
-  <section class="section" id="journey">
-    <div class="section__head reveal">
-      <span class="section__num">03</span>
-      <h2 data-i18n="j.h">رحلة المستخدم</h2>
-      <div class="rule"></div>
-    </div>
-
-    <p class="section__intro reveal">
-      <span data-i18n="j.intro">من تسجيل الدخول إلى الإشعار النهائي — تسع شاشات حقيقية، والأزرار داخلها تنقلك فعلًا. جرّبها بنفسك.</span>
-      <span class="section__intro-en">INSPECT · ANALYZE · COMPARE · IMPROVE</span>
-    </p>
-
-    <!-- نموذج تفاعلي: شاشات المنتج نفسها، والأزرار تنقل بينها فعلًا -->
-    <div class="app" id="app">
-      <div class="app__bar">
-        <span class="app__mark" aria-hidden="true">
-          <svg viewBox="0 0 100 52" width="26" height="14">
-            <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-              <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
-              <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
-              <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
-              <path d="M50 5 C 24 5, 6 20, 6 48"/>
-            </g>
-          </svg>
-        </span>
-        <span class="app__title" id="appTitle" data-i18n="sc.signin">تسجيل الدخول</span>
-        <span class="app__live" data-i18n="sc.live">نموذج تفاعلي</span>
+      <div class="field">
+        <label for="pass" data-i18n="a.pass">كلمة المرور</label>
+        <input id="pass" name="password" type="password"
+               autocomplete="current-password" minlength="8"
+               placeholder="••••••••" aria-describedby="passErr" required />
+        <p class="field__err" id="passErr" role="alert"></p>
       </div>
 
-      <div class="app__body">
-        <nav class="app__side" aria-label="أقسام التطبيق">
-          <span class="side__item is-on" data-side="home"><i></i><span data-i18n="sd.home">الرئيسية</span></span>
-          <span class="side__item" data-side="assets"><i></i><span data-i18n="sd.assets">المنشآت</span></span>
-          <span class="side__item" data-side="insp"><i></i><span data-i18n="sd.insp">الفحوصات</span></span>
-          <span class="side__item" data-side="rep"><i></i><span data-i18n="sd.rep">التقارير</span></span>
-          <span class="side__item" data-side="set"><i></i><span data-i18n="sd.set">الإعدادات</span></span>
-        </nav>
+      <label class="remember" for="remember">
+        <input type="checkbox" id="remember" name="remember" />
+        <span data-i18n="a.remember">تذكرني</span>
+      </label>
 
-        <div class="app__screens">
+      <button class="ui ui--go" type="submit" data-i18n="sc.signin">تسجيل الدخول</button>
+    </form>
 
-          <!-- تسجيل الدخول -->
-          <section class="scr is-on" id="s-signin" data-title="sc.signin" data-title-ar="تسجيل الدخول" data-side="">
-            <div class="scr__auth">
-              <svg class="scr__dome" viewBox="0 0 100 52" aria-hidden="true">
-                <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                  <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
-                  <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
-                  <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
-                  <path d="M50 5 C 24 5, 6 20, 6 48"/>
-                </g>
-              </svg>
-              <h3 data-i18n="a.welcome">مرحبًا بعودتك</h3>
-              <p class="scr__hint" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
-              <label class="fld"><span data-i18n="a.email">البريد الإلكتروني</span><b>eng@mirsaad.kw</b></label>
-              <label class="fld"><span data-i18n="a.pass">كلمة المرور</span><b>••••••••</b></label>
-              <p class="scr__row"><span class="chk" aria-hidden="true"></span><span data-i18n="a.remember">تذكرني</span></p>
-              <button class="ui ui--go" data-go="s-assets" data-i18n="sc.signin">تسجيل الدخول</button>
-              <p class="scr__hint scr__hint--c" data-i18n="a.noacct">ليس لديك حساب؟ أنشئ حسابًا جديدًا</p>
-            </div>
-          </section>
-
-          <!-- المنشآت -->
-          <section class="scr" id="s-assets" data-title="sc.assets" data-title-ar="المنشآت" data-side="assets">
-            <div class="scr__head">
-              <h3 data-i18n="sc.assets">المنشآت</h3>
-              <span class="ui ui--ghost" data-i18n="a.newAsset">+ منشأة جديدة</span>
-            </div>
-            <div class="fld fld--search" data-i18n="m2.a">ابحث عن منشأة…</div>
-            <button class="rowcard rowcard--go" data-go="s-data">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m2.b">جسر جابر</b><small data-i18n="m2.c">وزارة الأشغال</small></span>
-              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>12 / 03 / 2026</b></span>
-            </button>
-            <button class="rowcard rowcard--go" data-go="s-data">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m2.d">مبنى إداري</b><small data-i18n="m2.e">مدينة الكويت</small></span>
-              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>28 / 01 / 2026</b></span>
-            </button>
-            <button class="rowcard rowcard--go" data-go="s-data">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m2.f">طريق سريع</b><small data-i18n="m2.g">قطاع الصيانة</small></span>
-              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>05 / 11 / 2025</b></span>
-            </button>
-          </section>
-
-          <!-- بيانات الفحص -->
-          <section class="scr" id="s-data" data-title="sc.data" data-title-ar="فحص جديد" data-side="insp">
-            <div class="scr__head">
-              <h3><span data-i18n="sc.data">فحص جديد</span> <span class="scr__sub" data-i18n="m2.b">جسر جابر</span></h3>
-            </div>
-            <div class="tabs"><span class="is-on" data-i18n="m3.a">البيانات الأساسية</span><span data-i18n="m3.b">القياسات</span><span data-i18n="m3.c">الملاحظات</span></div>
-            <div class="pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
-            <div class="pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
-            <div class="pair"><span data-i18n="a.engineer">المهندس المسؤول</span><b data-i18n="a.engName">م. ريان العجمي</b></div>
-            <div class="pair"><span data-i18n="a.section">القطاع</span><b data-i18n="a.sectionV">الركائز والسطح السفلي</b></div>
-            <div class="fld fld--area" data-i18n="a.notes">ملاحظات ميدانية…</div>
-            <button class="ui ui--go" data-go="s-upload" data-i18n="m3.h">التالي</button>
-          </section>
-
-          <!-- رفع الملفات -->
-          <section class="scr" id="s-upload" data-title="sc.upload" data-title-ar="رفع الملفات" data-side="insp">
-            <div class="scr__head"><h3 data-i18n="sc.upload">رفع الملفات</h3></div>
-            <div class="tabs"><span class="is-on" data-i18n="m4.a">الصور</span><span data-i18n="m4.b">التقارير</span><span data-i18n="m3.b">القياسات</span></div>
-            <div class="drop">
-              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span data-i18n="m4.c">اسحب الملفات هنا</span>
-              <small>JPG · PNG · PDF</small>
-            </div>
-            <div class="files">
-              <span class="file"><i></i><b>pier-02-crack.jpg</b><small>2.4 MB</small></span>
-              <span class="file"><i></i><b>soffit-east.jpg</b><small>1.8 MB</small></span>
-              <span class="file"><i></i><b>survey-2026.pdf</b><small>640 KB</small></span>
-            </div>
-            <button class="ui ui--go" data-go="s-analyse" data-i18n="a.startAnalysis">بدء التحليل</button>
-          </section>
-
-          <!-- التحليل -->
-          <section class="scr" id="s-analyse" data-title="sc.analyse" data-title-ar="التحليل" data-side="insp">
-            <div class="scr__centre">
-              <p class="scr__big" data-i18n="m5.a">جارٍ التحليل…</p>
-              <p class="scr__hint" data-i18n="a.analysingSub">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
-              <div class="steps" id="analysisSteps">
-                <div class="stepline"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
-                <div class="stepline"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
-                <div class="stepline"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
-                <div class="stepline"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
-              </div>
-              <div class="bar"><b id="analysisBar"></b></div>
-              <p class="scr__pct" id="analysisPct">٠٪</p>
-            </div>
-          </section>
-
-          <!-- النتائج -->
-          <section class="scr" id="s-results" data-title="sc.results" data-title-ar="النتائج" data-side="insp">
-            <div class="scr__head">
-              <h3 data-i18n="m6.a">نتائج التحليل</h3>
-              <span class="chipacc" data-i18n="m6.b">دقة التحليل ٨٧٪</span>
-            </div>
-            <button class="rowcard rowcard--go" data-go="s-review">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m6.c">احتمال وجود تشقق</b><small data-i18n="m6.d">الركيزة رقم ٢</small></span>
-              <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
-            </button>
-            <button class="rowcard rowcard--go" data-go="s-review">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m6.e">تآكل سطحي</b><small data-i18n="m6.f">السطح السفلي</small></span>
-              <span class="pill pill--mid" data-i18n="lv.mid">متوسطة</span>
-            </button>
-            <div class="rowcard">
-              <span class="rowcard__img"></span>
-              <span class="rowcard__t"><b data-i18n="m6.g">لا توجد مشكلة</b><small data-i18n="m6.h">الجزء العلوي</small></span>
-              <span class="pill pill--ok" data-i18n="lv.ok">سليم</span>
-            </div>
-            <button class="ui ui--go" data-go="s-review" data-i18n="m6.i">مراجعة النتائج</button>
-          </section>
-
-          <!-- المراجعة -->
-          <section class="scr" id="s-review" data-title="sc.review" data-title-ar="المراجعة" data-side="insp">
-            <div class="scr__head">
-              <h3 data-i18n="m6.c">احتمال وجود تشقق</h3>
-              <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
-            </div>
-            <div class="cmp">
-              <span><small data-i18n="f.prev">الفحص السابق</small><b>0.6 مم</b></span>
-              <span class="cmp__ar arrow" aria-hidden="true">←</span>
-              <span><small data-i18n="f.curr">الفحص الحالي</small><b class="cmp__now">1.4 مم</b></span>
-            </div>
-            <p class="scr__lbl" data-i18n="a.confidence">دقة التحليل</p>
-            <div class="bar"><b style="width:87%"></b></div>
-            <p class="scr__hint" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
-            <p class="scr__lbl" data-i18n="a.decision">قرار المهندس</p>
-            <div class="acts">
-              <button class="ui ui--ok" data-go="s-record" data-i18n="m7.b">موافقة</button>
-              <button class="ui ui--no" data-go="s-results" data-i18n="m7.c">رفض</button>
-              <button class="ui ui--ghost" data-go="s-results" data-i18n="m7.d">تعديل</button>
-            </div>
-            <p class="scr__hint scr__hint--c" data-i18n="a.branchNote">الرفض أو التعديل يعيدك إلى النتائج — والموافقة تكتب القرار في السجل.</p>
-          </section>
-
-          <!-- السجل -->
-          <section class="scr" id="s-record" data-title="sc.record" data-title-ar="السجل" data-side="rep">
-            <div class="scr__head">
-              <h3 class="scr__ok" data-i18n="m8.a">تم حفظ القرار بنجاح</h3>
-            </div>
-            <div class="pair"><span data-i18n="m8.b">رقم الفحص</span><b>INSP-2026-014</b></div>
-            <div class="pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
-            <div class="pair"><span data-i18n="m8.c">التاريخ</span><b>20 / 09 / 2026</b></div>
-            <div class="pair"><span data-i18n="m8.d">الحالة</span><b data-i18n="m8.e">تمت المراجعة</b></div>
-            <p class="scr__lbl" data-i18n="a.history">سجل المنشأة</p>
-            <div class="hist">
-              <span class="hist__i is-now"><b>20 / 09 / 2026</b><small data-i18n="a.h1">تشقق الركيزة ٢ — معتمد</small></span>
-              <span class="hist__i"><b>12 / 03 / 2026</b><small data-i18n="a.h2">رطوبة السطح السفلي — للمتابعة</small></span>
-              <span class="hist__i"><b>04 / 08 / 2024</b><small data-i18n="a.h3">تآكل حديد التسليح — مغلق</small></span>
-            </div>
-            <button class="ui ui--go" data-go="s-alerts" data-i18n="a.finish">إنهاء الفحص</button>
-          </section>
-
-          <!-- الإشعارات -->
-          <section class="scr" id="s-alerts" data-title="sc.alerts" data-title-ar="الإشعارات" data-side="home">
-            <div class="scr__head"><h3 data-i18n="sc.alerts">الإشعارات</h3></div>
-            <div class="toast toast--ok"><i></i>
-              <span><b data-i18n="m9.a">تمت الموافقة على نتائج الفحص</b><span data-i18n="m9.b">تم تحديث سجل المنشأة بنجاح.</span></span>
-            </div>
-            <div class="toast toast--warn"><i></i>
-              <span><b data-i18n="m9.c">تحتاج إلى إجراء إضافي</b><span data-i18n="m9.d">تم تعديل إحدى نتائج فحص جسر جابر.</span></span>
-            </div>
-            <p class="scr__hint scr__hint--c" data-i18n="a.loopNote">ما حُفظ الآن هو ما سيقرأه الوكيل الذكي في الفحص القادم.</p>
-            <button class="ui ui--go" data-go="s-assets" data-i18n="a.next">بدء فحص جديد</button>
-          </section>
-
-        </div>
-      </div>
-
-      <div class="app__foot">
-        <button class="navb" id="appPrev" data-i18n-attr="aria-label:a.prev" aria-label="الشاشة السابقة">
-          <span class="arrow arrow--back" aria-hidden="true">←</span>
-        </button>
-        <div class="dots" id="appDots" role="tablist" aria-label="الشاشات"></div>
-        <button class="navb" id="appNext" data-i18n-attr="aria-label:a.next2" aria-label="الشاشة التالية">
-          <span class="arrow" aria-hidden="true">←</span>
-        </button>
-      </div>
-    </div>
-
-    <p class="flow__loop reveal">
-      <span aria-hidden="true">↻</span>
-      <span data-i18n="j.loop">ما يُحفظ في شاشة السجل هو ما يقرأه الوكيل الذكي في شاشة التحليل من الفحص القادم — جرّب «بدء فحص جديد» لتغلق الدورة بنفسك.</span>
+    <p class="gate__note" data-i18n="a.demoNote">
+      نموذج عرض: لا يوجد خادم يتحقق من الحساب، والجلسة تُحفظ في متصفحك وحده.
     </p>
   </section>
-
-  <!-- الملاحظات -->
-  <section class="section section--alt" id="findings">
-    <div class="section__head reveal">
-      <span class="section__num">04</span>
-      <h2 data-i18n="f.h">الملاحظات · Findings</h2>
-      <div class="rule"></div>
-    </div>
-
-    <p class="section__intro reveal" data-i18n="f.intro">
-      الملاحظة ليست تنبيهًا مجردًا — بل مرتبطة بموقعها في المنشأة، وبتاريخها، وبسبب ظهورها الآن.
-      وكل ملاحظة تنتظر قرار المهندس.
-    </p>
-
-    <div class="findings">
-      <article class="finding finding--high reveal" data-delay="1">
-        <header><span class="finding__tag" data-i18n="f.tag1">أولوية عالية</span><span class="finding__id">F-2026-018</span></header>
-        <h3 data-i18n="f.t1">اتساع تشقق في الركيزة رقم ٢</h3>
-        <p class="finding__cmp">
-          <span data-i18n="f.prev">الفحص السابق</span><b>0.6 مم</b>
-          <span class="arrow" aria-hidden="true">←</span>
-          <span data-i18n="f.curr">الفحص الحالي</span><b>1.4 مم</b>
-        </p>
-        <p data-i18n="f.d1">ربط الوكيل الملاحظة بتشقق مسجّل في فحص سابق ورصد تغيّرًا في العرض خلال المدة بين الزيارتين.</p>
-        <footer><span class="dotstate dotstate--wait"></span> <span data-i18n="f.wait">بانتظار مراجعة المهندس</span></footer>
-      </article>
-
-      <article class="finding finding--mid reveal" data-delay="2">
-        <header><span class="finding__tag" data-i18n="f.tag2">للمتابعة</span><span class="finding__id">F-2026-021</span></header>
-        <h3 data-i18n="f.t2">تآكل سطحي متكرر — السطح السفلي</h3>
-        <p class="finding__cmp"><span data-i18n="f.rep">تكرار الظهور</span><b data-i18n="f.rep3">٣ فحوصات متتالية</b></p>
-        <p data-i18n="f.d2">ظهر في ثلاث زيارات متتالية رغم المعالجة المسجّلة في السجل، ما يشير إلى مصدر لم يُعالَج.</p>
-        <footer><span class="dotstate dotstate--wait"></span> <span data-i18n="f.wait">بانتظار مراجعة المهندس</span></footer>
-      </article>
-
-      <article class="finding finding--ok reveal" data-delay="3">
-        <header><span class="finding__tag" data-i18n="f.tag3">معتمد</span><span class="finding__id">F-2024-104</span></header>
-        <h3 data-i18n="f.t3">تآكل حديد التسليح — تمت المعالجة</h3>
-        <p class="finding__cmp"><span data-i18n="f.st">الحالة</span><b data-i18n="f.closed">مغلق بعد التحقق</b></p>
-        <p data-i18n="f.d3">اعتمد المهندس إغلاق الملاحظة بعد التحقق الميداني، ودخل القرار سجل المنشأة كمرجع دائم.</p>
-        <footer><span class="dotstate dotstate--ok"></span> <span data-i18n="f.saved">محفوظ في سجل المنشأة</span></footer>
-      </article>
-    </div>
-  </section>
-
-  <!-- سجل المنشأة -->
-  <section class="section" id="record">
-    <div class="section__head reveal">
-      <span class="section__num">05</span>
-      <h2 data-i18n="r.h">سجل المنشأة</h2>
-      <div class="rule"></div>
-    </div>
-
-    <p class="section__intro reveal" data-i18n="r.intro">
-      خط زمني واحد لكل منشأة. كل نقطة عليه فحص كامل بمدخلاته وملاحظاته المعتمدة وقرارات المهندس.
-    </p>
-
-    <ol class="timeline">
-      <li class="reveal" data-delay="1">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <span class="timeline__date" data-i18n="r.p1">الفحص الأول</span>
-        <h3 data-i18n="r.t1">تأسيس السجل</h3>
-        <p data-i18n="r.d1">توثيق الحالة المرجعية للمنشأة: الصور الأساسية، العناصر الإنشائية، ونقطة البداية للمقارنة.</p>
-      </li>
-      <li class="reveal" data-delay="2">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <span class="timeline__date" data-i18n="r.p2">الفحص الدوري</span>
-        <h3 data-i18n="r.t2">مقارنة وتحديث</h3>
-        <p data-i18n="r.d2">يقارن الوكيل بالحالة المرجعية وبكل فحص تالٍ، ويعرض الفروقات بدل عرض البيانات الخام.</p>
-      </li>
-      <li class="reveal" data-delay="3">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <span class="timeline__date" data-i18n="r.p3">بعد المعالجة</span>
-        <h3 data-i18n="r.t3">إغلاق الملاحظات</h3>
-        <p data-i18n="r.d3">تُوثَّق المعالجة ومن اعتمدها ومتى، فيعرف الفحص القادم ما الذي عولج وما الذي عاد للظهور.</p>
-      </li>
-      <li class="reveal" data-delay="4">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <span class="timeline__date" data-i18n="r.p4">الفحص القادم</span>
-        <h3 data-i18n="r.t4">ذاكرة أغنى</h3>
-        <p data-i18n="r.d4">كلما زاد عدد الفحوصات، أصبح تحليل الوكيل أدق لأن تاريخ المنشأة صار أطول وأوضح.</p>
-      </li>
-    </ol>
-  </section>
-
-  <!-- الأمان -->
-  <section class="section section--alt" id="security">
-    <div class="section__head reveal">
-      <span class="section__num">06</span>
-      <h2 data-i18n="s.h">الأمان والمسؤولية</h2>
-      <div class="rule"></div>
-    </div>
-
-    <div class="grid">
-      <article class="tile reveal" data-delay="1">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <rect x="4.5" y="10" width="15" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="12" cy="15" r="1.3" fill="currentColor"/>
-          </svg>
-        </div>
-        <h3 data-i18n="s.t1">بيانات المكتب الهندسي</h3>
-        <p data-i18n="s.d1">كل منشأة تتبع مكتبها، والوصول محدد بالصلاحيات: من يُدخل، من يراجع، ومن يعتمد.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="2">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M12 3.5 5 6.4v5.1c0 4.2 2.9 7.8 7 9 4.1-1.2 7-4.8 7-9V6.4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M12 8.6v4.2M12 15.6v.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 data-i18n="s.t2">سجل غير قابل للضياع</h3>
-        <p data-i18n="s.d2">كل قرار يُحفظ بتاريخه وصاحبه، فيبقى المسار الهندسي قابلًا للمراجعة والتدقيق لاحقًا.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="3">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M12 4.5a7.5 7.5 0 1 0 7.5 7.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M12 8.2v4l2.8 1.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="18.6" cy="6" r="2.1" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <h3 data-i18n="s.t3">الوكيل مساعد لا بديل</h3>
-        <p data-i18n="s.d3">لا يعتمد الوكيل شيئًا بنفسه. مخرجاته اقتراحات موثّقة المصدر، والقرار الهندسي يبقى للمهندس.</p>
-      </article>
-    </div>
-  </section>
-
-  <div class="seam reveal" aria-hidden="true">
-    <svg viewBox="0 0 1200 44" preserveAspectRatio="none">
-      <path class="seam__hair" d="M0 22 H1200"/>
-      <path class="seam__gold" d="M0 22 H104 L146 7 L192 33 L246 9 L300 30 L356 12 L410 28 L468 5 L526 31 L586 13 L644 29 L704 8 L766 27 L826 14 L888 30 L946 11 L1004 28 L1060 16 L1112 25 H1200"/>
-    </svg>
-  </div>
-
-  <!-- الخاتمة -->
-  <section class="section section--cta">
-    <div class="cta reveal">
-      <p class="cta__quote" data-i18n="c.quote">« البنية التحتية أكثر أمانًا .. بقرارات أذكى »</p>
-      <p class="cta__en">SMART INSPECTIONS &nbsp;·&nbsp; SAFER TOMORROWS</p>
-      <p data-i18n="c.body">من إدخال البيانات، إلى تحليل الوكيل الذكي، إلى مراجعة المهندس، إلى سجل المنشأة الذي يغذّي الفحص القادم.</p>
-      <div class="hero__actions">
-        <a class="btn btn--solid" href="#journey"><span data-i18n="c.cta">راجع الرحلة من البداية</span> <span class="arrow" aria-hidden="true">←</span></a>
-      </div>
-    </div>
-  </section>
-
 </main>
-
-<footer class="foot">
-  <p data-i18n="foot.txt">مرصاد · MIRSAAD — منصة إدارة دورة فحص المنشآت</p>
-  <a href="#home" class="foot__top" data-i18n="foot.top">للأعلى ↑</a>
-</footer>
 
 <script src="assets/i18n.js"></script>
 <script src="assets/scene.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/script.js"></script>
+<script src="assets/chrome.js"></script>
+<script src="assets/auth.js"></script>
 </body>
 </html>
