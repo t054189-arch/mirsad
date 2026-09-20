@@ -78,14 +78,17 @@
   if (who && window.MirsaadSession) {
     var s = window.MirsaadSession();
     if (s) {
-      var shown = (root.lang === 'en' ? s.nameEn : s.name) || s.email;
-      who.querySelector('b').textContent = shown;
-      who.setAttribute('title', s.email);
-      // الاسم يتبع اللغة أيضًا
+      // الاسم والدور يتبعان اللغة
       whoSync = function () {
-        who.querySelector('b').textContent =
-          (document.documentElement.lang === 'en' ? s.nameEn : s.name) || s.email;
+        var en = document.documentElement.lang === 'en';
+        var name = (en ? s.nameEn : s.name) || s.email;
+        var role = en ? s.roleEn : s.role;
+        who.querySelector('b').textContent = name;
+        var tag = who.querySelector('.who__role');
+        if (tag) tag.textContent = role || '';
+        who.setAttribute('title', s.email);
       };
+      whoSync();
     }
   }
 

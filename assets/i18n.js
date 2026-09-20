@@ -16,20 +16,20 @@ window.MIRSAAD_EN = {
 
   /* المشكلة */
   'p.h': 'The problem',
-  'p.b1': 'Every site visit ends as a folder of photos, a Word report, notes on a phone, and maybe a spreadsheet. At the next inspection the engineer starts from zero: hunting for last year’s report, trying to remember whether this crack was already there, whether it has widened, and who signed off the previous repair.',
+  'p.b1': 'Every site visit ends as a folder of photos, a Word report, notes on a phone, and maybe a spreadsheet. At the next inspection whoever picks it up starts from zero: hunting for last year’s report, trying to remember whether this crack was already there, whether it has widened, and who signed off the previous repair.',
   'p.b2': 'The result is that <strong>the structure’s history is lost</strong>, and each inspection becomes an isolated snapshot instead of a link in a chain.',
 
   /* الفكرة */
   'i.h': 'The idea',
-  'i.intro': 'Mirsaad is a secure, intelligent platform built for engineering offices, helping engineers manage and track inspections of structures and infrastructure — from the first visit through every visit after it.',
+  'i.intro': 'Mirsaad is a secure, intelligent platform built for engineering offices, serving the whole team \u2014 from the field technician to the reviewer to the office manager \u2014 in managing and tracking inspections of structures and infrastructure, from the first visit through every visit after it.',
   'i.t1': 'One continuous record',
   'i.d1': 'Every inspection is added to the same asset record, so a structure becomes an entity with a searchable, comparable history.',
-  'i.t2': 'An AI agent that works before the engineer',
+  'i.t2': 'An AI agent that works before the review',
   'i.d2': 'It analyses the inspection data, searches the structure’s history, compares current against previous, and surfaces what deserves attention.',
-  'i.t3': 'The engineer approves',
-  'i.d3': 'The agent proposes; the engineer reviews and approves or rejects. Nothing enters the record without human review.',
+  'i.t3': 'The reviewer approves',
+  'i.d3': 'The agent proposes; the responsible reviewer approves or rejects. Nothing enters the record without human review.',
   'i.t4': 'It improves over time',
-  'i.d4': 'What the engineer approves today becomes part of the history the agent reads at the next inspection.',
+  'i.d4': 'What is approved today becomes part of the history the agent reads at the next inspection.',
   'i.no': 'Not',   'i.noH': 'just a tool',
   'i.n1': 'Not just a crack-detection tool.',
   'i.n2': 'Not a chatbot answering general questions.',
@@ -92,15 +92,15 @@ window.MIRSAAD_EN = {
   'a.remember': 'Remember me',
   'a.newAsset': '+ New structure',
   'a.last': 'Last inspection',
-  'a.engineer': 'Responsible engineer',
-  'a.engName': 'Eng. Rayan Alajmi',
+  'a.engineer': 'Assigned to',
+  'a.engName': 'Rayan Alajmi',
   'a.section': 'Section',
   'a.sectionV': 'Piers and underside',
   'a.notes': 'Field notes\u2026',
   'a.startAnalysis': 'Start the analysis',
   'a.analysingSub': 'The AI agent reads the files and compares them against the asset record.',
   'a.confidence': 'Analysis confidence',
-  'a.decision': 'Engineer\u2019s decision',
+  'a.decision': 'Reviewer\u2019s decision',
   'a.branchNote': 'Reject or edit sends you back to the results \u2014 approve writes the decision into the record.',
   'a.history': 'Asset record',
   'a.h1': 'Pier 2 crack \u2014 approved',
@@ -156,7 +156,7 @@ window.MIRSAAD_EN = {
 
   /* سجل المنشأة */
   'r.h': 'The asset record',
-  'r.intro': 'One timeline per structure. Every point on it is a full inspection with its inputs, its approved findings and the engineer’s decisions.',
+  'r.intro': 'One timeline per structure. Every point on it is a full inspection with its inputs, its approved findings and the reviewer’s decisions.',
   'r.p1': 'First inspection', 'r.t1': 'Establishing the record',
   'r.d1': 'Documenting the structure’s baseline: reference photos, structural elements, and the starting point for comparison.',
   'r.p2': 'Routine inspection', 'r.t2': 'Compare and update',
@@ -166,6 +166,20 @@ window.MIRSAAD_EN = {
   'r.p4': 'Next inspection', 'r.t4': 'A richer memory',
   'r.d4': 'The more inspections there are, the sharper the agent’s analysis becomes, because the structure’s history is longer and clearer.',
 
+  /* من يستخدم مرصاد */
+  'who.h': 'Who uses Mirsaad',
+  'who.intro': 'Inspection is not one person\u2019s job. Mirsaad serves everyone who takes part in the inspection cycle inside the office, with what each role needs \u2014 and permissions decide who captures, who reviews, and who approves.',
+  'who.t1': 'Field technician',
+  'who.d1': 'Captures photos and measurements on site and uploads them straight into the inspection.',
+  'who.t2': 'Engineer',
+  'who.d2': 'Reads the agent\u2019s analysis, weighs it against the structure\u2019s history, and proposes the repair.',
+  'who.t3': 'Reviewer or supervisor',
+  'who.d3': 'Approves, rejects or edits the finding \u2014 and the decision enters the record under their name and date.',
+  'who.t4': 'Office manager',
+  'who.d4': 'Tracks structure metrics and what is awaiting review, without going into the detail.',
+  'who.t5': 'Administrator',
+  'who.d5': 'Organises records and reports and pulls them out for an audit or for the asset owner.',
+
   /* الأمان */
   's.h': 'Security and accountability',
   's.t1': 'Engineering-office data',
@@ -173,7 +187,7 @@ window.MIRSAAD_EN = {
   's.t2': 'A record that cannot be lost',
   's.d2': 'Every decision is stored with its date and its author, so the engineering trail stays reviewable and auditable later.',
   's.t3': 'The agent assists, it does not replace',
-  's.d3': 'The agent approves nothing by itself. Its output is a set of sourced suggestions; the engineering decision stays with the engineer.',
+  's.d3': 'The agent approves nothing by itself. Its output is a set of sourced suggestions; the decision stays with the responsible reviewer.',
 
   /* الخاتمة */
   'c.quote': '« Safer infrastructure .. through smarter decisions »',

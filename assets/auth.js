@@ -18,7 +18,9 @@
 
   /* الحسابات التجريبية — أضف حسابًا هنا ليعمل في العرض */
   var ACCOUNTS = [
-    { email: 'eng@mirsaad.kw', pass: 'mirsaad2026', name: 'م. ريان العجمي', nameEn: 'Eng. Rayan Alajmi' }
+    { email: 'staff@mirsaad.kw', pass: 'mirsaad2026',
+      name: 'ريان العجمي', nameEn: 'Rayan Alajmi',
+      role: 'مراجِع', roleEn: 'Reviewer' }
   ];
   function findAccount(v) {
     v = v.trim().toLowerCase();
@@ -94,6 +96,8 @@
         email: account.email,
         name: account.name,
         nameEn: account.nameEn,
+        role: account.role,
+        roleEn: account.roleEn,
         at: new Date().toISOString()
       }));
     } catch (err) {
