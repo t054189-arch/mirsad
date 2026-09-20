@@ -79,20 +79,30 @@ npm run lint    # eslint
 
 ## Deployment
 
-The Vercel project **mirsad** exists and both environment variables are already
-set for Production, Preview and Development.
+Live: <https://mirsad-alpha.vercel.app>
 
-It is **not yet connected to this repository**, so pushes do not deploy on their
-own. Vercel's GitHub App is currently installed on the `wduwaisan` account,
-while this repository lives under `t054189-arch`, so Vercel cannot see it.
+The Vercel project **mirsad** is set up and deployed, with both environment
+variables configured for Production, Preview and Development.
 
-To finish the connection — this needs someone with admin rights on the
-`t054189-arch` GitHub account:
+### Pushes do not deploy yet
+
+The project is **not connected to this repository**, so nothing redeploys when
+you push. The current production deployment was uploaded directly.
+
+Making the repository public was not enough. Vercel can read the repository's
+metadata — it resolves commits and branches fine — but fetching the source for a
+build fails with `git_info_fail`, because Vercel's GitHub App is not installed
+on the `t054189-arch` account. It is installed on `wduwaisan`, which only covers
+that account's own repositories.
+
+Installing a GitHub App needs admin rights on the account that owns the
+repository, so **the owner of `t054189-arch` has to do this** — collaborators
+with push access cannot.
 
 1. Open the mirsad project on Vercel → **Settings → Git**.
 2. Choose **Connect Git Repository** and pick `t054189-arch/mirsad`.
-3. Vercel will ask to install its GitHub App on `t054189-arch`. Approve it and
-   grant access to the `mirsad` repository.
+3. Approve installing the Vercel GitHub App on `t054189-arch`, granting it
+   access to the `mirsad` repository.
 
 After that, pushes to `main` deploy to production and every other branch gets a
 preview URL.
