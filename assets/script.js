@@ -5,7 +5,7 @@
   var root = document.documentElement;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var prefersLight = window.matchMedia('(prefers-color-scheme: light)');
-  var K = { theme: 'mirsaad-theme', mode: 'mirsaad-mode', lang: 'mirsaad-lang' };
+  var K = { mode: 'mirsaad-mode', lang: 'mirsaad-lang' };
 
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* التخزين غير متاح */ } }
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -38,41 +38,6 @@
   var onSystem = function () { if (mode === 'auto') applyMode(); };
   if (prefersLight.addEventListener) prefersLight.addEventListener('change', onSystem);
   else if (prefersLight.addListener) prefersLight.addListener(onSystem);
-
-  /* ============ عائلة الألوان ============ */
-  var themeBtn = document.getElementById('themeBtn');
-  var themeMenu = document.getElementById('themeMenu');
-  var themeOptions = document.querySelectorAll('[data-theme-set]');
-
-  function applyTheme(name) {
-    root.setAttribute('data-theme', name);
-    Array.prototype.forEach.call(themeOptions, function (o) {
-      o.setAttribute('aria-checked', String(o.getAttribute('data-theme-set') === name));
-    });
-    save(K.theme, name);
-    applyMode();
-  }
-  var savedTheme = load(K.theme);
-  applyTheme(savedTheme && document.querySelector('[data-theme-set="' + savedTheme + '"]') ? savedTheme : 'mirsaad');
-
-  function closeThemes() {
-    if (!themeMenu) return;
-    themeMenu.classList.remove('is-open');
-    themeBtn.setAttribute('aria-expanded', 'false');
-  }
-  if (themeBtn && themeMenu) {
-    themeBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = themeMenu.classList.toggle('is-open');
-      themeBtn.setAttribute('aria-expanded', String(open));
-    });
-    Array.prototype.forEach.call(themeOptions, function (o) {
-      o.addEventListener('click', function () { applyTheme(o.getAttribute('data-theme-set')); closeThemes(); });
-    });
-    document.addEventListener('click', function (e) {
-      if (!themeMenu.contains(e.target) && !themeBtn.contains(e.target)) closeThemes();
-    });
-  }
 
   /* ============ اللغة: عربي / إنجليزي ============ */
   var EN = window.MIRSAAD_EN || {};
@@ -170,7 +135,7 @@
   });
   links.addEventListener('click', function (e) { if (e.target.tagName === 'A') closeMenu(); });
   window.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { closeMenu(); closeThemes(); }
+    if (e.key === 'Escape') closeMenu();
   });
 
   /* ============ الظهور التدريجي ============ */

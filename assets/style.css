@@ -1,14 +1,13 @@
 /* ============================================================
    مِرصاد · MIRSAAD — منصة إدارة دورة فحص المنشآت
-   عربي/إنجليزي · RTL/LTR · أربع عائلات ألوان × وضعين
-   العائلة على [data-theme] والوضع على [data-mode]
+   عربي/إنجليزي · RTL/LTR · الهوية الرسمية بوضعين
+   الوضع على [data-mode]: الداكن هو الأساس، والفاتح يستبدل القيم
    هذه الكتل مولّدة من tools/palettes.py — عدّلها هناك لا هنا
    ============================================================ */
 
-/* ========== عائلة: مرصاد — الهوية الرسمية (رملي) ========== */
+/* ========== مرصاد — الهوية الرسمية ========== */
 /* الوضع الداكن — الأساس */
-:root,
-[data-theme="mirsaad"]{
+:root{
   --bg:            #181613;
   --bg-alt:        #1d1b17;
   --surface:       #22201b;
@@ -29,7 +28,7 @@
 }
 
 /* الوضع الفاتح */
-[data-theme="mirsaad"][data-mode="light"]{
+[data-mode="light"]{
   --bg:            #f7f3ec;
   --bg-alt:        #fffdf8;
   --surface:       #fffdf8;
@@ -47,135 +46,6 @@
   --shadow:        0 16px 40px rgba(43,36,29,.09);
   --mark-strength: .6;
   --accent-soft: color-mix(in srgb, #8c5e17 11%, transparent);
-}
-
-/* ========== عائلة: فجر (كهرماني) ========== */
-/* الوضع الداكن — الأساس */
-[data-theme="dawn"]{
-  --bg:            #121729;
-  --bg-alt:        #171d33;
-  --surface:       #1b2239;
-  --surface-2:     #232b47;
-  --ink:           #f5f1ea;
-  --ink-soft:      #a6abc7;
-  --line:          #2d3556;
-  --accent:        #ffa552;
-  --accent-deep:   #ef8a2d;
-  --on-accent:     #2a1503;
-  --hi:            #ff7b72;
-  --mid:           #ffcf6b;
-  --ok:            #6fe0a8;
-  --grid-ink:      rgba(255,255,255,.05);
-  --shadow:        0 18px 48px rgba(0,0,0,.42);
-  --mark-strength: 1;
-  --accent-soft: color-mix(in srgb, #ffa552 11%, transparent);
-}
-
-/* الوضع الفاتح */
-[data-theme="dawn"][data-mode="light"]{
-  --bg:            #fbf6ef;
-  --bg-alt:        #fffdfa;
-  --surface:       #ffffff;
-  --surface-2:     #f5ebdd;
-  --ink:           #241c14;
-  --ink-soft:      #6b5c4b;
-  --line:          #e8dcc9;
-  --accent:        #a1560f;
-  --accent-deep:   #81450c;
-  --on-accent:     #ffffff;
-  --hi:            #b03024;
-  --mid:           #8a5a00;
-  --ok:            #2f6b45;
-  --grid-ink:      rgba(36,28,20,.05);
-  --shadow:        0 16px 40px rgba(36,28,20,.09);
-  --mark-strength: .6;
-  --accent-soft: color-mix(in srgb, #a1560f 11%, transparent);
-}
-
-/* ========== عائلة: أُفق (أزرق) ========== */
-/* الوضع الداكن — الأساس */
-[data-theme="horizon"]{
-  --bg:            #0b1520;
-  --bg-alt:        #0f1c2a;
-  --surface:       #132232;
-  --surface-2:     #1a2c3f;
-  --ink:           #eaf2f9;
-  --ink-soft:      #94a9bd;
-  --line:          #223547;
-  --accent:        #63b8f5;
-  --accent-deep:   #3f9be0;
-  --on-accent:     #05172a;
-  --hi:            #ff8079;
-  --mid:           #ffc266;
-  --ok:            #5fd6a8;
-  --grid-ink:      rgba(255,255,255,.05);
-  --shadow:        0 18px 48px rgba(0,0,0,.45);
-  --mark-strength: .9;
-  --accent-soft: color-mix(in srgb, #63b8f5 11%, transparent);
-}
-
-/* الوضع الفاتح */
-[data-theme="horizon"][data-mode="light"]{
-  --bg:            #f3f7fb;
-  --bg-alt:        #ffffff;
-  --surface:       #ffffff;
-  --surface-2:     #e6eff8;
-  --ink:           #10202e;
-  --ink-soft:      #506678;
-  --line:          #d5e3ef;
-  --accent:        #0a6dbb;
-  --accent-deep:   #085795;
-  --on-accent:     #ffffff;
-  --hi:            #b9291a;
-  --mid:           #8a5a00;
-  --ok:            #14705a;
-  --grid-ink:      rgba(16,32,46,.055);
-  --shadow:        0 16px 40px rgba(16,32,46,.09);
-  --mark-strength: .6;
-  --accent-soft: color-mix(in srgb, #0a6dbb 11%, transparent);
-}
-
-/* ========== عائلة: ترميم (نعناعي) ========== */
-/* الوضع الداكن — الأساس */
-[data-theme="restored"]{
-  --bg:            #0e1a19;
-  --bg-alt:        #112220;
-  --surface:       #142826;
-  --surface-2:     #1c332f;
-  --ink:           #eef6f3;
-  --ink-soft:      #97ada8;
-  --line:          #214039;
-  --accent:        #62dcae;
-  --accent-deep:   #3dbf90;
-  --on-accent:     #04231a;
-  --hi:            #ff8a7a;
-  --mid:           #ffc978;
-  --ok:            #62dcae;
-  --grid-ink:      rgba(255,255,255,.05);
-  --shadow:        0 18px 46px rgba(0,0,0,.45);
-  --mark-strength: .9;
-  --accent-soft: color-mix(in srgb, #62dcae 11%, transparent);
-}
-
-/* الوضع الفاتح */
-[data-theme="restored"][data-mode="light"]{
-  --bg:            #f1f6f3;
-  --bg-alt:        #fbfdfc;
-  --surface:       #ffffff;
-  --surface-2:     #e4efe9;
-  --ink:           #12201b;
-  --ink-soft:      #52635b;
-  --line:          #d5e4dc;
-  --accent:        #0f7355;
-  --accent-deep:   #0a5740;
-  --on-accent:     #ffffff;
-  --hi:            #b03123;
-  --mid:           #8a5a00;
-  --ok:            #0f7355;
-  --grid-ink:      rgba(18,32,27,.05);
-  --shadow:        0 16px 38px rgba(18,32,27,.08);
-  --mark-strength: .55;
-  --accent-soft: color-mix(in srgb, #0f7355 11%, transparent);
 }
 
 [data-mode="dark"]{  color-scheme: dark; }
@@ -272,20 +142,6 @@ b{ font-weight:600; }
 
 .nav__tools{ display:flex; align-items:center; gap:8px; }
 
-.themebtn{
-  display:flex; align-items:center; gap:8px;
-  font:inherit; font-size:.85rem; color:var(--ink);
-  background:var(--surface); border:1px solid var(--line);
-  border-radius:999px; padding:7px 14px; cursor:pointer;
-  transition:border-color .25s, background .25s;
-}
-.themebtn:hover{ border-color:var(--accent); }
-.themebtn__swatch{
-  width:14px; height:14px; border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 0 3px var(--accent-soft);
-}
-
 .nav__toggle{
   display:none; flex-direction:column; gap:5px;
   background:none; border:0; cursor:pointer; padding:8px;
@@ -294,44 +150,6 @@ b{ font-weight:600; }
   width:24px; height:2px; background:var(--ink); border-radius:2px;
   transition:transform .3s var(--ease), opacity .2s;
 }
-
-/* ---------- قائمة الثيمات ---------- */
-.themes{
-  position:absolute; inset-block-start:calc(100% - 4px); inset-inline-end:clamp(18px,5vw,54px);
-  width:min(340px, 88vw);
-  background:var(--surface); border:1px solid var(--line);
-  border-radius:var(--r); box-shadow:var(--shadow);
-  padding:14px; display:grid; gap:6px;
-  opacity:0; visibility:hidden; transform:translateY(-8px);
-  transition:opacity .25s var(--ease), transform .25s var(--ease), visibility .25s;
-}
-.themes.is-open{ opacity:1; visibility:visible; transform:translateY(0); }
-.themes__title{
-  font-size:.78rem; color:var(--ink-soft); letter-spacing:.04em;
-  margin:2px 4px 8px; text-transform:none;
-}
-.theme{
-  display:flex; align-items:center; gap:12px; width:100%;
-  font:inherit; text-align:start; color:var(--ink);
-  background:transparent; border:1px solid transparent;
-  border-radius:10px; padding:9px 10px; cursor:pointer;
-  transition:background .2s, border-color .2s;
-}
-.theme:hover{ background:var(--surface-2); }
-.theme[aria-checked="true"]{
-  border-color:var(--accent);
-  background:var(--accent-soft);
-}
-.theme__dots{ display:flex; flex-shrink:0; }
-.theme__dots i{
-  width:16px; height:16px; border-radius:50%;
-  border:1.5px solid color-mix(in srgb, var(--ink) 22%, var(--surface));
-  margin-inline-start:-5px;
-}
-.theme__dots i:first-child{ margin-inline-start:0; }
-.theme__meta{ display:grid; gap:1px; line-height:1.45; }
-.theme__meta strong{ font-size:.92rem; font-weight:600; }
-.theme__meta small{ font-size:.76rem; color:var(--ink-soft); }
 
 /* ---------- الواجهة الرئيسية ---------- */
 main{ position:relative; z-index:1; }
@@ -643,8 +461,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   .hero{ min-height:auto; align-items:start; padding-block:120px 130px; }
 
   .nav__toggle{ display:flex; }
-  .themebtn__label{ display:none; }
-  .themebtn{ padding:7px 10px; }
 
   .nav__links{
     position:fixed; inset:0;
@@ -659,7 +475,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 
   .hero__stats{ gap:22px; }
   .hero__stats li{ min-width:44%; }
-  .themes{ inset-inline:12px; width:auto; }
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -770,28 +585,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   font-family:"Space Grotesk",sans-serif;
   font-size:.7rem; letter-spacing:.3em; color:var(--accent);
 }
-
-.journey{
-  display:grid; gap:18px; align-items:start;
-  grid-template-columns:repeat(3, 1fr);
-}
-.jstep{
-  display:flex; flex-direction:column; gap:16px;
-  background:var(--surface); border:1px solid var(--line);
-  border-radius:calc(var(--r) + 2px); padding:22px 20px;
-  transition:transform .35s var(--ease), border-color .35s, box-shadow .35s;
-}
-.jstep:hover{ transform:translateY(-4px); border-color:var(--accent); box-shadow:var(--shadow); }
-.jstep__head{ display:flex; align-items:flex-start; gap:13px; }
-.jstep__num{
-  flex-shrink:0; display:grid; place-items:center;
-  width:32px; height:32px; border-radius:50%;
-  border:1px solid var(--accent); color:var(--accent);
-  background:var(--accent-soft);
-  font-family:"Space Grotesk",sans-serif; font-weight:500; font-size:.92rem;
-}
-.jstep__head h3{ font-size:1rem; margin-bottom:4px; }
-.jstep__head p{ color:var(--ink-soft); font-size:.87rem; line-height:1.6; }
 
 /* ---------- واجهات مصغّرة داخل الخطوات ---------- */
 .mock{
@@ -948,10 +741,8 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 
 /* ---------- الشاشات الصغيرة ---------- */
 @media (max-width: 980px){
-  .journey{ grid-template-columns:repeat(2, 1fr); }
 }
 @media (max-width: 680px){
-  .journey{ grid-template-columns:1fr; }
   .hero__en{ letter-spacing:.34em; }
   .bridge{ opacity:calc(var(--mark-strength) * .35); }
 }
@@ -1099,4 +890,104 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   .iconbtn{ width:32px; height:32px; }
   .intro__skip{ inset-block-end:24px; inset-inline-end:24px; }
   .scene{ opacity:calc(var(--mark-strength) * .38); }
+}
+
+/* ============================================================
+   المخطط الانسيابي لرحلة المستخدم
+   عمودان: مسار العودة على جهة البداية، والعقد على الأخرى.
+   العقد عناصر شبكة، فصفّ كل خطوة يساوي ترتيبها — وبذلك يمتد
+   مسار العودة من الخطوة ٥ إلى ٩ بلا أي حساب في JavaScript.
+   ============================================================ */
+.fc{
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr);
+  position:relative;
+}
+
+/* مسار العودة: من الخطوة ٩ صعودًا إلى الخطوة ٥ */
+.fc::before{
+  content:""; grid-column:1; grid-row:5 / 10;
+  border:1.5px dashed var(--accent);
+  border-inline-end:0;
+  border-start-start-radius:16px;
+  border-end-start-radius:16px;
+  margin:42px 14px 42px 0;
+  margin-inline:0 14px;
+  opacity:.5;
+}
+/* رأس سهم العودة: عند الطرف المفتوح، مشيرًا إلى عقدة الخطوة ٥ */
+.fc::after{
+  content:""; grid-column:1; grid-row:5;
+  align-self:start; justify-self:end;
+  width:9px; height:10px;
+  margin-block-start:37px; margin-inline-end:10px;
+  background:var(--accent); opacity:.75;
+  clip-path:polygon(100% 0, 0 50%, 100% 100%);   /* يشير يسارًا في RTL */
+}
+[dir="ltr"] .fc::after{ clip-path:polygon(0 0, 100% 50%, 0 100%); }
+
+.fc__step{
+  grid-column:2; position:relative;
+  padding-block-end:52px;
+}
+.fc__step:last-child{ padding-block-end:0; }
+
+/* السهم الواصل بين عقدة والتي تليها */
+.fc__step:not(:last-child)::before{
+  content:""; position:absolute; inset-block-end:16px;
+  inset-inline:0; margin-inline:auto;
+  width:1.5px; height:30px; background:var(--ink-soft); opacity:.45;
+}
+.fc__step:not(:last-child)::after{
+  content:""; position:absolute; inset-block-end:12px;
+  inset-inline:0; margin-inline:auto;
+  width:8px; height:8px;
+  border-inline-end:1.5px solid var(--ink-soft);
+  border-block-end:1.5px solid var(--ink-soft);
+  transform:rotate(45deg); opacity:.45;
+}
+
+/* ---------- العقدة ---------- */
+.fc__node{
+  display:grid; gap:22px; align-items:center;
+  grid-template-columns:minmax(0,1fr) minmax(0,290px);
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:calc(var(--r) + 4px);
+  padding:24px 26px;
+  transition:transform .35s var(--ease), border-color .35s, box-shadow .35s;
+}
+.fc__node:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:var(--shadow); }
+
+.fc__body{ display:flex; align-items:flex-start; gap:15px; }
+.fc__text h3{ font-size:1.12rem; margin-bottom:6px; }
+.fc__text p{ color:var(--ink-soft); font-size:.94rem; }
+
+.fc__num{
+  flex-shrink:0; display:grid; place-items:center;
+  width:38px; height:38px; border-radius:50%;
+  border:1px solid var(--accent); color:var(--accent);
+  background:var(--accent-soft);
+  font-family:"Space Grotesk",sans-serif; font-weight:500; font-size:1rem;
+}
+
+/* عقدة القرار: معيّن، كما في اصطلاح المخططات الانسيابية */
+.fc__step--decision .fc__num{
+  border-radius:5px; transform:rotate(45deg);
+  background:var(--accent); color:var(--on-accent); border-color:var(--accent);
+}
+.fc__step--decision .fc__num > span{ transform:rotate(-45deg); }
+.fc__step--decision .fc__node{ border-color:color-mix(in srgb, var(--accent) 55%, var(--line)); }
+
+/* الواجهة المصغّرة داخل العقدة */
+.fc__node .mock{ margin:0; }
+
+/* ---------- الشاشات المتوسطة والصغيرة ---------- */
+@media (max-width: 900px){
+  .fc__node{ grid-template-columns:1fr; gap:18px; }
+}
+@media (max-width: 620px){
+  .fc{ grid-template-columns:30px minmax(0,1fr); }
+  .fc::before{ margin-inline:0 8px; border-start-start-radius:11px; border-end-start-radius:11px; }
+  .fc__node{ padding:20px 18px; }
+  .fc__step{ padding-block-end:44px; }
 }

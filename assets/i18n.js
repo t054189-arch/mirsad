@@ -13,22 +13,10 @@ window.MIRSAAD_EN = {
   'nav.findings': 'Findings',
   'nav.record': 'Asset record',
   'nav.security': 'Security',
-  'ui.theme': 'Theme',
-  'ui.themeTitle': 'Colour family — light and dark work with each one',
   'intro.skip': 'Skip intro',
   'a11y.lang': 'Switch to Arabic',
   'a11y.mode': 'Toggle light and dark mode',
   'a11y.menu': 'Open menu',
-
-  /* الثيمات */
-  'th.mirsaad': 'Mirsaad · official identity',
-  'th.mirsaadD': 'Warm sand — charcoal by night, porcelain by day',
-  'th.dawn': 'Dawn',
-  'th.dawnD': 'Amber — first light on site',
-  'th.horizon': 'Horizon',
-  'th.horizonD': 'Open blue — space and what can be built in it',
-  'th.restored': 'Restored',
-  'th.restoredD': 'Calm mint — after the repair',
 
   /* الواجهة */
   'hero.tag': 'We inspect today .. to build a safer tomorrow',

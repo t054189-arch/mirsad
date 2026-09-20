@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="mirsaad" data-mode="dark">
+<html lang="ar" dir="rtl" data-mode="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,11 +12,9 @@
 (function(){
   var d=document.documentElement;
   function get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-  var theme=get('mirsaad-theme')||'mirsaad';
   var mode=get('mirsaad-mode')||'auto';
   var lang=get('mirsaad-lang')||'ar';
   var dark=mode==='dark'||(mode==='auto'&&!window.matchMedia('(prefers-color-scheme: light)').matches);
-  d.setAttribute('data-theme',theme);
   d.setAttribute('data-mode',dark?'dark':'light');
   d.setAttribute('lang',lang);
   d.setAttribute('dir',lang==='en'?'ltr':'rtl');
@@ -97,51 +95,11 @@
       </svg>
     </button>
 
-    <button class="themebtn" id="themeBtn" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu">
-      <span class="themebtn__swatch" aria-hidden="true"></span>
-      <span class="themebtn__label" data-i18n="ui.theme">الثيم</span>
-    </button>
-
     <button class="nav__toggle" id="navToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <div class="themes" id="themeMenu" role="menu" aria-label="الثيمات">
-    <p class="themes__title" data-i18n="ui.themeTitle">عائلة الألوان — والوضع يعمل مع كل واحدة</p>
-
-    <button class="theme" role="menuitemradio" data-theme-set="mirsaad" aria-checked="true">
-      <span class="theme__dots" aria-hidden="true"><i style="background:#181613"></i><i style="background:#ead5b8"></i><i style="background:#f7f3ec"></i></span>
-      <span class="theme__meta">
-        <strong data-i18n="th.mirsaad">مرصاد · الهوية الرسمية</strong>
-        <small data-i18n="th.mirsaadD">رملي دافئ — فحمي ليلًا، خزفي نهارًا</small>
-      </span>
-    </button>
-
-    <button class="theme" role="menuitemradio" data-theme-set="dawn" aria-checked="false">
-      <span class="theme__dots" aria-hidden="true"><i style="background:#121729"></i><i style="background:#ffa552"></i><i style="background:#fbf6ef"></i></span>
-      <span class="theme__meta">
-        <strong data-i18n="th.dawn">فجر</strong>
-        <small data-i18n="th.dawnD">كهرماني — أول ضوء على الموقع</small>
-      </span>
-    </button>
-
-    <button class="theme" role="menuitemradio" data-theme-set="horizon" aria-checked="false">
-      <span class="theme__dots" aria-hidden="true"><i style="background:#0b1520"></i><i style="background:#63b8f5"></i><i style="background:#f3f7fb"></i></span>
-      <span class="theme__meta">
-        <strong data-i18n="th.horizon">أُفق</strong>
-        <small data-i18n="th.horizonD">أزرق مفتوح — مساحة وما يمكن بناؤه فيها</small>
-      </span>
-    </button>
-
-    <button class="theme" role="menuitemradio" data-theme-set="restored" aria-checked="false">
-      <span class="theme__dots" aria-hidden="true"><i style="background:#0e1a19"></i><i style="background:#62dcae"></i><i style="background:#f1f6f3"></i></span>
-      <span class="theme__meta">
-        <strong data-i18n="th.restored">ترميم</strong>
-        <small data-i18n="th.restoredD">نعناعي هادئ — ما بعد المعالجة</small>
-      </span>
-    </button>
-  </div>
 </header>
 
 <main>
@@ -347,128 +305,156 @@
       <span class="section__intro-en">INSPECT · ANALYZE · COMPARE · IMPROVE</span>
     </p>
 
-    <ol class="journey">
+    <!-- مخطط انسيابي: عقد موصولة بأسهم، قرار في الخطوة ٧، ومسار عودة إلى ٥ -->
+    <ol class="fc">
 
-      <li class="jstep reveal" data-delay="1">
-        <div class="jstep__head"><span class="jstep__num">1</span>
-          <div><h3 data-i18n="j1.t">تسجيل الدخول</h3><p data-i18n="j1.d">يدخل المستخدم إلى حسابه في مرصاد.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <p class="mock__title" data-i18n="m1.a">مرحبًا بعودتك</p>
-          <div class="mock__field" data-i18n="m1.b">البريد الإلكتروني</div>
-          <div class="mock__field" data-i18n="m1.c">كلمة المرور</div>
-          <div class="mock__btn" data-i18n="j1.t">تسجيل الدخول</div>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="2">
-        <div class="jstep__head"><span class="jstep__num">2</span>
-          <div><h3 data-i18n="j2.t">اختيار المنشأة</h3><p data-i18n="j2.d">يختار المستخدم المنشأة المراد فحصها، أو ينشئ منشأة جديدة.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="mock__search" data-i18n="m2.a">ابحث عن منشأة…</div>
-          <div class="mock__row mock__row--on"><span class="mock__thumb"></span><span><span data-i18n="m2.b">جسر جابر</span><small data-i18n="m2.c">وزارة الأشغال</small></span></div>
-          <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.d">مبنى إداري</span><small data-i18n="m2.e">مدينة الكويت</small></span></div>
-          <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.f">طريق سريع</span><small data-i18n="m2.g">قطاع الصيانة</small></span></div>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="3">
-        <div class="jstep__head"><span class="jstep__num">3</span>
-          <div><h3 data-i18n="j3.t">إدخال بيانات الفحص</h3><p data-i18n="j3.d">يضيف المستخدم بيانات الفحص ونوعه والتاريخ والقياسات والملاحظات.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="mock__tabs"><span class="is-on" data-i18n="m3.a">البيانات الأساسية</span><span data-i18n="m3.b">القياسات</span><span data-i18n="m3.c">الملاحظات</span></div>
-          <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
-          <div class="mock__pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
-          <div class="mock__pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
-          <div class="mock__btn" data-i18n="m3.h">التالي</div>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="1">
-        <div class="jstep__head"><span class="jstep__num">4</span>
-          <div><h3 data-i18n="j4.t">رفع الملفات</h3><p data-i18n="j4.d">يرفع المستخدم الصور والتقارير والملفات المرتبطة بالزيارة.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="mock__tabs"><span class="is-on" data-i18n="m4.a">الصور</span><span data-i18n="m4.b">التقارير</span><span data-i18n="m3.b">القياسات</span></div>
-          <div class="mock__drop">
-            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span data-i18n="m4.c">اسحب الملفات هنا</span>
-            <small>JPG · PNG · PDF</small>
+      <li class="fc__step reveal" data-delay="1">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>1</span></span>
+            <div class="fc__text"><h3 data-i18n="j1.t">تسجيل الدخول</h3><p data-i18n="j1.d">يدخل المستخدم إلى حسابه في مرصاد.</p></div>
           </div>
-          <div class="mock__thumbs"><i></i><i></i><i></i></div>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="2">
-        <div class="jstep__head"><span class="jstep__num">5</span>
-          <div><h3 data-i18n="j5.t">بدء التحليل</h3><p data-i18n="j5.d">يبدأ الوكيل الذكي بتحليل البيانات ومقارنتها بالسجل السابق.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <p class="mock__title" data-i18n="m5.a">جارٍ التحليل…</p>
-          <div class="mock__check is-done"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
-          <div class="mock__check is-done"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
-          <div class="mock__check is-done"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
-          <div class="mock__check"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
-          <div class="mock__prog"><b style="width:75%"></b></div>
-          <p class="mock__progval" data-i18n="m5.f">٧٥٪</p>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="3">
-        <div class="jstep__head"><span class="jstep__num">6</span>
-          <div><h3 data-i18n="j6.t">عرض النتائج</h3><p data-i18n="j6.d">يعرض الوكيل الذكي النتائج والملاحظات المحتملة مرتبةً حسب الأولوية.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="mock__top"><span data-i18n="m6.a">نتائج التحليل</span><span class="mock__acc" data-i18n="m6.b">دقة التحليل ٨٧٪</span></div>
-          <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.c">احتمال وجود تشقق</span><small data-i18n="m6.d">الركيزة رقم ٢</small></span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
-          <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.e">تآكل سطحي</span><small data-i18n="m6.f">السطح السفلي</small></span><b class="pill pill--mid" data-i18n="lv.mid">متوسطة</b></div>
-          <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.g">لا توجد مشكلة</span><small data-i18n="m6.h">الجزء العلوي</small></span><b class="pill pill--ok" data-i18n="lv.ok">سليم</b></div>
-          <div class="mock__btn" data-i18n="m6.i">مراجعة النتائج</div>
-        </div>
-      </li>
-
-      <li class="jstep reveal" data-delay="1">
-        <div class="jstep__head"><span class="jstep__num">7</span>
-          <div><h3 data-i18n="j7.t">مراجعة المستخدم</h3><p data-i18n="j7.d">يراجع المهندس النتيجة ويقرر الموافقة أو الرفض أو التعديل.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="mock__top"><span data-i18n="m6.c">احتمال وجود تشقق</span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
-          <div class="mock__meter"><b style="width:87%"></b></div>
-          <p class="mock__note" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
-          <div class="mock__acts">
-            <span class="act act--ok" data-i18n="m7.b">موافقة</span>
-            <span class="act act--no" data-i18n="m7.c">رفض</span>
-            <span class="act" data-i18n="m7.d">تعديل</span>
+          <div class="mock" aria-hidden="true">
+            <p class="mock__title" data-i18n="m1.a">مرحبًا بعودتك</p>
+            <div class="mock__field" data-i18n="m1.b">البريد الإلكتروني</div>
+            <div class="mock__field" data-i18n="m1.c">كلمة المرور</div>
+            <div class="mock__btn" data-i18n="j1.t">تسجيل الدخول</div>
           </div>
         </div>
       </li>
 
-      <li class="jstep reveal" data-delay="2">
-        <div class="jstep__head"><span class="jstep__num">8</span>
-          <div><h3 data-i18n="j8.t">تحديث السجل</h3><p data-i18n="j8.d">يُحفظ قرار المهندس في سجل المنشأة ويصبح جزءًا من تاريخها.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <p class="mock__title mock__title--ok" data-i18n="m8.a">تم حفظ القرار بنجاح</p>
-          <div class="mock__pair"><span data-i18n="m8.b">رقم الفحص</span><b>INSP-2026-014</b></div>
-          <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
-          <div class="mock__pair"><span data-i18n="m8.c">التاريخ</span><b>20 / 09 / 2026</b></div>
-          <div class="mock__pair"><span data-i18n="m8.d">الحالة</span><b data-i18n="m8.e">تمت المراجعة</b></div>
-          <div class="mock__btn mock__btn--ghost" data-i18n="m8.f">العودة إلى المنشأة</div>
+      <li class="fc__step reveal" data-delay="2">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>2</span></span>
+            <div class="fc__text"><h3 data-i18n="j2.t">اختيار المنشأة</h3><p data-i18n="j2.d">يختار المستخدم المنشأة المراد فحصها، أو ينشئ منشأة جديدة.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <div class="mock__search" data-i18n="m2.a">ابحث عن منشأة…</div>
+            <div class="mock__row mock__row--on"><span class="mock__thumb"></span><span><span data-i18n="m2.b">جسر جابر</span><small data-i18n="m2.c">وزارة الأشغال</small></span></div>
+            <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.d">مبنى إداري</span><small data-i18n="m2.e">مدينة الكويت</small></span></div>
+            <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.f">طريق سريع</span><small data-i18n="m2.g">قطاع الصيانة</small></span></div>
+          </div>
         </div>
       </li>
 
-      <li class="jstep reveal" data-delay="3">
-        <div class="jstep__head"><span class="jstep__num">9</span>
-          <div><h3 data-i18n="j9.t">إشعار من الوكيل الذكي</h3><p data-i18n="j9.d">يصل الإشعار بنتيجة المراجعة، وبما يحتاج إلى إجراء إضافي.</p></div>
-        </div>
-        <div class="mock" aria-hidden="true">
-          <div class="toast toast--ok"><i></i>
-            <span><b data-i18n="m9.a">تمت الموافقة على نتائج الفحص</b><span data-i18n="m9.b">تم تحديث سجل المنشأة بنجاح.</span></span>
+      <li class="fc__step reveal" data-delay="3">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>3</span></span>
+            <div class="fc__text"><h3 data-i18n="j3.t">إدخال بيانات الفحص</h3><p data-i18n="j3.d">يضيف المستخدم بيانات الفحص ونوعه والتاريخ والقياسات والملاحظات.</p></div>
           </div>
-          <div class="toast toast--warn"><i></i>
-            <span><b data-i18n="m9.c">تحتاج إلى إجراء إضافي</b><span data-i18n="m9.d">تم تعديل إحدى نتائج فحص جسر جابر.</span></span>
+          <div class="mock" aria-hidden="true">
+            <div class="mock__tabs"><span class="is-on" data-i18n="m3.a">البيانات الأساسية</span><span data-i18n="m3.b">القياسات</span><span data-i18n="m3.c">الملاحظات</span></div>
+            <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
+            <div class="mock__pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
+            <div class="mock__pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
+            <div class="mock__btn" data-i18n="m3.h">التالي</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step reveal" data-delay="1">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>4</span></span>
+            <div class="fc__text"><h3 data-i18n="j4.t">رفع الملفات</h3><p data-i18n="j4.d">يرفع المستخدم الصور والتقارير والملفات المرتبطة بالزيارة.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <div class="mock__tabs"><span class="is-on" data-i18n="m4.a">الصور</span><span data-i18n="m4.b">التقارير</span><span data-i18n="m3.b">القياسات</span></div>
+            <div class="mock__drop">
+              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span data-i18n="m4.c">اسحب الملفات هنا</span>
+              <small>JPG · PNG · PDF</small>
+            </div>
+            <div class="mock__thumbs"><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step reveal" data-delay="2">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>5</span></span>
+            <div class="fc__text"><h3 data-i18n="j5.t">بدء التحليل</h3><p data-i18n="j5.d">يبدأ الوكيل الذكي بتحليل البيانات ومقارنتها بالسجل السابق.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <p class="mock__title" data-i18n="m5.a">جارٍ التحليل…</p>
+            <div class="mock__check is-done"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
+            <div class="mock__check is-done"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
+            <div class="mock__check is-done"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
+            <div class="mock__check"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
+            <div class="mock__prog"><b style="width:75%"></b></div>
+            <p class="mock__progval" data-i18n="m5.f">٧٥٪</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step reveal" data-delay="3">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>6</span></span>
+            <div class="fc__text"><h3 data-i18n="j6.t">عرض النتائج</h3><p data-i18n="j6.d">يعرض الوكيل الذكي النتائج والملاحظات المحتملة مرتبةً حسب الأولوية.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <div class="mock__top"><span data-i18n="m6.a">نتائج التحليل</span><span class="mock__acc" data-i18n="m6.b">دقة التحليل ٨٧٪</span></div>
+            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.c">احتمال وجود تشقق</span><small data-i18n="m6.d">الركيزة رقم ٢</small></span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
+            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.e">تآكل سطحي</span><small data-i18n="m6.f">السطح السفلي</small></span><b class="pill pill--mid" data-i18n="lv.mid">متوسطة</b></div>
+            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.g">لا توجد مشكلة</span><small data-i18n="m6.h">الجزء العلوي</small></span><b class="pill pill--ok" data-i18n="lv.ok">سليم</b></div>
+            <div class="mock__btn" data-i18n="m6.i">مراجعة النتائج</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step fc__step--decision reveal" data-delay="1">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>7</span></span>
+            <div class="fc__text"><h3 data-i18n="j7.t">مراجعة المستخدم</h3><p data-i18n="j7.d">يراجع المهندس النتيجة ويقرر الموافقة أو الرفض أو التعديل.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <div class="mock__top"><span data-i18n="m6.c">احتمال وجود تشقق</span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
+            <div class="mock__meter"><b style="width:87%"></b></div>
+            <p class="mock__note" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
+            <div class="mock__acts">
+              <span class="act act--ok" data-i18n="m7.b">موافقة</span>
+              <span class="act act--no" data-i18n="m7.c">رفض</span>
+              <span class="act" data-i18n="m7.d">تعديل</span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step reveal" data-delay="2">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>8</span></span>
+            <div class="fc__text"><h3 data-i18n="j8.t">تحديث السجل</h3><p data-i18n="j8.d">يُحفظ قرار المهندس في سجل المنشأة ويصبح جزءًا من تاريخها.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <p class="mock__title mock__title--ok" data-i18n="m8.a">تم حفظ القرار بنجاح</p>
+            <div class="mock__pair"><span data-i18n="m8.b">رقم الفحص</span><b>INSP-2026-014</b></div>
+            <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
+            <div class="mock__pair"><span data-i18n="m8.c">التاريخ</span><b>20 / 09 / 2026</b></div>
+            <div class="mock__pair"><span data-i18n="m8.d">الحالة</span><b data-i18n="m8.e">تمت المراجعة</b></div>
+            <div class="mock__btn mock__btn--ghost" data-i18n="m8.f">العودة إلى المنشأة</div>
+          </div>
+        </div>
+      </li>
+
+      <li class="fc__step reveal" data-delay="3">
+        <div class="fc__node">
+          <div class="fc__body">
+            <span class="fc__num"><span>9</span></span>
+            <div class="fc__text"><h3 data-i18n="j9.t">إشعار من الوكيل الذكي</h3><p data-i18n="j9.d">يصل الإشعار بنتيجة المراجعة، وبما يحتاج إلى إجراء إضافي.</p></div>
+          </div>
+          <div class="mock" aria-hidden="true">
+            <div class="toast toast--ok"><i></i>
+              <span><b data-i18n="m9.a">تمت الموافقة على نتائج الفحص</b><span data-i18n="m9.b">تم تحديث سجل المنشأة بنجاح.</span></span>
+            </div>
+            <div class="toast toast--warn"><i></i>
+              <span><b data-i18n="m9.c">تحتاج إلى إجراء إضافي</b><span data-i18n="m9.d">تم تعديل إحدى نتائج فحص جسر جابر.</span></span>
+            </div>
           </div>
         </div>
       </li>
