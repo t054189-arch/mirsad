@@ -79,4 +79,20 @@ npm run lint    # eslint
 
 ## Deployment
 
-Pushes to `main` deploy to production; every other branch gets a preview URL.
+The Vercel project **mirsad** exists and both environment variables are already
+set for Production, Preview and Development.
+
+It is **not yet connected to this repository**, so pushes do not deploy on their
+own. Vercel's GitHub App is currently installed on the `wduwaisan` account,
+while this repository lives under `t054189-arch`, so Vercel cannot see it.
+
+To finish the connection — this needs someone with admin rights on the
+`t054189-arch` GitHub account:
+
+1. Open the mirsad project on Vercel → **Settings → Git**.
+2. Choose **Connect Git Repository** and pick `t054189-arch/mirsad`.
+3. Vercel will ask to install its GitHub App on `t054189-arch`. Approve it and
+   grant access to the `mirsad` repository.
+
+After that, pushes to `main` deploy to production and every other branch gets a
+preview URL.
