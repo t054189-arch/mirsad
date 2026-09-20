@@ -73,6 +73,7 @@
     if (label) label.textContent = next === 'en' ? 'ع' : 'EN';
     save(K.lang, next);
     if (window.MirsaadScene) window.MirsaadScene.refresh();
+    if (window.MirsaadApp) window.MirsaadApp.syncTitle();
   }
   applyLang(lang);
 

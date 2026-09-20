@@ -137,7 +137,7 @@
       </div>
 
       <ul class="hero__stats reveal" data-delay="4">
-        <li><strong data-count="9">0</strong><span data-i18n="hero.s1">خطوات في رحلة الفحص</span></li>
+        <li><strong data-count="9">0</strong><span data-i18n="hero.s1">شاشات في رحلة الفحص</span></li>
         <li><strong data-i18n="hero.s2v">وكيل ذكي</strong><span data-i18n="hero.s2">تحليل ومقارنة تلقائية</span></li>
         <li><strong data-i18n="hero.s3v">المهندس</strong><span data-i18n="hero.s3">القرار النهائي دائمًا</span></li>
       </ul>
@@ -301,169 +301,225 @@
     </div>
 
     <p class="section__intro reveal">
-      <span data-i18n="j.intro">من إدخال البيانات إلى الإشعار النهائي — تسع خطوات تنتهي بأن تصبح مدخلًا للفحص الذي يليه.</span>
+      <span data-i18n="j.intro">من تسجيل الدخول إلى الإشعار النهائي — تسع شاشات حقيقية، والأزرار داخلها تنقلك فعلًا. جرّبها بنفسك.</span>
       <span class="section__intro-en">INSPECT · ANALYZE · COMPARE · IMPROVE</span>
     </p>
 
-    <!-- مخطط انسيابي: عقد موصولة بأسهم، قرار في الخطوة ٧، ومسار عودة إلى ٥ -->
-    <ol class="fc">
+    <!-- نموذج تفاعلي: شاشات المنتج نفسها، والأزرار تنقل بينها فعلًا -->
+    <div class="app" id="app">
+      <div class="app__bar">
+        <span class="app__mark" aria-hidden="true">
+          <svg viewBox="0 0 100 52" width="26" height="14">
+            <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+              <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+              <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+              <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+              <path d="M50 5 C 24 5, 6 20, 6 48"/>
+            </g>
+          </svg>
+        </span>
+        <span class="app__title" id="appTitle" data-i18n="sc.signin">تسجيل الدخول</span>
+        <span class="app__live" data-i18n="sc.live">نموذج تفاعلي</span>
+      </div>
 
-      <li class="fc__step reveal" data-delay="1">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>1</span></span>
-            <div class="fc__text"><h3 data-i18n="j1.t">تسجيل الدخول</h3><p data-i18n="j1.d">يدخل المستخدم إلى حسابه في مرصاد.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <p class="mock__title" data-i18n="m1.a">مرحبًا بعودتك</p>
-            <div class="mock__field" data-i18n="m1.b">البريد الإلكتروني</div>
-            <div class="mock__field" data-i18n="m1.c">كلمة المرور</div>
-            <div class="mock__btn" data-i18n="j1.t">تسجيل الدخول</div>
-          </div>
-        </div>
-      </li>
+      <div class="app__body">
+        <nav class="app__side" aria-label="أقسام التطبيق">
+          <span class="side__item is-on" data-side="home"><i></i><span data-i18n="sd.home">الرئيسية</span></span>
+          <span class="side__item" data-side="assets"><i></i><span data-i18n="sd.assets">المنشآت</span></span>
+          <span class="side__item" data-side="insp"><i></i><span data-i18n="sd.insp">الفحوصات</span></span>
+          <span class="side__item" data-side="rep"><i></i><span data-i18n="sd.rep">التقارير</span></span>
+          <span class="side__item" data-side="set"><i></i><span data-i18n="sd.set">الإعدادات</span></span>
+        </nav>
 
-      <li class="fc__step reveal" data-delay="2">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>2</span></span>
-            <div class="fc__text"><h3 data-i18n="j2.t">اختيار المنشأة</h3><p data-i18n="j2.d">يختار المستخدم المنشأة المراد فحصها، أو ينشئ منشأة جديدة.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock__search" data-i18n="m2.a">ابحث عن منشأة…</div>
-            <div class="mock__row mock__row--on"><span class="mock__thumb"></span><span><span data-i18n="m2.b">جسر جابر</span><small data-i18n="m2.c">وزارة الأشغال</small></span></div>
-            <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.d">مبنى إداري</span><small data-i18n="m2.e">مدينة الكويت</small></span></div>
-            <div class="mock__row"><span class="mock__thumb"></span><span><span data-i18n="m2.f">طريق سريع</span><small data-i18n="m2.g">قطاع الصيانة</small></span></div>
-          </div>
-        </div>
-      </li>
+        <div class="app__screens">
 
-      <li class="fc__step reveal" data-delay="3">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>3</span></span>
-            <div class="fc__text"><h3 data-i18n="j3.t">إدخال بيانات الفحص</h3><p data-i18n="j3.d">يضيف المستخدم بيانات الفحص ونوعه والتاريخ والقياسات والملاحظات.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock__tabs"><span class="is-on" data-i18n="m3.a">البيانات الأساسية</span><span data-i18n="m3.b">القياسات</span><span data-i18n="m3.c">الملاحظات</span></div>
-            <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
-            <div class="mock__pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
-            <div class="mock__pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
-            <div class="mock__btn" data-i18n="m3.h">التالي</div>
-          </div>
-        </div>
-      </li>
+          <!-- تسجيل الدخول -->
+          <section class="scr is-on" id="s-signin" data-title="sc.signin" data-title-ar="تسجيل الدخول" data-side="">
+            <div class="scr__auth">
+              <svg class="scr__dome" viewBox="0 0 100 52" aria-hidden="true">
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+                  <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+                  <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+                  <path d="M50 5 C 24 5, 6 20, 6 48"/>
+                </g>
+              </svg>
+              <h3 data-i18n="a.welcome">مرحبًا بعودتك</h3>
+              <p class="scr__hint" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
+              <label class="fld"><span data-i18n="a.email">البريد الإلكتروني</span><b>eng@mirsaad.kw</b></label>
+              <label class="fld"><span data-i18n="a.pass">كلمة المرور</span><b>••••••••</b></label>
+              <p class="scr__row"><span class="chk" aria-hidden="true"></span><span data-i18n="a.remember">تذكرني</span></p>
+              <button class="ui ui--go" data-go="s-assets" data-i18n="sc.signin">تسجيل الدخول</button>
+              <p class="scr__hint scr__hint--c" data-i18n="a.noacct">ليس لديك حساب؟ أنشئ حسابًا جديدًا</p>
+            </div>
+          </section>
 
-      <li class="fc__step reveal" data-delay="1">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>4</span></span>
-            <div class="fc__text"><h3 data-i18n="j4.t">رفع الملفات</h3><p data-i18n="j4.d">يرفع المستخدم الصور والتقارير والملفات المرتبطة بالزيارة.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock__tabs"><span class="is-on" data-i18n="m4.a">الصور</span><span data-i18n="m4.b">التقارير</span><span data-i18n="m3.b">القياسات</span></div>
-            <div class="mock__drop">
-              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <!-- المنشآت -->
+          <section class="scr" id="s-assets" data-title="sc.assets" data-title-ar="المنشآت" data-side="assets">
+            <div class="scr__head">
+              <h3 data-i18n="sc.assets">المنشآت</h3>
+              <span class="ui ui--ghost" data-i18n="a.newAsset">+ منشأة جديدة</span>
+            </div>
+            <div class="fld fld--search" data-i18n="m2.a">ابحث عن منشأة…</div>
+            <button class="rowcard rowcard--go" data-go="s-data">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m2.b">جسر جابر</b><small data-i18n="m2.c">وزارة الأشغال</small></span>
+              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>12 / 03 / 2026</b></span>
+            </button>
+            <button class="rowcard rowcard--go" data-go="s-data">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m2.d">مبنى إداري</b><small data-i18n="m2.e">مدينة الكويت</small></span>
+              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>28 / 01 / 2026</b></span>
+            </button>
+            <button class="rowcard rowcard--go" data-go="s-data">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m2.f">طريق سريع</b><small data-i18n="m2.g">قطاع الصيانة</small></span>
+              <span class="rowcard__m"><small data-i18n="a.last">آخر فحص</small><b>05 / 11 / 2025</b></span>
+            </button>
+          </section>
+
+          <!-- بيانات الفحص -->
+          <section class="scr" id="s-data" data-title="sc.data" data-title-ar="فحص جديد" data-side="insp">
+            <div class="scr__head">
+              <h3><span data-i18n="sc.data">فحص جديد</span> <span class="scr__sub" data-i18n="m2.b">جسر جابر</span></h3>
+            </div>
+            <div class="tabs"><span class="is-on" data-i18n="m3.a">البيانات الأساسية</span><span data-i18n="m3.b">القياسات</span><span data-i18n="m3.c">الملاحظات</span></div>
+            <div class="pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
+            <div class="pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
+            <div class="pair"><span data-i18n="a.engineer">المهندس المسؤول</span><b data-i18n="a.engName">م. ريان العجمي</b></div>
+            <div class="pair"><span data-i18n="a.section">القطاع</span><b data-i18n="a.sectionV">الركائز والسطح السفلي</b></div>
+            <div class="fld fld--area" data-i18n="a.notes">ملاحظات ميدانية…</div>
+            <button class="ui ui--go" data-go="s-upload" data-i18n="m3.h">التالي</button>
+          </section>
+
+          <!-- رفع الملفات -->
+          <section class="scr" id="s-upload" data-title="sc.upload" data-title-ar="رفع الملفات" data-side="insp">
+            <div class="scr__head"><h3 data-i18n="sc.upload">رفع الملفات</h3></div>
+            <div class="tabs"><span class="is-on" data-i18n="m4.a">الصور</span><span data-i18n="m4.b">التقارير</span><span data-i18n="m3.b">القياسات</span></div>
+            <div class="drop">
+              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span data-i18n="m4.c">اسحب الملفات هنا</span>
               <small>JPG · PNG · PDF</small>
             </div>
-            <div class="mock__thumbs"><i></i><i></i><i></i></div>
-          </div>
-        </div>
-      </li>
-
-      <li class="fc__step reveal" data-delay="2">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>5</span></span>
-            <div class="fc__text"><h3 data-i18n="j5.t">بدء التحليل</h3><p data-i18n="j5.d">يبدأ الوكيل الذكي بتحليل البيانات ومقارنتها بالسجل السابق.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <p class="mock__title" data-i18n="m5.a">جارٍ التحليل…</p>
-            <div class="mock__check is-done"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
-            <div class="mock__check is-done"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
-            <div class="mock__check is-done"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
-            <div class="mock__check"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
-            <div class="mock__prog"><b style="width:75%"></b></div>
-            <p class="mock__progval" data-i18n="m5.f">٧٥٪</p>
-          </div>
-        </div>
-      </li>
-
-      <li class="fc__step reveal" data-delay="3">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>6</span></span>
-            <div class="fc__text"><h3 data-i18n="j6.t">عرض النتائج</h3><p data-i18n="j6.d">يعرض الوكيل الذكي النتائج والملاحظات المحتملة مرتبةً حسب الأولوية.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock__top"><span data-i18n="m6.a">نتائج التحليل</span><span class="mock__acc" data-i18n="m6.b">دقة التحليل ٨٧٪</span></div>
-            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.c">احتمال وجود تشقق</span><small data-i18n="m6.d">الركيزة رقم ٢</small></span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
-            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.e">تآكل سطحي</span><small data-i18n="m6.f">السطح السفلي</small></span><b class="pill pill--mid" data-i18n="lv.mid">متوسطة</b></div>
-            <div class="mock__res"><span class="mock__thumb"></span><span><span data-i18n="m6.g">لا توجد مشكلة</span><small data-i18n="m6.h">الجزء العلوي</small></span><b class="pill pill--ok" data-i18n="lv.ok">سليم</b></div>
-            <div class="mock__btn" data-i18n="m6.i">مراجعة النتائج</div>
-          </div>
-        </div>
-      </li>
-
-      <li class="fc__step fc__step--decision reveal" data-delay="1">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>7</span></span>
-            <div class="fc__text"><h3 data-i18n="j7.t">مراجعة المستخدم</h3><p data-i18n="j7.d">يراجع المهندس النتيجة ويقرر الموافقة أو الرفض أو التعديل.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock__top"><span data-i18n="m6.c">احتمال وجود تشقق</span><b class="pill pill--hi" data-i18n="lv.hi">عالية</b></div>
-            <div class="mock__meter"><b style="width:87%"></b></div>
-            <p class="mock__note" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
-            <div class="mock__acts">
-              <span class="act act--ok" data-i18n="m7.b">موافقة</span>
-              <span class="act act--no" data-i18n="m7.c">رفض</span>
-              <span class="act" data-i18n="m7.d">تعديل</span>
+            <div class="files">
+              <span class="file"><i></i><b>pier-02-crack.jpg</b><small>2.4 MB</small></span>
+              <span class="file"><i></i><b>soffit-east.jpg</b><small>1.8 MB</small></span>
+              <span class="file"><i></i><b>survey-2026.pdf</b><small>640 KB</small></span>
             </div>
-          </div>
-        </div>
-      </li>
+            <button class="ui ui--go" data-go="s-analyse" data-i18n="a.startAnalysis">بدء التحليل</button>
+          </section>
 
-      <li class="fc__step reveal" data-delay="2">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>8</span></span>
-            <div class="fc__text"><h3 data-i18n="j8.t">تحديث السجل</h3><p data-i18n="j8.d">يُحفظ قرار المهندس في سجل المنشأة ويصبح جزءًا من تاريخها.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
-            <p class="mock__title mock__title--ok" data-i18n="m8.a">تم حفظ القرار بنجاح</p>
-            <div class="mock__pair"><span data-i18n="m8.b">رقم الفحص</span><b>INSP-2026-014</b></div>
-            <div class="mock__pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
-            <div class="mock__pair"><span data-i18n="m8.c">التاريخ</span><b>20 / 09 / 2026</b></div>
-            <div class="mock__pair"><span data-i18n="m8.d">الحالة</span><b data-i18n="m8.e">تمت المراجعة</b></div>
-            <div class="mock__btn mock__btn--ghost" data-i18n="m8.f">العودة إلى المنشأة</div>
-          </div>
-        </div>
-      </li>
+          <!-- التحليل -->
+          <section class="scr" id="s-analyse" data-title="sc.analyse" data-title-ar="التحليل" data-side="insp">
+            <div class="scr__centre">
+              <p class="scr__big" data-i18n="m5.a">جارٍ التحليل…</p>
+              <p class="scr__hint" data-i18n="a.analysingSub">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
+              <div class="steps" id="analysisSteps">
+                <div class="stepline"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
+                <div class="stepline"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
+                <div class="stepline"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
+                <div class="stepline"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
+              </div>
+              <div class="bar"><b id="analysisBar"></b></div>
+              <p class="scr__pct" id="analysisPct">٠٪</p>
+            </div>
+          </section>
 
-      <li class="fc__step reveal" data-delay="3">
-        <div class="fc__node">
-          <div class="fc__body">
-            <span class="fc__num"><span>9</span></span>
-            <div class="fc__text"><h3 data-i18n="j9.t">إشعار من الوكيل الذكي</h3><p data-i18n="j9.d">يصل الإشعار بنتيجة المراجعة، وبما يحتاج إلى إجراء إضافي.</p></div>
-          </div>
-          <div class="mock" aria-hidden="true">
+          <!-- النتائج -->
+          <section class="scr" id="s-results" data-title="sc.results" data-title-ar="النتائج" data-side="insp">
+            <div class="scr__head">
+              <h3 data-i18n="m6.a">نتائج التحليل</h3>
+              <span class="chipacc" data-i18n="m6.b">دقة التحليل ٨٧٪</span>
+            </div>
+            <button class="rowcard rowcard--go" data-go="s-review">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m6.c">احتمال وجود تشقق</b><small data-i18n="m6.d">الركيزة رقم ٢</small></span>
+              <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
+            </button>
+            <button class="rowcard rowcard--go" data-go="s-review">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m6.e">تآكل سطحي</b><small data-i18n="m6.f">السطح السفلي</small></span>
+              <span class="pill pill--mid" data-i18n="lv.mid">متوسطة</span>
+            </button>
+            <div class="rowcard">
+              <span class="rowcard__img"></span>
+              <span class="rowcard__t"><b data-i18n="m6.g">لا توجد مشكلة</b><small data-i18n="m6.h">الجزء العلوي</small></span>
+              <span class="pill pill--ok" data-i18n="lv.ok">سليم</span>
+            </div>
+            <button class="ui ui--go" data-go="s-review" data-i18n="m6.i">مراجعة النتائج</button>
+          </section>
+
+          <!-- المراجعة -->
+          <section class="scr" id="s-review" data-title="sc.review" data-title-ar="المراجعة" data-side="insp">
+            <div class="scr__head">
+              <h3 data-i18n="m6.c">احتمال وجود تشقق</h3>
+              <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
+            </div>
+            <div class="cmp">
+              <span><small data-i18n="f.prev">الفحص السابق</small><b>0.6 مم</b></span>
+              <span class="cmp__ar arrow" aria-hidden="true">←</span>
+              <span><small data-i18n="f.curr">الفحص الحالي</small><b class="cmp__now">1.4 مم</b></span>
+            </div>
+            <p class="scr__lbl" data-i18n="a.confidence">دقة التحليل</p>
+            <div class="bar"><b style="width:87%"></b></div>
+            <p class="scr__hint" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
+            <p class="scr__lbl" data-i18n="a.decision">قرار المهندس</p>
+            <div class="acts">
+              <button class="ui ui--ok" data-go="s-record" data-i18n="m7.b">موافقة</button>
+              <button class="ui ui--no" data-go="s-results" data-i18n="m7.c">رفض</button>
+              <button class="ui ui--ghost" data-go="s-results" data-i18n="m7.d">تعديل</button>
+            </div>
+            <p class="scr__hint scr__hint--c" data-i18n="a.branchNote">الرفض أو التعديل يعيدك إلى النتائج — والموافقة تكتب القرار في السجل.</p>
+          </section>
+
+          <!-- السجل -->
+          <section class="scr" id="s-record" data-title="sc.record" data-title-ar="السجل" data-side="rep">
+            <div class="scr__head">
+              <h3 class="scr__ok" data-i18n="m8.a">تم حفظ القرار بنجاح</h3>
+            </div>
+            <div class="pair"><span data-i18n="m8.b">رقم الفحص</span><b>INSP-2026-014</b></div>
+            <div class="pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="m2.b">جسر جابر</b></div>
+            <div class="pair"><span data-i18n="m8.c">التاريخ</span><b>20 / 09 / 2026</b></div>
+            <div class="pair"><span data-i18n="m8.d">الحالة</span><b data-i18n="m8.e">تمت المراجعة</b></div>
+            <p class="scr__lbl" data-i18n="a.history">سجل المنشأة</p>
+            <div class="hist">
+              <span class="hist__i is-now"><b>20 / 09 / 2026</b><small data-i18n="a.h1">تشقق الركيزة ٢ — معتمد</small></span>
+              <span class="hist__i"><b>12 / 03 / 2026</b><small data-i18n="a.h2">رطوبة السطح السفلي — للمتابعة</small></span>
+              <span class="hist__i"><b>04 / 08 / 2024</b><small data-i18n="a.h3">تآكل حديد التسليح — مغلق</small></span>
+            </div>
+            <button class="ui ui--go" data-go="s-alerts" data-i18n="a.finish">إنهاء الفحص</button>
+          </section>
+
+          <!-- الإشعارات -->
+          <section class="scr" id="s-alerts" data-title="sc.alerts" data-title-ar="الإشعارات" data-side="home">
+            <div class="scr__head"><h3 data-i18n="sc.alerts">الإشعارات</h3></div>
             <div class="toast toast--ok"><i></i>
               <span><b data-i18n="m9.a">تمت الموافقة على نتائج الفحص</b><span data-i18n="m9.b">تم تحديث سجل المنشأة بنجاح.</span></span>
             </div>
             <div class="toast toast--warn"><i></i>
               <span><b data-i18n="m9.c">تحتاج إلى إجراء إضافي</b><span data-i18n="m9.d">تم تعديل إحدى نتائج فحص جسر جابر.</span></span>
             </div>
-          </div>
-        </div>
-      </li>
+            <p class="scr__hint scr__hint--c" data-i18n="a.loopNote">ما حُفظ الآن هو ما سيقرأه الوكيل الذكي في الفحص القادم.</p>
+            <button class="ui ui--go" data-go="s-assets" data-i18n="a.next">بدء فحص جديد</button>
+          </section>
 
-    </ol>
+        </div>
+      </div>
+
+      <div class="app__foot">
+        <button class="navb" id="appPrev" data-i18n-attr="aria-label:a.prev" aria-label="الشاشة السابقة">
+          <span class="arrow arrow--back" aria-hidden="true">←</span>
+        </button>
+        <div class="dots" id="appDots" role="tablist" aria-label="الشاشات"></div>
+        <button class="navb" id="appNext" data-i18n-attr="aria-label:a.next2" aria-label="الشاشة التالية">
+          <span class="arrow" aria-hidden="true">←</span>
+        </button>
+      </div>
+    </div>
 
     <p class="flow__loop reveal">
       <span aria-hidden="true">↻</span>
-      <span data-i18n="j.loop">ما يُحفظ في الخطوة ٨ هو ما يقرأه الوكيل الذكي في الخطوة ٥ من الفحص القادم — الرحلة دورة لا خط مستقيم.</span>
+      <span data-i18n="j.loop">ما يُحفظ في شاشة السجل هو ما يقرأه الوكيل الذكي في شاشة التحليل من الفحص القادم — جرّب «بدء فحص جديد» لتغلق الدورة بنفسك.</span>
     </p>
   </section>
 
@@ -625,6 +681,7 @@
 
 <script src="assets/i18n.js"></script>
 <script src="assets/scene.js"></script>
+<script src="assets/app.js"></script>
 <script src="assets/script.js"></script>
 </body>
 </html>
