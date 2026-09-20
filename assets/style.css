@@ -1,14 +1,36 @@
 /* ============================================================
    مِرصاد — منصة إدارة دورة فحص المنشآت
-   RTL · خمسة ثيمات حول فكرة الترميم والبناء من جديد
-   كل ثيم مجموعة متغيرات واحدة — لا تكرار في التنسيقات
+   RTL · الهوية الرسمية + أربعة بدائل عبر [data-theme]
    ============================================================ */
 
-/* ---------- الافتراضي: كِنتسوغي (Kintsugi) ----------
+/* ---------- الهوية الرسمية: مرصاد (Mirsaad) ----------
+   فحمي دافئ + رملي، مأخوذة من لوحة هوية المشروع.          */
+:root,
+[data-theme="mirsaad"]{
+  --bg:        #181613;
+  --bg-alt:    #1d1b17;
+  --surface:   #22201b;
+  --surface-2: #2a2721;
+  --ink:       #f2ece3;
+  --ink-soft:  #a89f92;
+  --line:      #35302a;
+  --accent:      #ead5b8;
+  --accent-deep: #d6bc96;
+  --accent-soft: rgba(234,213,184,.10);
+  --on-accent:   #201c16;
+  --hi:  #dd7b76;   /* أولوية عالية */
+  --mid: #e0a75c;   /* للمتابعة */
+  --ok:  #63b894;   /* سليم / معتمد */
+  --grid-ink: rgba(234,213,184,.045);
+  --shadow: 0 20px 52px rgba(0,0,0,.5);
+  --mark-strength: .95;
+  color-scheme: dark;
+}
+
+/* ---------- بديل فاتح: كِنتسوغي (Kintsugi) ----------
    فن ترميم الخزف المكسور بالذهب: الشرخ لا يُخفى، بل يُبرَز
    ويصبح جزءًا من تاريخ القطعة وأجمل ما فيها — وهي فكرة مرصاد
    نفسها: الملاحظة التي عولجت تبقى في السجل لا تُمحى منه.        */
-:root,
 [data-theme="kintsugi"]{
   --bg:        #f7f3ec;
   --bg-alt:    #fffdf8;
@@ -51,29 +73,6 @@
   --shadow: 0 18px 48px rgba(0,0,0,.42);
   --mark-strength: 1;
   color-scheme: dark;
-}
-
-/* ---------- نماء (Verdant) ----------
-   الحياة تعود إلى ما كان متصدّعًا: نمو هادئ ومتجدد.            */
-[data-theme="verdant"]{
-  --bg:        #f2f6f1;
-  --bg-alt:    #fbfdfa;
-  --surface:   #ffffff;
-  --surface-2: #e6efe4;
-  --ink:       #1a231c;
-  --ink-soft:  #546056;
-  --line:      #d8e3d6;
-  --accent:      #2c7a4b;
-  --accent-deep: #1f5c37;
-  --accent-soft: rgba(44,122,75,.10);
-  --on-accent:   #ffffff;
-  --hi:  #b03123;
-  --mid: #8a5a00;
-  --ok:  #2c7a4b;
-  --grid-ink: rgba(26,35,28,.05);
-  --shadow: 0 16px 38px rgba(26,35,28,.08);
-  --mark-strength: .55;
-  color-scheme: light;
 }
 
 /* ---------- أُفق (Horizon) ----------
@@ -223,14 +222,6 @@ body.is-ready .curtain{
 }
 
 .nav__brand{ display:flex; align-items:center; gap:10px; font-weight:700; }
-.nav__mark{ color:var(--accent); display:grid; place-items:center; }
-.nav__seam{ animation:mend 5.5s var(--ease) infinite; }
-@keyframes mend{
-  0%,100%{ opacity:.75; }
-  50%{ opacity:1; }
-}
-.nav__name{ font-size:1.15rem; letter-spacing:.01em; }
-.nav__name .dot{ color:var(--accent); }
 
 .nav__links{ display:flex; gap:clamp(12px,2vw,26px); font-size:.93rem; }
 .nav__links a{ position:relative; color:var(--ink-soft); padding-block:4px; transition:color .25s; }
@@ -312,7 +303,7 @@ main{ position:relative; z-index:1; }
   position:relative;
   min-height:100svh;
   display:grid; align-items:center;
-  padding:130px 0 90px;
+  padding:130px 0 clamp(150px, 26vh, 250px);
 }
 .hero__inner{ width:var(--shell); margin-inline:auto; }
 
@@ -321,10 +312,7 @@ main{ position:relative; z-index:1; }
   color:var(--accent); font-weight:600; margin-bottom:18px;
 }
 
-.hero__title{
-  font-size:clamp(2.6rem, 8.5vw, 5.4rem);
-  line-height:1.12; margin-bottom:26px;
-}
+.hero__title{ line-height:1.14; }
 .hero__title .line{ display:block; overflow:hidden; }
 .hero__title .line span{
   display:inline-block;
@@ -364,21 +352,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   font-size:1.9rem; font-weight:700; color:var(--accent); line-height:1.2;
 }
 .hero__stats span{ font-size:.85rem; color:var(--ink-soft); }
-
-.hero__scroll{
-  position:absolute; inset-block-end:28px; inset-inline-start:50%;
-  transform:translateX(50%);
-  display:grid; justify-items:center; gap:8px;
-  font-size:.7rem; letter-spacing:.18em; color:var(--ink-soft);
-}
-.hero__scroll i{
-  width:1px; height:42px; background:var(--line); position:relative; overflow:hidden;
-}
-.hero__scroll i::after{
-  content:""; position:absolute; inset-inline:0; height:16px;
-  background:var(--accent); animation:drop 1.9s var(--ease) infinite;
-}
-@keyframes drop{ 0%{ top:-16px; } 100%{ top:42px; } }
 
 /* ---------- الأقسام ---------- */
 .section{
@@ -496,26 +469,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 .contrast__col--yes li::before{ background:var(--accent); }
 
 /* ---------- دورة الفحص ---------- */
-.flow{
-  display:grid; gap:16px;
-  grid-template-columns:repeat(3, 1fr);
-}
-.flow li{
-  position:relative;
-  background:var(--surface); border:1px solid var(--line);
-  border-radius:var(--r); padding:24px 22px 22px;
-  transition:transform .35s var(--ease), border-color .35s;
-}
-.flow li:hover{ transform:translateY(-4px); border-color:var(--accent); }
-.flow__num{
-  display:grid; place-items:center;
-  width:36px; height:36px; border-radius:10px;
-  background:var(--accent); color:var(--on-accent);
-  font-weight:700; font-size:1rem; margin-bottom:14px;
-}
-.flow h3{ font-size:1.02rem; margin-bottom:7px; }
-.flow p{ color:var(--ink-soft); font-size:.93rem; }
-
 .flow__loop{
   margin-top:26px; padding:16px 20px;
   background:var(--accent-soft); border:1px dashed var(--accent);
@@ -646,13 +599,11 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 /* ---------- الشاشات الصغيرة ---------- */
 @media (max-width: 900px){
   .about{ grid-template-columns:1fr; }
-  .flow{ grid-template-columns:repeat(2, 1fr); }
   .section__head h2{ white-space:normal; }
 }
 
 @media (max-width: 760px){
-  .flow{ grid-template-columns:1fr; }
-  .hero{ min-height:auto; align-items:start; padding-block:120px 72px; }
+  .hero{ min-height:auto; align-items:start; padding-block:120px 130px; }
 
   .nav__toggle{ display:flex; }
   .themebtn__label{ display:none; }
@@ -671,7 +622,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 
   .hero__stats{ gap:22px; }
   .hero__stats li{ min-width:44%; }
-  .hero__scroll{ display:none; }
   .themes{ inset-inline:12px; width:auto; }
 }
 
@@ -685,12 +635,6 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   .reveal{ opacity:1; transform:none; }
   .hero__title .line span{ transform:none; }
   .seam__gold{ stroke-dashoffset:0 !important; }
-}
-
-/* علامة الهوية بجانب الاسم */
-.nav__name .dot{
-  display:inline-block; width:6px; height:6px; border-radius:50%;
-  background:var(--accent); margin-inline-start:6px; vertical-align:.18em;
 }
 
 /* ---------- الدرز المُرمَّم ----------
@@ -717,4 +661,264 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
   width:var(--shell); margin-inline:auto;
   text-align:center; color:var(--ink-soft);
   font-size:.92rem; padding-block:4px 10px;
+}
+
+/* ============================================================
+   الهوية: قفل الشعار، الجسر، ورحلة المستخدم
+   ============================================================ */
+
+/* ---------- قفل الشعار في الشريط ---------- */
+.nav__mark{ color:var(--accent); display:grid; place-items:center; }
+.nav__lockup{ display:grid; line-height:1; gap:3px; }
+.nav__ar{ font-size:1.12rem; font-weight:500; letter-spacing:.02em; }
+.nav__en{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:.56rem; letter-spacing:.42em; color:var(--ink-soft);
+  padding-inline-start:.42em;
+}
+
+/* ---------- قفل الشعار في الواجهة ---------- */
+.hero__lockup{ margin-bottom:18px; }
+.hero__dome{
+  width:clamp(96px,13vw,136px); height:auto; color:var(--accent);
+  display:block;
+}
+.hero__dome path{
+  stroke-dasharray:120; stroke-dashoffset:120;
+  animation:raise 1.5s var(--ease) forwards;
+}
+.hero__dome path:nth-child(1){ animation-delay:.25s }
+.hero__dome path:nth-child(2){ animation-delay:.33s }
+.hero__dome path:nth-child(3){ animation-delay:.41s }
+.hero__dome path:nth-child(4){ animation-delay:.49s }
+.hero__dome path:nth-child(5){ animation-delay:.57s }
+.hero__dome path:nth-child(6){ animation-delay:.65s }
+.hero__dome path:nth-child(7){ animation-delay:.73s }
+@keyframes raise{ to{ stroke-dashoffset:0; } }
+
+.hero__title{ font-size:clamp(2.8rem,9vw,5.6rem); margin-bottom:6px; font-weight:600; }
+.hero__en{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(.8rem,1.9vw,1.05rem);
+  letter-spacing:.52em; color:var(--ink-soft);
+  margin:0 0 26px; padding-inline-start:.5em;
+}
+.hero__tag{
+  font-size:clamp(1.02rem,2.3vw,1.3rem); font-weight:400;
+  color:var(--accent); margin-bottom:6px;
+}
+.hero__tag-en{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:.7rem; letter-spacing:.24em; color:var(--ink-soft);
+  margin-bottom:28px;
+}
+
+/* ---------- جسر جابر: خط الأفق ---------- */
+.bridge{
+  position:absolute; inset-inline:0; inset-block-end:0;
+  height:min(30vh,210px); pointer-events:none;
+  opacity:calc(var(--mark-strength) * .42);
+  mask-image:linear-gradient(to top, #000 22%, transparent 88%);
+  -webkit-mask-image:linear-gradient(to top, #000 22%, transparent 88%);
+}
+.bridge svg{ width:100%; height:100%; display:block; }
+.bridge path{ fill:none; stroke:var(--accent); stroke-linecap:round; }
+.bridge__far path{ stroke:var(--ink-soft); stroke-width:1; opacity:.3; }
+.bridge__deck path{ stroke-width:2.2; opacity:.62; }
+.bridge__pylon path{ stroke-width:1.6; opacity:.5; }
+
+/* ---------- رحلة المستخدم ---------- */
+.section__intro-en{
+  display:block; margin-top:10px;
+  font-family:"Space Grotesk",sans-serif;
+  font-size:.7rem; letter-spacing:.3em; color:var(--accent);
+}
+
+.journey{
+  display:grid; gap:18px; align-items:start;
+  grid-template-columns:repeat(3, 1fr);
+}
+.jstep{
+  display:flex; flex-direction:column; gap:16px;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:calc(var(--r) + 2px); padding:22px 20px;
+  transition:transform .35s var(--ease), border-color .35s, box-shadow .35s;
+}
+.jstep:hover{ transform:translateY(-4px); border-color:var(--accent); box-shadow:var(--shadow); }
+.jstep__head{ display:flex; align-items:flex-start; gap:13px; }
+.jstep__num{
+  flex-shrink:0; display:grid; place-items:center;
+  width:32px; height:32px; border-radius:50%;
+  border:1px solid var(--accent); color:var(--accent);
+  background:var(--accent-soft);
+  font-family:"Space Grotesk",sans-serif; font-weight:500; font-size:.92rem;
+}
+.jstep__head h3{ font-size:1rem; margin-bottom:4px; }
+.jstep__head p{ color:var(--ink-soft); font-size:.87rem; line-height:1.6; }
+
+/* ---------- واجهات مصغّرة داخل الخطوات ---------- */
+.mock{
+  background:var(--bg-alt); border:1px solid var(--line);
+  border-radius:12px; padding:14px;
+  display:grid; gap:8px; font-size:.78rem;
+}
+.mock__title{
+  margin:0 0 2px; font-weight:600; font-size:.88rem; text-align:center;
+}
+.mock__title--ok{ color:var(--ok); }
+.mock__field,
+.mock__search{
+  background:var(--surface-2); border:1px solid var(--line);
+  border-radius:8px; padding:9px 11px; color:var(--ink-soft);
+}
+.mock__btn{
+  background:var(--accent); color:var(--on-accent);
+  border-radius:8px; padding:9px 11px; text-align:center; font-weight:600;
+}
+.mock__btn--ghost{
+  background:transparent; color:var(--accent);
+  border:1px solid var(--accent);
+}
+
+.mock__row,
+.mock__res{
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface-2); border:1px solid transparent;
+  border-radius:9px; padding:8px 10px;
+}
+.mock__row--on{ border-color:var(--accent); background:var(--accent-soft); }
+.mock__row span:not(.mock__thumb),
+.mock__res span:not(.mock__thumb){ display:grid; gap:1px; flex:1; min-width:0; }
+.mock__row small,
+.mock__res small{ color:var(--ink-soft); font-size:.7rem; }
+.mock__thumb{
+  flex-shrink:0; width:30px; height:24px; border-radius:5px;
+  background:
+    linear-gradient(115deg, transparent 46%, var(--ink-soft) 46%, var(--ink-soft) 50%, transparent 50%),
+    var(--line);
+  opacity:.85;
+}
+
+.mock__tabs{ display:flex; gap:5px; }
+.mock__tabs span{
+  flex:1; text-align:center; padding:6px 4px; border-radius:7px;
+  background:var(--surface-2); color:var(--ink-soft); font-size:.71rem;
+}
+.mock__tabs .is-on{ background:var(--accent-soft); color:var(--accent); }
+
+.mock__pair{
+  display:flex; justify-content:space-between; gap:10px;
+  padding-block:6px; border-bottom:1px dashed var(--line);
+}
+.mock__pair:last-of-type{ border-bottom:0; }
+.mock__pair span{ color:var(--ink-soft); }
+.mock__pair b{ font-weight:600; }
+
+.mock__drop{
+  display:grid; justify-items:center; gap:4px;
+  padding:16px 10px; text-align:center; color:var(--ink-soft);
+  border:1px dashed var(--line); border-radius:10px;
+}
+.mock__drop svg{ color:var(--accent); }
+.mock__drop small{ font-size:.68rem; opacity:.75; }
+.mock__thumbs{ display:flex; gap:6px; }
+.mock__thumbs i{
+  flex:1; height:30px; border-radius:6px;
+  background:
+    linear-gradient(115deg, transparent 46%, var(--ink-soft) 46%, var(--ink-soft) 50%, transparent 50%),
+    var(--line);
+  opacity:.8;
+}
+
+.mock__check{ display:flex; align-items:center; gap:9px; color:var(--ink-soft); }
+.mock__check i{
+  flex-shrink:0; width:16px; height:16px; border-radius:50%;
+  border:1px solid var(--line); position:relative;
+}
+.mock__check.is-done{ color:var(--ink); }
+.mock__check.is-done i{ background:var(--ok); border-color:var(--ok); }
+.mock__check.is-done i::after{
+  content:""; position:absolute; inset-block-start:4px; inset-inline-start:4.5px;
+  width:6px; height:3px; border:1.6px solid var(--on-accent);
+  border-block-start:0; border-inline-end:0; transform:rotate(-45deg);
+}
+
+.mock__prog,
+.mock__meter{
+  height:5px; border-radius:99px; background:var(--surface-2); overflow:hidden;
+}
+.mock__prog b,
+.mock__meter b{ display:block; height:100%; background:var(--accent); border-radius:99px; }
+.mock__progval{ margin:0; text-align:end; color:var(--accent); font-size:.74rem; }
+
+.mock__top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; font-weight:600;
+}
+.mock__acc{
+  font-weight:400; font-size:.7rem; color:var(--accent);
+  border:1px solid var(--line); border-radius:99px; padding:3px 9px;
+}
+.mock__note{ margin:0; color:var(--ink-soft); font-size:.73rem; line-height:1.6; }
+
+.pill{ flex-shrink:0; font-size:.69rem; font-weight:700; padding:3px 10px; border-radius:99px; }
+.pill--hi{  background:color-mix(in srgb, var(--hi) 20%, transparent);  color:var(--hi); }
+.pill--mid{ background:color-mix(in srgb, var(--mid) 20%, transparent); color:var(--mid); }
+.pill--ok{  background:color-mix(in srgb, var(--ok) 20%, transparent);  color:var(--ok); }
+
+.mock__acts{ display:flex; gap:6px; }
+.act{
+  flex:1; text-align:center; padding:7px 4px; border-radius:8px;
+  border:1px solid var(--line); color:var(--ink-soft); font-size:.74rem;
+}
+.act--ok{ background:color-mix(in srgb, var(--ok) 18%, transparent); color:var(--ok); border-color:transparent; }
+.act--no{ color:var(--hi); border-color:color-mix(in srgb, var(--hi) 40%, transparent); }
+
+.toast{
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--surface-2); border:1px solid var(--line);
+  border-radius:10px; padding:10px 11px;
+}
+.toast span{ display:grid; gap:2px; color:var(--ink-soft); font-size:.73rem; line-height:1.55; }
+.toast b{ color:var(--ink); font-size:.79rem; font-weight:600; }
+.toast i{
+  flex-shrink:0; width:20px; height:20px; border-radius:50%;
+  display:block; position:relative; margin-top:2px;
+}
+.toast--ok i{ background:color-mix(in srgb, var(--ok) 22%, transparent); }
+.toast--ok i::after{
+  content:""; position:absolute; inset-block-start:6px; inset-inline-start:5.5px;
+  width:8px; height:4px; border:1.8px solid var(--ok);
+  border-block-start:0; border-inline-end:0; transform:rotate(-45deg);
+}
+.toast--warn i{ background:color-mix(in srgb, var(--mid) 22%, transparent); }
+.toast--warn i::after{
+  content:"!"; position:absolute; inset:0;
+  display:grid; place-items:center;
+  color:var(--mid); font-weight:700; font-size:.78rem;
+}
+
+/* ---------- الدعوة الختامية ---------- */
+.cta__quote{
+  font-size:clamp(1.25rem,3.2vw,1.95rem); font-weight:500;
+  color:var(--accent); margin-bottom:8px; line-height:1.55;
+}
+.cta__en{
+  font-family:"Space Grotesk",sans-serif;
+  font-size:.72rem; letter-spacing:.26em; color:var(--ink-soft);
+  margin-bottom:20px;
+}
+
+/* ---------- الشاشات الصغيرة ---------- */
+@media (max-width: 980px){
+  .journey{ grid-template-columns:repeat(2, 1fr); }
+}
+@media (max-width: 680px){
+  .journey{ grid-template-columns:1fr; }
+  .hero__en{ letter-spacing:.34em; }
+  .bridge{ opacity:calc(var(--mark-strength) * .35); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .hero__dome path{ stroke-dashoffset:0 !important; }
 }
