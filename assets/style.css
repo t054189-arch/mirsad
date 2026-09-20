@@ -1,125 +1,185 @@
 /* ============================================================
-   مِرصاد — منصة إدارة دورة فحص المنشآت
-   RTL · الهوية الرسمية + أربعة بدائل عبر [data-theme]
+   مِرصاد · MIRSAAD — منصة إدارة دورة فحص المنشآت
+   عربي/إنجليزي · RTL/LTR · أربع عائلات ألوان × وضعين
+   العائلة على [data-theme] والوضع على [data-mode]
+   هذه الكتل مولّدة من tools/palettes.py — عدّلها هناك لا هنا
    ============================================================ */
 
-/* ---------- الهوية الرسمية: مرصاد (Mirsaad) ----------
-   فحمي دافئ + رملي، مأخوذة من لوحة هوية المشروع.          */
+/* ========== عائلة: مرصاد — الهوية الرسمية (رملي) ========== */
+/* الوضع الداكن — الأساس */
 :root,
 [data-theme="mirsaad"]{
-  --bg:        #181613;
-  --bg-alt:    #1d1b17;
-  --surface:   #22201b;
-  --surface-2: #2a2721;
-  --ink:       #f2ece3;
-  --ink-soft:  #a89f92;
-  --line:      #35302a;
-  --accent:      #ead5b8;
-  --accent-deep: #d6bc96;
-  --accent-soft: rgba(234,213,184,.10);
-  --on-accent:   #201c16;
-  --hi:  #dd7b76;   /* أولوية عالية */
-  --mid: #e0a75c;   /* للمتابعة */
-  --ok:  #63b894;   /* سليم / معتمد */
-  --grid-ink: rgba(234,213,184,.045);
-  --shadow: 0 20px 52px rgba(0,0,0,.5);
+  --bg:            #181613;
+  --bg-alt:        #1d1b17;
+  --surface:       #22201b;
+  --surface-2:     #2a2721;
+  --ink:           #f2ece3;
+  --ink-soft:      #a89f92;
+  --line:          #35302a;
+  --accent:        #ead5b8;
+  --accent-deep:   #d6bc96;
+  --on-accent:     #201c16;
+  --hi:            #dd7b76;
+  --mid:           #e0a75c;
+  --ok:            #63b894;
+  --grid-ink:      rgba(234,213,184,.045);
+  --shadow:        0 20px 52px rgba(0,0,0,.5);
   --mark-strength: .95;
-  color-scheme: dark;
+  --accent-soft: color-mix(in srgb, #ead5b8 11%, transparent);
 }
 
-/* ---------- بديل فاتح: كِنتسوغي (Kintsugi) ----------
-   فن ترميم الخزف المكسور بالذهب: الشرخ لا يُخفى، بل يُبرَز
-   ويصبح جزءًا من تاريخ القطعة وأجمل ما فيها — وهي فكرة مرصاد
-   نفسها: الملاحظة التي عولجت تبقى في السجل لا تُمحى منه.        */
-[data-theme="kintsugi"]{
-  --bg:        #f7f3ec;
-  --bg-alt:    #fffdf8;
-  --surface:   #fffdf8;
-  --surface-2: #f1e8da;
-  --ink:       #2b241d;
-  --ink-soft:  #6a5f52;
-  --line:      #e4dac9;
-  --accent:      #916118;
-  --accent-deep: #714b0f;
-  --accent-soft: rgba(145,97,24,.12);
-  --on-accent:   #fffdf8;
-  --hi:  #a8291b;   /* أولوية عالية */
-  --mid: #8a5a00;   /* للمتابعة */
-  --ok:  #2f6b45;   /* معتمد */
-  --grid-ink: rgba(43,36,29,.05);
-  --shadow: 0 16px 40px rgba(43,36,29,.09);
+/* الوضع الفاتح */
+[data-theme="mirsaad"][data-mode="light"]{
+  --bg:            #f7f3ec;
+  --bg-alt:        #fffdf8;
+  --surface:       #fffdf8;
+  --surface-2:     #f1e8da;
+  --ink:           #2b241d;
+  --ink-soft:      #6a5f52;
+  --line:          #e4dac9;
+  --accent:        #8c5e17;
+  --accent-deep:   #704b12;
+  --on-accent:     #fffdf8;
+  --hi:            #a8291b;
+  --mid:           #8a5a00;
+  --ok:            #2f6b45;
+  --grid-ink:      rgba(43,36,29,.05);
+  --shadow:        0 16px 40px rgba(43,36,29,.09);
   --mark-strength: .6;
-  color-scheme: light;
+  --accent-soft: color-mix(in srgb, #8c5e17 11%, transparent);
 }
 
-/* ---------- فجر (Dawn) ----------
-   أول ضوء على الموقع: الليل ينحسر ويوم جديد يبدأ على المنشأة.   */
+/* ========== عائلة: فجر (كهرماني) ========== */
+/* الوضع الداكن — الأساس */
 [data-theme="dawn"]{
-  --bg:        #121729;
-  --bg-alt:    #171d33;
-  --surface:   #1b2239;
-  --surface-2: #232b47;
-  --ink:       #f5f1ea;
-  --ink-soft:  #a6abc7;
-  --line:      #2d3556;
-  --accent:      #ffa552;
-  --accent-deep: #ef8a2d;
-  --accent-soft: rgba(255,165,82,.13);
-  --on-accent:   #2a1503;
-  --hi:  #ff7b72;
-  --mid: #ffcf6b;
-  --ok:  #6fe0a8;
-  --grid-ink: rgba(255,255,255,.05);
-  --shadow: 0 18px 48px rgba(0,0,0,.42);
+  --bg:            #121729;
+  --bg-alt:        #171d33;
+  --surface:       #1b2239;
+  --surface-2:     #232b47;
+  --ink:           #f5f1ea;
+  --ink-soft:      #a6abc7;
+  --line:          #2d3556;
+  --accent:        #ffa552;
+  --accent-deep:   #ef8a2d;
+  --on-accent:     #2a1503;
+  --hi:            #ff7b72;
+  --mid:           #ffcf6b;
+  --ok:            #6fe0a8;
+  --grid-ink:      rgba(255,255,255,.05);
+  --shadow:        0 18px 48px rgba(0,0,0,.42);
   --mark-strength: 1;
-  color-scheme: dark;
+  --accent-soft: color-mix(in srgb, #ffa552 11%, transparent);
 }
 
-/* ---------- أُفق (Horizon) ----------
-   مساحة مفتوحة وما يمكن بناؤه فيها: خفّة وتفاؤل ووضوح.        */
-[data-theme="horizon"]{
-  --bg:        #f3f7fb;
-  --bg-alt:    #ffffff;
-  --surface:   #ffffff;
-  --surface-2: #e6eff8;
-  --ink:       #10202e;
-  --ink-soft:  #506678;
-  --line:      #d5e3ef;
-  --accent:      #0b6fbd;
-  --accent-deep: #08548f;
-  --accent-soft: rgba(11,111,189,.10);
-  --on-accent:   #ffffff;
-  --hi:  #b9291a;
-  --mid: #8a5a00;
-  --ok:  #14705a;
-  --grid-ink: rgba(16,32,46,.055);
-  --shadow: 0 16px 40px rgba(16,32,46,.09);
+/* الوضع الفاتح */
+[data-theme="dawn"][data-mode="light"]{
+  --bg:            #fbf6ef;
+  --bg-alt:        #fffdfa;
+  --surface:       #ffffff;
+  --surface-2:     #f5ebdd;
+  --ink:           #241c14;
+  --ink-soft:      #6b5c4b;
+  --line:          #e8dcc9;
+  --accent:        #a1560f;
+  --accent-deep:   #81450c;
+  --on-accent:     #ffffff;
+  --hi:            #b03024;
+  --mid:           #8a5a00;
+  --ok:            #2f6b45;
+  --grid-ink:      rgba(36,28,20,.05);
+  --shadow:        0 16px 40px rgba(36,28,20,.09);
   --mark-strength: .6;
-  color-scheme: light;
+  --accent-soft: color-mix(in srgb, #a1560f 11%, transparent);
 }
 
-/* ---------- ترميم (Restored) ----------
-   ما بعد المعالجة: هدوء وثقة، والمنشأة تستعيد سلامتها.         */
-[data-theme="restored"]{
-  --bg:        #0e1a19;
-  --bg-alt:    #112220;
-  --surface:   #142826;
-  --surface-2: #1c332f;
-  --ink:       #eef6f3;
-  --ink-soft:  #97ada8;
-  --line:      #214039;
-  --accent:      #62dcae;
-  --accent-deep: #3dbf90;
-  --accent-soft: rgba(98,220,174,.12);
-  --on-accent:   #04231a;
-  --hi:  #ff8a7a;
-  --mid: #ffc978;
-  --ok:  #62dcae;
-  --grid-ink: rgba(255,255,255,.05);
-  --shadow: 0 18px 46px rgba(0,0,0,.45);
+/* ========== عائلة: أُفق (أزرق) ========== */
+/* الوضع الداكن — الأساس */
+[data-theme="horizon"]{
+  --bg:            #0b1520;
+  --bg-alt:        #0f1c2a;
+  --surface:       #132232;
+  --surface-2:     #1a2c3f;
+  --ink:           #eaf2f9;
+  --ink-soft:      #94a9bd;
+  --line:          #223547;
+  --accent:        #63b8f5;
+  --accent-deep:   #3f9be0;
+  --on-accent:     #05172a;
+  --hi:            #ff8079;
+  --mid:           #ffc266;
+  --ok:            #5fd6a8;
+  --grid-ink:      rgba(255,255,255,.05);
+  --shadow:        0 18px 48px rgba(0,0,0,.45);
   --mark-strength: .9;
-  color-scheme: dark;
+  --accent-soft: color-mix(in srgb, #63b8f5 11%, transparent);
 }
+
+/* الوضع الفاتح */
+[data-theme="horizon"][data-mode="light"]{
+  --bg:            #f3f7fb;
+  --bg-alt:        #ffffff;
+  --surface:       #ffffff;
+  --surface-2:     #e6eff8;
+  --ink:           #10202e;
+  --ink-soft:      #506678;
+  --line:          #d5e3ef;
+  --accent:        #0a6dbb;
+  --accent-deep:   #085795;
+  --on-accent:     #ffffff;
+  --hi:            #b9291a;
+  --mid:           #8a5a00;
+  --ok:            #14705a;
+  --grid-ink:      rgba(16,32,46,.055);
+  --shadow:        0 16px 40px rgba(16,32,46,.09);
+  --mark-strength: .6;
+  --accent-soft: color-mix(in srgb, #0a6dbb 11%, transparent);
+}
+
+/* ========== عائلة: ترميم (نعناعي) ========== */
+/* الوضع الداكن — الأساس */
+[data-theme="restored"]{
+  --bg:            #0e1a19;
+  --bg-alt:        #112220;
+  --surface:       #142826;
+  --surface-2:     #1c332f;
+  --ink:           #eef6f3;
+  --ink-soft:      #97ada8;
+  --line:          #214039;
+  --accent:        #62dcae;
+  --accent-deep:   #3dbf90;
+  --on-accent:     #04231a;
+  --hi:            #ff8a7a;
+  --mid:           #ffc978;
+  --ok:            #62dcae;
+  --grid-ink:      rgba(255,255,255,.05);
+  --shadow:        0 18px 46px rgba(0,0,0,.45);
+  --mark-strength: .9;
+  --accent-soft: color-mix(in srgb, #62dcae 11%, transparent);
+}
+
+/* الوضع الفاتح */
+[data-theme="restored"][data-mode="light"]{
+  --bg:            #f1f6f3;
+  --bg-alt:        #fbfdfc;
+  --surface:       #ffffff;
+  --surface-2:     #e4efe9;
+  --ink:           #12201b;
+  --ink-soft:      #52635b;
+  --line:          #d5e4dc;
+  --accent:        #0f7355;
+  --accent-deep:   #0a5740;
+  --on-accent:     #ffffff;
+  --hi:            #b03123;
+  --mid:           #8a5a00;
+  --ok:            #0f7355;
+  --grid-ink:      rgba(18,32,27,.05);
+  --shadow:        0 16px 38px rgba(18,32,27,.08);
+  --mark-strength: .55;
+  --accent-soft: color-mix(in srgb, #0f7355 11%, transparent);
+}
+
+[data-mode="dark"]{  color-scheme: dark; }
+[data-mode="light"]{ color-scheme: light; }
 
 /* ---------- أساسيات ---------- */
 :root{
@@ -181,29 +241,6 @@ b{ font-weight:600; }
     radial-gradient(ellipse 45% 70% at 18% 130%, var(--accent-soft), transparent 62%);
 }
 
-/* ---------- ستارة التحميل ---------- */
-.curtain{
-  position:fixed; inset:0; z-index:999;
-  background:var(--bg);
-  display:grid; place-items:center;
-  transition:transform .85s var(--ease), opacity .55s ease .25s;
-}
-.curtain__bar{
-  width:min(320px,60vw); height:3px;
-  background:var(--line); overflow:hidden; position:relative;
-}
-.curtain__bar::after{
-  content:""; position:absolute; inset:0;
-  background:var(--accent);
-  transform:scaleX(0); transform-origin:right;
-  animation:load 1s var(--ease) forwards;
-}
-@keyframes load{ to{ transform:scaleX(1); } }
-body.is-ready .curtain{
-  transform:translateY(-101%);
-  opacity:0; pointer-events:none;
-}
-
 /* ---------- الشريط العلوي ---------- */
 .nav{
   position:fixed; inset-block-start:0; inset-inline:0; z-index:120;
@@ -233,7 +270,7 @@ body.is-ready .curtain{
 .nav__links a:hover{ color:var(--ink); }
 .nav__links a:hover::after{ transform:scaleX(1); }
 
-.nav__tools{ display:flex; align-items:center; gap:10px; }
+.nav__tools{ display:flex; align-items:center; gap:8px; }
 
 .themebtn{
   display:flex; align-items:center; gap:8px;
@@ -921,4 +958,145 @@ body.is-ready .hero__title .line span{ transform:translateY(0); }
 
 @media (prefers-reduced-motion: reduce){
   .hero__dome path{ stroke-dashoffset:0 !important; }
+}
+
+/* ============================================================
+   الخلفية ثلاثية الأبعاد · المدخل السينمائي · اللغة والوضع
+   ============================================================ */
+
+/* ---------- لوحة المشهد ---------- */
+.scene{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  opacity:calc(var(--mark-strength) * .55);
+  transition:opacity .6s var(--ease);
+}
+.scene.is-off{ opacity:0; }
+
+/* الشبكة المسطحة تخفّ حين يحمل المشهد العمق */
+.blueprint{ opacity:.5; }
+
+/* ---------- المدخل السينمائي ---------- */
+.intro{
+  position:fixed; inset:0; z-index:400;
+  display:grid; place-items:center;
+  background:var(--bg);
+  transition:opacity .9s var(--ease), transform 1.1s var(--ease), visibility .9s;
+}
+.intro.is-gone{
+  opacity:0; visibility:hidden;
+  transform:scale(1.08);
+  pointer-events:none;
+}
+.intro.is-fast{ transition-duration:.35s, .35s, .35s; }
+
+.intro__inner{ display:grid; justify-items:center; gap:2px; text-align:center; padding:24px; }
+
+.intro__dome{
+  width:clamp(120px,18vw,190px); height:auto; color:var(--accent);
+  margin-bottom:22px;
+}
+.intro__dome path{
+  stroke-dasharray:130; stroke-dashoffset:130;
+  animation:introDraw 1.1s var(--ease) forwards;
+}
+.intro__dome path:nth-child(1){ animation-delay:.10s }
+.intro__dome path:nth-child(2){ animation-delay:.18s }
+.intro__dome path:nth-child(3){ animation-delay:.26s }
+.intro__dome path:nth-child(4){ animation-delay:.34s }
+.intro__dome path:nth-child(5){ animation-delay:.42s }
+.intro__dome path:nth-child(6){ animation-delay:.50s }
+.intro__dome path:nth-child(7){ animation-delay:.58s }
+@keyframes introDraw{ to{ stroke-dashoffset:0; } }
+
+.intro__ar{
+  margin:0; font-size:clamp(2rem,6vw,3.2rem); font-weight:600;
+  color:var(--ink); opacity:0;
+  animation:introUp .9s var(--ease) 1.05s forwards;
+}
+.intro__en{
+  margin:2px 0 0;
+  font-family:"Space Grotesk",sans-serif;
+  font-size:clamp(.72rem,1.6vw,.95rem); letter-spacing:.5em;
+  color:var(--ink-soft); padding-inline-start:.5em; opacity:0;
+  animation:introUp .9s var(--ease) 1.25s forwards;
+}
+.intro__tag{
+  margin:20px 0 0; color:var(--accent);
+  font-size:clamp(.88rem,1.9vw,1.05rem); opacity:0;
+  animation:introUp .9s var(--ease) 1.5s forwards;
+}
+@keyframes introUp{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+
+.intro__skip{
+  position:absolute; inset-block-end:34px; inset-inline-end:34px;
+  font:inherit; font-size:.8rem; color:var(--ink-soft);
+  background:transparent; border:1px solid var(--line);
+  border-radius:999px; padding:8px 18px; cursor:pointer;
+  opacity:0; animation:introUp .6s var(--ease) 1.9s forwards;
+  transition:color .25s, border-color .25s;
+}
+.intro__skip:hover{ color:var(--accent); border-color:var(--accent); }
+
+/* المحتوى ينتظر انتهاء المدخل */
+.has-intro body{ overflow:hidden; }
+.has-intro .nav,
+.has-intro main,
+.has-intro .foot{ opacity:0; }
+.nav, main, .foot{ transition:opacity .8s var(--ease) .1s; }
+
+/* عنوان الواجهة يرتفع بعد رفع المدخل */
+.hero__title .line span{ transform:translateY(105%); }
+.is-ready .hero__title .line span{ transform:translateY(0); }
+
+/* ---------- أزرار اللغة والوضع ---------- */
+.iconbtn{
+  display:grid; place-items:center;
+  width:36px; height:36px; padding:0;
+  font:inherit; font-size:.76rem; font-weight:600; color:var(--ink);
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; cursor:pointer;
+  transition:border-color .25s, color .25s, background .25s;
+}
+.iconbtn:hover{ border-color:var(--accent); color:var(--accent); }
+.iconbtn .ico{ grid-area:1/1; transition:opacity .25s, transform .4s var(--ease); }
+[data-mode="dark"]  .ico--sun{  opacity:1; transform:none; }
+[data-mode="dark"]  .ico--moon{ opacity:0; transform:rotate(-40deg) scale(.7); }
+[data-mode="light"] .ico--sun{  opacity:0; transform:rotate(40deg) scale(.7); }
+[data-mode="light"] .ico--moon{ opacity:1; transform:none; }
+
+/* ---------- الإنجليزية ---------- */
+[lang="en"] body{
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.72;
+}
+[lang="en"] h1,[lang="en"] h2,[lang="en"] h3{ letter-spacing:-.018em; }
+[lang="en"] .hero__title{ font-size:clamp(2.4rem,7.4vw,4.8rem); letter-spacing:-.03em; }
+[lang="en"] .hero__en{ letter-spacing:.2em; font-family:"IBM Plex Sans Arabic",sans-serif; }
+[lang="en"] .intro__ar{ letter-spacing:-.02em; }
+[lang="en"] .intro__en{ letter-spacing:.14em; font-family:"IBM Plex Sans Arabic",sans-serif; }
+[lang="en"] .nav__ar{ font-family:"Space Grotesk",sans-serif; letter-spacing:.06em; }
+[lang="en"] .nav__en{ letter-spacing:.06em; font-family:"IBM Plex Sans Arabic",sans-serif; }
+[lang="en"] .nav__links{ font-size:.9rem; }
+[lang="en"] .section__num,
+[lang="en"] .finding__id{ font-family:"Space Grotesk",sans-serif; }
+
+/* الأسهم الاتجاهية تنقلب مع اتجاه القراءة */
+[dir="ltr"] .arrow{ display:inline-block; transform:scaleX(-1); }
+
+/* ---------- الحركة المخفّضة ---------- */
+@media (prefers-reduced-motion: reduce){
+  .intro{ display:none; }
+  .has-intro .nav,
+  .has-intro main,
+  .has-intro .foot{ opacity:1; }
+  .hero__title .line span{ transform:none !important; }
+  .scene{ transition:none; }
+}
+
+/* ---------- الشاشات الصغيرة ---------- */
+@media (max-width: 760px){
+  .nav__tools{ gap:6px; }
+  .iconbtn{ width:32px; height:32px; }
+  .intro__skip{ inset-block-end:24px; inset-inline-end:24px; }
+  .scene{ opacity:calc(var(--mark-strength) * .38); }
 }
