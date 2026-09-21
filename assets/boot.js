@@ -25,7 +25,10 @@
   }
   window.MirsaadSession = session;
 
-  var onLogin = /(^|\/)index\.html$/.test(location.pathname) || /\/$/.test(location.pathname);
+  // الصفحة تُعرّف نفسها بـ data-gate. الاستدلال من المسار كان يخطئ
+  // حيثما لم ينتهِ العنوان بـ index.html أو بشرطة مائلة، فتدور البوابة
+  // على نفسها بلا نهاية.
+  var onLogin = d.hasAttribute('data-gate');
   var signedIn = !!session();
 
   if (!onLogin && !signedIn) {
