@@ -83,6 +83,8 @@ window.MIRSAAD_EN = {
   'sd.home': 'Home',
   'sd.assets': 'Structures',
   'sd.insp': 'Inspections',
+  'sd.analysis': 'Analysis',
+  'sd.review': 'Review',
   'sd.rep': 'Reports',
 
   'a.welcomeSub': 'Sign in to continue your structures\u2019 inspections.',
