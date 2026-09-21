@@ -116,7 +116,7 @@
       }));
     } catch (e) { return false; }
     var next = new URLSearchParams(location.search).get('next');
-    var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'home.html';
+    var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'app.html#/dashboard';
     document.body.classList.add('is-leaving');
     setTimeout(function () { location.href = target; }, 260);
     return true;
