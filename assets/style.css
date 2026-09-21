@@ -666,3 +666,33 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
   text-underline-offset:3px;
 }
 .linkb:hover{ color:var(--accent-deep); }
+
+/* ---------- المدخل السينمائي للبوابة ----------
+   القُبّة تُرسم قوسًا بعد قوس، ثم يرتفع الاسم فالشعار فالبطاقة —
+   بالتوازي مع تراجع كاميرا المشهد ثلاثي الأبعاد في scene.js. */
+.gate__ar,
+.gate__en,
+.gate__tag,
+.gate__tagen,
+.gate__card{
+  opacity:0;
+  animation:rise .85s var(--ease) forwards;
+}
+.gate__ar{     animation-delay:.72s; }
+.gate__en{     animation-delay:.86s; }
+.gate__tag{    animation-delay:1.02s; }
+.gate__tagen{  animation-delay:1.14s; }
+.gate__card{   animation-delay:.95s; }
+@keyframes rise{
+  from{ opacity:0; transform:translateY(16px); }
+  to{   opacity:1; transform:none; }
+}
+
+/* أدوات اللغة والوضع تظهر أخيرًا، فلا تسبق الهوية */
+.gate__tools{ opacity:0; animation:rise .6s var(--ease) 1.3s forwards; }
+
+@media (prefers-reduced-motion: reduce){
+  .gate__ar,.gate__en,.gate__tag,.gate__tagen,.gate__card,.gate__tools{
+    opacity:1 !important; animation:none !important; transform:none !important;
+  }
+}
