@@ -20,6 +20,8 @@
     try {
       localStorage.removeItem(KEY);
       sessionStorage.removeItem(KEY);
+      localStorage.removeItem('mirsaad-session');
+      sessionStorage.removeItem('mirsaad-session');
     } catch (e) { /* التخزين غير متاح */ }
     location.replace('index.html');
   }
@@ -37,16 +39,16 @@
       e.preventDefault(); e.stopPropagation(); leave(); return;
     }
 
-    // «إجراء فحص جديد» يفتح الخطوات، كل خطوة في صفحتها
+    // «إجراء فحص جديد» يفتح صفحة الفحص في الموقع
     if (e.target.closest('a[href="#/inspections/new"]')) {
       e.preventDefault(); e.stopPropagation();
-      location.href = 'step-1.html';
+      location.href = 'inspection.html';
     }
   }, true);
 
   // ومن يفتح معالج التطبيق بالعنوان مباشرةً يُحوَّل إلى الخطوات أيضًا
   function routeWizard() {
-    if (location.hash === '#/inspections/new') location.replace('step-1.html');
+    if (location.hash === '#/inspections/new') location.replace('inspection.html');
   }
   routeWizard();
   window.addEventListener('hashchange', routeWizard);

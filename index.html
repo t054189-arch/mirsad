@@ -1,166 +1,169 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>تسجيل الدخول — مرصاد · MIRSAAD</title>
-    <meta name="description" content="مرصاد — منصة ذكية لإدارة وتحليل بيانات فحص المنشآت. سجّل الدخول أو أنشئ حسابًا للمتابعة." />
-    <meta name="robots" content="noindex" />
-    <script>
-      /* إن كانت هناك جلسة، ادخل التطبيق مباشرةً قبل أول رسم */
-      (function () {
-        try {
-          var r = sessionStorage.getItem('mirsaad.session') || localStorage.getItem('mirsaad.session');
-          if (r && JSON.parse(r).email) { location.replace('app.html#/dashboard'); return; }
-        } catch (e) { /* التخزين غير متاح */ }
-        try {
-          var l = localStorage.getItem('mirsaad.locale');
-          if (l === 'en') {
-            document.documentElement.lang = 'en';
-            document.documentElement.dir = 'ltr';
-          }
-        } catch (e) { /* التخزين غير متاح */ }
-      })();
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="auth.css" />
-  </head>
-  <body class="gate">
-    <div class="gate__tools">
-      <button class="chip" id="langBtn" type="button" aria-label="تغيير اللغة">
-        <span id="langLabel">EN</span>
-      </button>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-mode="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تسجيل الدخول — مِرصاد · MIRSAAD</title>
+<meta name="description" content="مرصاد — منصة ذكية وآمنة لإدارة دورة فحص المنشآت للمكاتب الهندسية." />
+<meta name="theme-color" content="#181613" />
+<script src="assets/boot.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="gate">
+
+<canvas class="scene" id="scene" aria-hidden="true"></canvas>
+<div class="blueprint" aria-hidden="true"></div>
+<div class="dawnglow" aria-hidden="true"></div>
+
+<div class="gate__tools">
+  <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
+    <span id="langLabel">EN</span>
+  </button>
+  <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
+    <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+            fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<main class="gate__wrap">
+  <section class="gate__brand">
+    <svg class="gate__dome" viewBox="0 0 100 52" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+        <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+        <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+        <path d="M50 5 C 24 5, 6 20, 6 48"/>
+      </g>
+    </svg>
+    <p class="gate__ar">مرصاد</p>
+    <p class="gate__en">MIRSAAD</p>
+    <p class="gate__tag" data-i18n="hero.tag">نفحص اليوم .. لنبني غدًا أكثر أمانًا</p>
+    <p class="gate__tagen">SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW</p>
+  </section>
+
+  <section class="gate__card">
+    <div class="tabsw" role="tablist" aria-label="الدخول أو إنشاء حساب">
+      <button class="tabsw__b is-on" id="tabIn" role="tab" aria-selected="true"
+              aria-controls="paneIn" data-i18n="sc.signin">تسجيل الدخول</button>
+      <button class="tabsw__b" id="tabUp" role="tab" aria-selected="false"
+              aria-controls="paneUp" data-i18n="g.signup">إنشاء حساب</button>
     </div>
 
-    <main class="wrap">
-      <section class="brand">
-        <svg class="brand__dome" viewBox="0 0 100 52" aria-hidden="true">
-          <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-            <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
-            <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
-            <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
-            <path d="M50 5 C 24 5, 6 20, 6 48"/>
-          </g>
-        </svg>
-        <p class="brand__ar" data-t="brand">مرصاد</p>
-        <p class="brand__en">MIRSAAD</p>
-        <p class="brand__tag" data-t="tag">نفحص اليوم... لننشئ غدًا أكثر أمانًا</p>
-        <p class="brand__tagen">SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW</p>
-      </section>
+    <!-- تسجيل الدخول -->
+    <div id="paneIn" role="tabpanel" aria-labelledby="tabIn">
+      <p class="gate__sub" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
 
-      <section class="card">
-        <div class="tabs" role="tablist" aria-label="الدخول أو إنشاء حساب">
-          <button class="is-on" id="tabIn" role="tab" aria-selected="true"
-                  aria-controls="paneIn" type="button" data-t="signin">تسجيل الدخول</button>
-          <button id="tabUp" role="tab" aria-selected="false"
-                  aria-controls="paneUp" type="button" data-t="signup">إنشاء حساب</button>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email" data-i18n="a.email">البريد الإلكتروني</label>
+          <input id="email" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false"
+                 placeholder="name@company.com" aria-describedby="emailErr" required />
+          <p class="field__err" id="emailErr" role="alert"></p>
         </div>
 
-        <!-- تسجيل الدخول -->
-        <div id="paneIn" role="tabpanel" aria-labelledby="tabIn">
-          <p class="sub" data-t="inSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
-
-          <form id="loginForm" novalidate>
-            <div class="field">
-              <label for="email" data-t="email">البريد الإلكتروني</label>
-              <input id="email" type="email" inputmode="email" autocomplete="email"
-                     spellcheck="false" placeholder="name@company.com"
-                     aria-describedby="emailErr" required />
-              <p class="field__err" id="emailErr" role="alert"></p>
-            </div>
-
-            <div class="field">
-              <label for="pass" data-t="pass">كلمة المرور</label>
-              <input id="pass" type="password" autocomplete="current-password" minlength="8"
-                     placeholder="••••••••" aria-describedby="passErr" required />
-              <p class="field__err" id="passErr" role="alert"></p>
-            </div>
-
-            <label class="remember" for="remember">
-              <input type="checkbox" id="remember" />
-              <span data-t="remember">تذكرني</span>
-            </label>
-
-            <button class="go" type="submit" data-t="signin">تسجيل الدخول</button>
-          </form>
-
-          <p class="swap"><span data-t="noAcct">ليس لديك حساب؟</span><button
-            type="button" class="linkb" id="goUp" data-t="signup">إنشاء حساب</button></p>
-
-          <div class="demo">
-            <p class="demo__h" data-t="demoH">الحساب التجريبي</p>
-            <div class="demo__row"><span data-t="email">البريد الإلكتروني</span><code>dalal@mirsaad.demo</code></div>
-            <div class="demo__row"><span data-t="pass">كلمة المرور</span><code>mirsaad2026</code></div>
-            <button class="demo__btn" type="button" id="demoBtn" data-t="demoGo">الدخول بالحساب التجريبي</button>
-          </div>
+        <div class="field">
+          <label for="pass" data-i18n="a.pass">كلمة المرور</label>
+          <input id="pass" name="password" type="password"
+                 autocomplete="current-password" minlength="8"
+                 placeholder="••••••••" aria-describedby="passErr" required />
+          <p class="field__err" id="passErr" role="alert"></p>
         </div>
 
-        <!-- إنشاء حساب -->
-        <div id="paneUp" role="tabpanel" aria-labelledby="tabUp" hidden>
-          <p class="sub" data-t="upSub">أنشئ حسابك للانضمام إلى فريق المكتب على مرصاد.</p>
+        <label class="remember" for="remember">
+          <input type="checkbox" id="remember" name="remember" />
+          <span data-i18n="a.remember">تذكرني</span>
+        </label>
 
-          <form id="signupForm" novalidate>
-            <div class="field">
-              <label for="sName" data-t="name">الاسم الكامل</label>
-              <input id="sName" type="text" autocomplete="name" placeholder="دلال العتيبي"
-                     aria-describedby="sNameErr" required />
-              <p class="field__err" id="sNameErr" role="alert"></p>
-            </div>
+        <button class="ui ui--go" type="submit" data-i18n="sc.signin">تسجيل الدخول</button>
+      </form>
 
-            <div class="field">
-              <label for="sEmail" data-t="email">البريد الإلكتروني</label>
-              <input id="sEmail" type="email" inputmode="email" autocomplete="email"
-                     spellcheck="false" placeholder="name@company.com"
-                     aria-describedby="sEmailErr" required />
-              <p class="field__err" id="sEmailErr" role="alert"></p>
-            </div>
+      <p class="gate__swap"><span data-i18n="g.noAcct">ليس لديك حساب؟</span>
+        <button type="button" class="linkb" id="goUp" data-i18n="g.signup">إنشاء حساب</button></p>
 
-            <div class="field">
-              <label for="sRole" data-t="role">الدور في المكتب</label>
-              <select id="sRole" aria-describedby="sRoleErr" required>
-                <option value="" data-t="rolePick">اختر دورك…</option>
-                <option value="tech"  data-t="rTech">الفنّي الميداني</option>
-                <option value="eng"   data-t="rEng">المهندس</option>
-                <option value="rev"   data-t="rRev">المراجِع أو المشرف</option>
-                <option value="mgr"   data-t="rMgr">مدير المكتب</option>
-                <option value="admin" data-t="rAdmin">الموظف الإداري</option>
-              </select>
-              <p class="field__err" id="sRoleErr" role="alert"></p>
-            </div>
+      <div class="demo">
+        <p class="demo__h" data-i18n="a.demoH">الحساب التجريبي</p>
+        <div class="demo__row"><span data-i18n="a.email">البريد الإلكتروني</span><code>staff@mirsaad.kw</code></div>
+        <div class="demo__row"><span data-i18n="a.pass">كلمة المرور</span><code>mirsaad2026</code></div>
+        <button class="ui ui--ghost demo__btn" type="button" id="demoBtn" data-i18n="a.demoGo">الدخول بالحساب التجريبي</button>
+      </div>
+    </div>
 
-            <div class="field">
-              <label for="sPass" data-t="pass">كلمة المرور</label>
-              <input id="sPass" type="password" autocomplete="new-password" minlength="8"
-                     placeholder="••••••••" aria-describedby="sPassErr" required />
-              <p class="field__hint" data-t="passRule">٨ أحرف فأكثر، وتحتوي حرفًا ورقمًا.</p>
-              <p class="field__err" id="sPassErr" role="alert"></p>
-            </div>
+    <!-- إنشاء حساب -->
+    <div id="paneUp" role="tabpanel" aria-labelledby="tabUp" hidden>
+      <p class="gate__sub" data-i18n="g.signupSub">أنشئ حسابك للانضمام إلى فريق المكتب على مرصاد.</p>
 
-            <div class="field">
-              <label for="sPass2" data-t="passConfirm">تأكيد كلمة المرور</label>
-              <input id="sPass2" type="password" autocomplete="new-password"
-                     placeholder="••••••••" aria-describedby="sPass2Err" required />
-              <p class="field__err" id="sPass2Err" role="alert"></p>
-            </div>
-
-            <button class="go" type="submit" data-t="create">إنشاء الحساب والدخول</button>
-          </form>
-
-          <p class="swap"><span data-t="haveAcct">لديك حساب بالفعل؟</span><button
-            type="button" class="linkb" id="goIn" data-t="signin">تسجيل الدخول</button></p>
+      <form id="signupForm" novalidate>
+        <div class="field">
+          <label for="sName" data-i18n="g.name">الاسم الكامل</label>
+          <input id="sName" name="name" type="text" autocomplete="name"
+                 placeholder="ريان العجمي" aria-describedby="sNameErr" required />
+          <p class="field__err" id="sNameErr" role="alert"></p>
         </div>
 
-        <p class="note" data-t="note">
-          عرض تجريبي: التحقق يجري في المتصفح لا على خادم، والحسابات تُحفظ في متصفحك وحده.
-        </p>
-      </section>
-    </main>
+        <div class="field">
+          <label for="sEmail" data-i18n="a.email">البريد الإلكتروني</label>
+          <input id="sEmail" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false"
+                 placeholder="name@company.com" aria-describedby="sEmailErr" required />
+          <p class="field__err" id="sEmailErr" role="alert"></p>
+        </div>
 
-    <script src="auth.js"></script>
-  </body>
+        <div class="field">
+          <label for="sRole" data-i18n="g.role">الدور في المكتب</label>
+          <select id="sRole" name="role" aria-describedby="sRoleErr" required>
+            <option value="" data-i18n="g.rolePick">اختر دورك…</option>
+            <option value="tech"  data-i18n="who.t1">الفنّي الميداني</option>
+            <option value="eng"   data-i18n="who.t2">المهندس</option>
+            <option value="rev"   data-i18n="who.t3">المراجِع أو المشرف</option>
+            <option value="mgr"   data-i18n="who.t4">مدير المكتب</option>
+            <option value="admin" data-i18n="who.t5">الموظف الإداري</option>
+          </select>
+          <p class="field__err" id="sRoleErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="sPass" data-i18n="a.pass">كلمة المرور</label>
+          <input id="sPass" name="password" type="password"
+                 autocomplete="new-password" minlength="8"
+                 placeholder="••••••••" aria-describedby="sPassErr" required />
+          <p class="field__hint" data-i18n="g.passRule">٨ أحرف فأكثر، وتحتوي حرفًا ورقمًا.</p>
+          <p class="field__err" id="sPassErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="sPass2" data-i18n="g.passConfirm">تأكيد كلمة المرور</label>
+          <input id="sPass2" name="password2" type="password"
+                 autocomplete="new-password" placeholder="••••••••"
+                 aria-describedby="sPass2Err" required />
+          <p class="field__err" id="sPass2Err" role="alert"></p>
+        </div>
+
+        <button class="ui ui--go" type="submit" data-i18n="g.create">إنشاء الحساب والدخول</button>
+      </form>
+
+      <p class="gate__swap"><span data-i18n="g.haveAcct">لديك حساب بالفعل؟</span>
+        <button type="button" class="linkb" id="goIn" data-i18n="sc.signin">تسجيل الدخول</button></p>
+    </div>
+
+    <p class="gate__note" data-i18n="a.demoNote">
+      نموذج عرض: التحقق يجري في المتصفح لا على خادم، والحسابات تُحفظ في متصفحك وحده.
+    </p>
+  </section>
+</main>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/chrome.js"></script>
+<script src="assets/auth.js"></script>
+</body>
 </html>

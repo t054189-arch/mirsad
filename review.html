@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-mode="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title data-i18n="sc.review">المراجعة — مِرصاد</title>
+<meta name="theme-color" content="#181613" />
+<meta name="robots" content="noindex" />
+<script src="assets/boot.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="shellpage">
+
+<div class="blueprint" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="topbar__brand" href="home.html" aria-label="مرصاد">
+    <span class="topbar__mark" aria-hidden="true">
+      <svg viewBox="0 0 100 52" width="30" height="16">
+        <g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+          <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+          <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+          <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+          <path d="M50 5 C 24 5, 6 20, 6 48"/>
+        </g>
+      </svg>
+    </span>
+    <span class="topbar__lock">
+      <span class="topbar__ar" data-i18n="brand.name">مرصاد</span>
+      <span class="topbar__en" data-i18n="brand.sub">MIRSAAD</span>
+    </span>
+  </a>
+
+  <h1 class="topbar__page" data-i18n="sc.review">المراجعة</h1>
+
+  <div class="topbar__tools">
+    <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b><em class="who__role"></em></span>
+
+    <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
+      <span id="langLabel">EN</span>
+    </button>
+
+    <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
+      <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+              fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="iconbtn" id="outBtn" data-i18n-attr="aria-label:a.logout" aria-label="تسجيل الخروج">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M15 5.5V4a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 4v16a1.5 1.5 0 0 0 1.5 1.5h8A1.5 1.5 0 0 0 15 20v-1.5"
+              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M9.5 12h11m0 0-3.2-3.2M20.5 12l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="navtoggle" id="sideToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidenav" id="sidenav" aria-label="أقسام مرصاد">
+      <a class="sidenav__item" href="home.html"><i aria-hidden="true"></i><span data-i18n="sd.home">الرئيسية</span></a>
+      <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
+      <a class="sidenav__item" href="inspection.html"><i aria-hidden="true"></i><span data-i18n="sd.insp">فحص جديد</span></a>
+      <a class="sidenav__item is-on" href="results.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
+      <a class="sidenav__item" href="record.html"><i aria-hidden="true"></i><span data-i18n="sd.rep">السجلات</span></a>
+      <a class="sidenav__item" href="alerts.html"><i aria-hidden="true"></i><span data-i18n="sd.alerts">الإشعارات</span></a>
+      <a class="sidenav__item" href="app.html#/dashboard"><i aria-hidden="true"></i><span data-i18n="sd.board">لوحة التحكم</span></a>
+      <a class="sidenav__item" href="about.html"><i aria-hidden="true"></i><span data-i18n="sd.about">عن المشروع</span></a>
+  </nav>
+
+  <main class="page" id="page">
+<div class="page__bar">
+  <p class="page__lead"><b data-i18n="m6.c">احتمال وجود تشقق</b> — <span data-i18n="m6.d">الركيزة رقم ٢</span></p>
+  <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
+</div>
+
+<div class="cmp">
+  <span><small data-i18n="f.prev">الفحص السابق</small><b>0.6 مم</b></span>
+  <span class="cmp__ar arrow" aria-hidden="true">←</span>
+  <span><small data-i18n="f.curr">الفحص الحالي</small><b class="cmp__now">1.4 مم</b></span>
+</div>
+
+<p class="page__lbl" data-i18n="a.confidence">دقة التحليل</p>
+<div class="bar"><b style="width:87%"></b></div>
+<p class="page__lead" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
+
+<p class="page__lbl" data-i18n="a.decision">قرار المراجِع</p>
+<div class="acts">
+  <a class="ui ui--ok" href="record.html" data-i18n="m7.b">موافقة</a>
+  <a class="ui ui--no" href="results.html" data-i18n="m7.c">رفض</a>
+  <a class="ui ui--ghost" href="results.html" data-i18n="m7.d">تعديل</a>
+</div>
+<p class="page__lead page__lead--c" data-i18n="a.branchNote">الرفض أو التعديل يعيدك إلى النتائج — والموافقة تكتب القرار في السجل.</p>
+
+  </main>
+</div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+</body>
+</html>
