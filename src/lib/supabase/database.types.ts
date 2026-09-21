@@ -1,7 +1,3 @@
-// Generated from the Mirsad database schema.
-//
-// Regenerate after any migration with:
-//   npx supabase gen types typescript --project-id sbeftcrvveonvgxetcxq
 export type Json =
   | string
   | number
@@ -63,7 +59,268 @@ export type Database = {
             referencedRelation: "inspections"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "analysis_runs_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "structure_inspection_history"
+            referencedColumns: ["inspection_id"]
+          },
         ]
+      }
+      csb_construction_column_labels: {
+        Row: {
+          id: number
+          label: string
+        }
+        Insert: {
+          id: number
+          label: string
+        }
+        Update: {
+          id?: number
+          label?: string
+        }
+        Relationships: []
+      }
+      csb_construction_columns: {
+        Row: {
+          field_code: string
+          label_id: number
+          ordinal: number
+          table_id: number
+        }
+        Insert: {
+          field_code: string
+          label_id: number
+          ordinal: number
+          table_id: number
+        }
+        Update: {
+          field_code?: string
+          label_id?: number
+          ordinal?: number
+          table_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "csb_construction_columns_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "csb_construction_column_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "csb_construction_columns_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "csb_construction_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      csb_construction_labels: {
+        Row: {
+          id: number
+          isic_code: string | null
+          label_ar: string | null
+          label_en: string | null
+        }
+        Insert: {
+          id: number
+          isic_code?: string | null
+          label_ar?: string | null
+          label_en?: string | null
+        }
+        Update: {
+          id?: number
+          isic_code?: string | null
+          label_ar?: string | null
+          label_en?: string | null
+        }
+        Relationships: []
+      }
+      csb_construction_observations: {
+        Row: {
+          id: number
+          label_id: number | null
+          sector: string | null
+          source_row: number | null
+          table_id: number
+          values: Json
+        }
+        Insert: {
+          id?: number
+          label_id?: number | null
+          sector?: string | null
+          source_row?: number | null
+          table_id: number
+          values?: Json
+        }
+        Update: {
+          id?: number
+          label_id?: number | null
+          sector?: string | null
+          source_row?: number | null
+          table_id?: number
+          values?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "csb_construction_observations_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "csb_construction_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "csb_construction_observations_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "csb_construction_tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      csb_construction_tables: {
+        Row: {
+          id: number
+          imported_at: string
+          table_code: string | null
+          title_id: number | null
+          year: number
+        }
+        Insert: {
+          id: number
+          imported_at?: string
+          table_code?: string | null
+          title_id?: number | null
+          year: number
+        }
+        Update: {
+          id?: number
+          imported_at?: string
+          table_code?: string | null
+          title_id?: number | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "csb_construction_tables_title_id_fkey"
+            columns: ["title_id"]
+            isOneToOne: false
+            referencedRelation: "csb_construction_titles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      csb_construction_titles: {
+        Row: {
+          id: number
+          title_ar: string | null
+          title_en: string | null
+          units: string | null
+        }
+        Insert: {
+          id: number
+          title_ar?: string | null
+          title_en?: string | null
+          units?: string | null
+        }
+        Update: {
+          id?: number
+          title_ar?: string | null
+          title_en?: string | null
+          units?: string | null
+        }
+        Relationships: []
+      }
+      csb_publications: {
+        Row: {
+          catalog_id: number
+          download_count: number | null
+          fetched_at: string
+          file_url: string | null
+          id: string
+          parent_category_id: number
+          postback_target: string
+          reference_year: number
+          release_type_ar: string
+          series_ar: string
+          source: string
+          source_url: string
+          title_ar: string
+        }
+        Insert: {
+          catalog_id: number
+          download_count?: number | null
+          fetched_at?: string
+          file_url?: string | null
+          id?: string
+          parent_category_id: number
+          postback_target: string
+          reference_year: number
+          release_type_ar: string
+          series_ar: string
+          source?: string
+          source_url: string
+          title_ar: string
+        }
+        Update: {
+          catalog_id?: number
+          download_count?: number | null
+          fetched_at?: string
+          file_url?: string | null
+          id?: string
+          parent_category_id?: number
+          postback_target?: string
+          reference_year?: number
+          release_type_ar?: string
+          series_ar?: string
+          source?: string
+          source_url?: string
+          title_ar?: string
+        }
+        Relationships: []
+      }
+      data_sources: {
+        Row: {
+          access: Database["public"]["Enums"]["source_access"]
+          access_note: string
+          checked_at: string
+          key: string
+          kind: Database["public"]["Enums"]["source_kind"]
+          licence: string | null
+          name_ar: string | null
+          name_en: string
+          publisher: string
+          url: string
+        }
+        Insert: {
+          access: Database["public"]["Enums"]["source_access"]
+          access_note: string
+          checked_at?: string
+          key: string
+          kind: Database["public"]["Enums"]["source_kind"]
+          licence?: string | null
+          name_ar?: string | null
+          name_en: string
+          publisher: string
+          url: string
+        }
+        Update: {
+          access?: Database["public"]["Enums"]["source_access"]
+          access_note?: string
+          checked_at?: string
+          key?: string
+          kind?: Database["public"]["Enums"]["source_kind"]
+          licence?: string | null
+          name_ar?: string | null
+          name_en?: string
+          publisher?: string
+          url?: string
+        }
+        Relationships: []
       }
       finding_reviews: {
         Row: {
@@ -91,6 +348,13 @@ export type Database = {
           reviewed_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "finding_reviews_finding_id_fkey"
+            columns: ["finding_id"]
+            isOneToOne: false
+            referencedRelation: "finding_comparison"
+            referencedColumns: ["finding_id"]
+          },
           {
             foreignKeyName: "finding_reviews_finding_id_fkey"
             columns: ["finding_id"]
@@ -172,6 +436,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "findings_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "structure_inspection_history"
+            referencedColumns: ["inspection_id"]
+          },
+          {
+            foreignKeyName: "findings_previous_finding_id_fkey"
+            columns: ["previous_finding_id"]
+            isOneToOne: false
+            referencedRelation: "finding_comparison"
+            referencedColumns: ["finding_id"]
+          },
+          {
             foreignKeyName: "findings_previous_finding_id_fkey"
             columns: ["previous_finding_id"]
             isOneToOne: false
@@ -243,6 +521,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "inspections"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspection_files_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "structure_inspection_history"
+            referencedColumns: ["inspection_id"]
           },
           {
             foreignKeyName: "inspection_files_uploaded_by_fkey"
@@ -347,6 +632,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "notifications_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "structure_inspection_history"
+            referencedColumns: ["inspection_id"]
+          },
+          {
             foreignKeyName: "notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -381,6 +673,216 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      reference_benchmark_runs: {
+        Row: {
+          completed_at: string | null
+          created_by: string | null
+          dataset_id: string
+          id: string
+          model: string
+          note: string | null
+          split: Database["public"]["Enums"]["dataset_split"] | null
+          started_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_by?: string | null
+          dataset_id: string
+          id?: string
+          model: string
+          note?: string | null
+          split?: Database["public"]["Enums"]["dataset_split"] | null
+          started_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_by?: string | null
+          dataset_id?: string
+          id?: string
+          model?: string
+          note?: string | null
+          split?: Database["public"]["Enums"]["dataset_split"] | null
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_benchmark_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reference_benchmark_runs_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "reference_datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_datasets: {
+        Row: {
+          archive_bytes: number | null
+          archive_sha256: string | null
+          attribution: string
+          doi: string | null
+          id: string
+          image_count: number
+          imported_at: string
+          is_kuwaiti: boolean
+          licence: string
+          licence_url: string | null
+          publisher: string
+          purpose: string | null
+          slug: string
+          source_url: string
+          title: string
+        }
+        Insert: {
+          archive_bytes?: number | null
+          archive_sha256?: string | null
+          attribution: string
+          doi?: string | null
+          id?: string
+          image_count?: number
+          imported_at?: string
+          is_kuwaiti?: boolean
+          licence: string
+          licence_url?: string | null
+          publisher: string
+          purpose?: string | null
+          slug: string
+          source_url: string
+          title: string
+        }
+        Update: {
+          archive_bytes?: number | null
+          archive_sha256?: string | null
+          attribution?: string
+          doi?: string | null
+          id?: string
+          image_count?: number
+          imported_at?: string
+          is_kuwaiti?: boolean
+          licence?: string
+          licence_url?: string | null
+          publisher?: string
+          purpose?: string | null
+          slug?: string
+          source_url?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      reference_images: {
+        Row: {
+          bytes: number
+          created_at: string
+          dataset_id: string
+          file_name: string
+          height: number | null
+          id: string
+          label: Database["public"]["Enums"]["crack_label"]
+          sha256: string
+          source_path: string
+          split: Database["public"]["Enums"]["dataset_split"]
+          storage_path: string
+          stored_bytes: number | null
+          uploaded_at: string | null
+          width: number | null
+        }
+        Insert: {
+          bytes: number
+          created_at?: string
+          dataset_id: string
+          file_name: string
+          height?: number | null
+          id?: string
+          label: Database["public"]["Enums"]["crack_label"]
+          sha256: string
+          source_path: string
+          split: Database["public"]["Enums"]["dataset_split"]
+          storage_path: string
+          stored_bytes?: number | null
+          uploaded_at?: string | null
+          width?: number | null
+        }
+        Update: {
+          bytes?: number
+          created_at?: string
+          dataset_id?: string
+          file_name?: string
+          height?: number | null
+          id?: string
+          label?: Database["public"]["Enums"]["crack_label"]
+          sha256?: string
+          source_path?: string
+          split?: Database["public"]["Enums"]["dataset_split"]
+          storage_path?: string
+          stored_bytes?: number | null
+          uploaded_at?: string | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_images_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "reference_datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_predictions: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          id: string
+          predicted_label: Database["public"]["Enums"]["crack_label"]
+          reference_image_id: string
+          run_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          predicted_label: Database["public"]["Enums"]["crack_label"]
+          reference_image_id: string
+          run_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          predicted_label?: Database["public"]["Enums"]["crack_label"]
+          reference_image_id?: string
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_predictions_reference_image_id_fkey"
+            columns: ["reference_image_id"]
+            isOneToOne: false
+            referencedRelation: "reference_images"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reference_predictions_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "reference_benchmark_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reference_predictions_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "reference_benchmark_scores"
+            referencedColumns: ["run_id"]
+          },
+        ]
       }
       structures: {
         Row: {
@@ -428,6 +930,63 @@ export type Database = {
       }
     }
     Views: {
+      finding_comparison: {
+        Row: {
+          comparison_note: string | null
+          component: string | null
+          confidence: number | null
+          days_since_previous: number | null
+          direction: string | null
+          finding_id: string | null
+          inspection_date: string | null
+          inspection_id: string | null
+          inspection_reference: string | null
+          previous_finding_id: string | null
+          previous_inspection_date: string | null
+          previous_inspection_reference: string | null
+          previous_severity: Database["public"]["Enums"]["severity"] | null
+          severity: Database["public"]["Enums"]["severity"] | null
+          structure_id: string | null
+          title: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "findings_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "inspections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "findings_inspection_id_fkey"
+            columns: ["inspection_id"]
+            isOneToOne: false
+            referencedRelation: "structure_inspection_history"
+            referencedColumns: ["inspection_id"]
+          },
+          {
+            foreignKeyName: "findings_previous_finding_id_fkey"
+            columns: ["previous_finding_id"]
+            isOneToOne: false
+            referencedRelation: "finding_comparison"
+            referencedColumns: ["finding_id"]
+          },
+          {
+            foreignKeyName: "findings_previous_finding_id_fkey"
+            columns: ["previous_finding_id"]
+            isOneToOne: false
+            referencedRelation: "findings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspections_structure_id_fkey"
+            columns: ["structure_id"]
+            isOneToOne: false
+            referencedRelation: "structures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       finding_current_review: {
         Row: {
           created_at: string | null
@@ -438,6 +997,13 @@ export type Database = {
           reviewed_by: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "finding_reviews_finding_id_fkey"
+            columns: ["finding_id"]
+            isOneToOne: false
+            referencedRelation: "finding_comparison"
+            referencedColumns: ["finding_id"]
+          },
           {
             foreignKeyName: "finding_reviews_finding_id_fkey"
             columns: ["finding_id"]
@@ -454,6 +1020,53 @@ export type Database = {
           },
         ]
       }
+      reference_benchmark_scores: {
+        Row: {
+          accuracy_pct: number | null
+          correct: number | null
+          dataset_id: string | null
+          false_negatives: number | null
+          false_positives: number | null
+          model: string | null
+          run_id: string | null
+          scored: number | null
+          split: Database["public"]["Enums"]["dataset_split"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_benchmark_runs_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "reference_datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      structure_inspection_history: {
+        Row: {
+          finding_count: number | null
+          high_severity_count: number | null
+          inspection_date: string | null
+          inspection_id: string | null
+          inspection_type: Database["public"]["Enums"]["inspection_type"] | null
+          recency: number | null
+          reference: string | null
+          status: Database["public"]["Enums"]["inspection_status"] | null
+          structure_id: string | null
+          structure_name: string | null
+          structure_type: Database["public"]["Enums"]["structure_type"] | null
+          worst_severity_rank: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspections_structure_id_fkey"
+            columns: ["structure_id"]
+            isOneToOne: false
+            referencedRelation: "structures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       can_edit_inspection: {
@@ -466,9 +1079,15 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       is_admin: { Args: never; Returns: boolean }
+      severity_rank: {
+        Args: { s: Database["public"]["Enums"]["severity"] }
+        Returns: number
+      }
     }
     Enums: {
       analysis_status: "queued" | "running" | "succeeded" | "failed"
+      crack_label: "cracked" | "uncracked"
+      dataset_split: "train" | "validation" | "test"
       file_kind: "image" | "report" | "measurement"
       inspection_status:
         | "draft"
@@ -481,6 +1100,8 @@ export type Database = {
       notification_kind: "success" | "warning" | "info"
       review_decision: "approved" | "rejected" | "edited"
       severity: "high" | "medium" | "low"
+      source_access: "open" | "partial" | "restricted" | "unreachable"
+      source_kind: "gis" | "statistics" | "imagery" | "portal"
       structure_type: "bridge" | "building" | "road" | "tunnel" | "other"
       user_role: "admin" | "inspector" | "viewer"
     }
@@ -611,6 +1232,8 @@ export const Constants = {
   public: {
     Enums: {
       analysis_status: ["queued", "running", "succeeded", "failed"],
+      crack_label: ["cracked", "uncracked"],
+      dataset_split: ["train", "validation", "test"],
       file_kind: ["image", "report", "measurement"],
       inspection_status: [
         "draft",
@@ -624,6 +1247,8 @@ export const Constants = {
       notification_kind: ["success", "warning", "info"],
       review_decision: ["approved", "rejected", "edited"],
       severity: ["high", "medium", "low"],
+      source_access: ["open", "partial", "restricted", "unreachable"],
+      source_kind: ["gis", "statistics", "imagery", "portal"],
       structure_type: ["bridge", "building", "road", "tunnel", "other"],
       user_role: ["admin", "inspector", "viewer"],
     },
