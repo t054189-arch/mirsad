@@ -83,8 +83,8 @@
   })();
 
   /* ---------- الكاميرا ---------- */
-  var camDist = reduced ? 21 : 9;   // يبدأ قريبًا ثم يتراجع في المدخل
-  var camY = 1.15, yaw = 0.2, focal = 0;
+  var camDist = reduced ? 12.5 : 6;   // يبدأ قريبًا ثم يتراجع قليلًا في المدخل
+  var camY = 1.05, yaw = 0.26, focal = 0;
   var targetPX = 0, targetPY = 0, px = 0, py = 0;   // إزاحة المؤشر
   var W = 0, H = 0, cx = 0, cy = 0, dpr = 1;
 
@@ -168,7 +168,7 @@
     if (introStart === null) introStart = now;
     var t = Math.min((now - introStart) / 2600, 1);
     var eased = 1 - Math.pow(1 - t, 3);
-    camDist = 9 + (21 - 9) * eased;
+    camDist = 6 + (12.5 - 6) * eased;
     yaw += 0.0022 - 0.0019 * eased;        // دوران سريع في البداية يهدأ بعدها
     px += (targetPX - px) * 0.05;
     py += (targetPY - py) * 0.05;
@@ -191,8 +191,13 @@
 
   window.addEventListener('pointermove', function (e) {
     if (reduced) return;
-    targetPX = ((e.clientX / window.innerWidth) - 0.5) * -0.9;
-    targetPY = ((e.clientY / window.innerHeight) - 0.5) * 0.5;
+    var nx = (e.clientX / window.innerWidth) - 0.5;
+    var ny = (e.clientY / window.innerHeight) - 0.5;
+    targetPX = nx * -0.9;
+    targetPY = ny * 0.5;
+    // الصورة تتحرك أقل من المجسّم، فتفترق الطبقتان ويظهر العمق
+    document.documentElement.style.setProperty('--par-x', (nx * -18).toFixed(1) + 'px');
+    document.documentElement.style.setProperty('--par-y', (ny * -12).toFixed(1) + 'px');
   }, { passive: true });
 
   document.addEventListener('visibilitychange', function () {
@@ -216,7 +221,7 @@
 
   if (reduced) {
     // بلا حركة: إطار واحد ثابت من الموضع النهائي
-    camDist = 21; yaw = 0.2;
+    camDist = 12.5; yaw = 0.26;
     draw();
   } else {
     start();
@@ -226,7 +231,7 @@
     refresh: function () { readColours(); resize(); if (reduced || !running) draw(); },
     settle: function () {            // ينهي دوران المدخل فورًا عند التخطي
       introStart = performance.now() - 2600;
-      camDist = 21;
+      camDist = 12.5;
     }
   };
 })();
