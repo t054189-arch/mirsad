@@ -746,10 +746,16 @@ body::before{
 /* صفحات التطبيق: الصورة حاضرة لكنها تتنحّى، فالقراءة أولًا */
 body.shellpage::before{
   background-image:
-    linear-gradient(to bottom, rgba(11,11,12,.93), rgba(11,11,12,.96)),
+    linear-gradient(to bottom,
+      rgba(11,11,12,.985) 0%,
+      rgba(11,11,12,.975) 42%,
+      rgba(11,11,12,.90) 70%,
+      rgba(11,11,12,.74) 100%),
     url("hero.webp");
-  filter:blur(3px);
-  transform:translate3d(0,0,0) scale(1.1);
+  /* الجسر يستقر عند أسفل الصفحة، والباقي فحمة داكنة كما في المرجع */
+  background-position:center, center bottom;
+  filter:blur(2px);
+  transform:translate3d(0,0,0) scale(1.06);
 }
 
 /* الوضع الفاتح: الصورة داكنة، فتخفت ويعلوها حجاب فاتح */
@@ -760,36 +766,28 @@ body.shellpage::before{
 }
 [data-mode="light"] body.shellpage::before{
   background-image:
-    linear-gradient(to bottom, rgba(247,243,236,.955), rgba(247,243,236,.975)),
+    linear-gradient(to bottom,
+      rgba(247,243,236,.985) 0%,
+      rgba(247,243,236,.975) 45%,
+      rgba(247,243,236,.93) 72%,
+      rgba(247,243,236,.88) 100%),
     url("hero.webp");
+  background-position:center, center bottom;
 }
 
 /* الشبكة الزرقاء كانت تقرأ على لون مصمت؛ فوق صورة تكفيها لمسة */
 body::after{ content:none; }
 .blueprint{ opacity:.35; }
-body.gate .blueprint{ opacity:.22; }
-
-/* المشهد السلكي يعلو الصورة كطبقة فحص، لا كعنصر ينافسها */
-body.gate .scene{ opacity:calc(var(--mark-strength) * .38); }
+body.gate .blueprint{ opacity:.5; }
 
 @media (prefers-reduced-motion: reduce){
   body::before{ transform:none; }
   @media (max-width: 760px){ body::before{ transform:scale(1.1); } }
 }
 
-/* النص فوق الصورة يحمل تباينه معه، فلا نضطر إلى تعتيم الصورة كلها */
-body.gate .gate__ar,
-body.gate .gate__en,
-body.gate .gate__tag,
-body.gate .gate__tagen{
-  text-shadow:0 2px 18px rgba(11,11,12,.85), 0 1px 3px rgba(11,11,12,.6);
-}
-body.gate .gate__dome{ filter:drop-shadow(0 2px 14px rgba(11,11,12,.8)); }
-[data-mode="light"] body.gate .gate__ar,
-[data-mode="light"] body.gate .gate__en,
-[data-mode="light"] body.gate .gate__tag,
-[data-mode="light"] body.gate .gate__tagen{ text-shadow:0 1px 10px rgba(247,243,236,.9); }
-[data-mode="light"] body.gate .gate__dome{ filter:drop-shadow(0 1px 8px rgba(247,243,236,.9)); }
 
-/* المشهد السلكي طبقة فحص فوق الجسر المصوّر، لا جسر ثانٍ ينافسه */
-body.gate .scene{ opacity:calc(var(--mark-strength) * .17); }
+/* الافتتاحية: المجسّم وحده هو الجسر فيها، فيعود إلى حضوره الكامل */
+body.gate .scene{ opacity:calc(var(--mark-strength) * .55); }
+
+/* الافتتاحية بلا صورة: المجسّم ثلاثي الأبعاد وحده هو الجسر فيها */
+body.gate::before{ background-image:none; }
