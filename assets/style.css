@@ -709,3 +709,87 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
     opacity:1 !important; animation:none !important; transform:none !important;
   }
 }
+
+/* ============================================================
+   خلفية الموقع — صورة جسر الشيخ جابر
+   الصورة أصل حقيقي في assets/hero.webp، تُرسم في طبقة واحدة تحت
+   كل شيء: التدرّج فوقها في الطبقة نفسها، فلا تعلو على الشبكة ولا
+   على المشهد ثلاثي الأبعاد ولا على المحتوى.
+   ============================================================ */
+body::before{
+  content:"";
+  position:fixed; inset:-6vmax; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(to bottom,
+      rgba(11,11,12,.70) 0%,
+      rgba(11,11,12,.24) 26%,
+      rgba(11,11,12,.40) 58%,
+      rgba(11,11,12,.72) 80%,
+      rgba(11,11,12,.93) 100%),
+    url("hero.webp");
+  background-repeat:no-repeat, no-repeat;
+  background-size:cover, cover;
+  /* الإطار مضبوط على الجسر نفسه لا على وسط الصورة، والتكبير يقرّبه */
+  background-position:center, center 42%;
+  transform:translate3d(var(--par-x,0px), var(--par-y,0px), 0) scale(1.06);
+  will-change:transform;
+}
+
+/* الشاشات الضيّقة تقتطع الصورة، فيُزاح الإطار ليبقى الجسر في الكادر */
+@media (max-width: 760px){
+  body::before{
+    background-position:center, center 38%;
+    transform:translate3d(var(--par-x,0px), var(--par-y,0px), 0) scale(1.1);
+  }
+}
+
+/* صفحات التطبيق: الصورة حاضرة لكنها تتنحّى، فالقراءة أولًا */
+body.shellpage::before{
+  background-image:
+    linear-gradient(to bottom, rgba(11,11,12,.93), rgba(11,11,12,.96)),
+    url("hero.webp");
+  filter:blur(3px);
+  transform:translate3d(0,0,0) scale(1.1);
+}
+
+/* الوضع الفاتح: الصورة داكنة، فتخفت ويعلوها حجاب فاتح */
+[data-mode="light"] body::before{
+  background-image:
+    linear-gradient(to bottom, rgba(247,243,236,.80) 0%, rgba(247,243,236,.62) 40%, rgba(247,243,236,.92) 100%),
+    url("hero.webp");
+}
+[data-mode="light"] body.shellpage::before{
+  background-image:
+    linear-gradient(to bottom, rgba(247,243,236,.955), rgba(247,243,236,.975)),
+    url("hero.webp");
+}
+
+/* الشبكة الزرقاء كانت تقرأ على لون مصمت؛ فوق صورة تكفيها لمسة */
+body::after{ content:none; }
+.blueprint{ opacity:.35; }
+body.gate .blueprint{ opacity:.22; }
+
+/* المشهد السلكي يعلو الصورة كطبقة فحص، لا كعنصر ينافسها */
+body.gate .scene{ opacity:calc(var(--mark-strength) * .38); }
+
+@media (prefers-reduced-motion: reduce){
+  body::before{ transform:none; }
+  @media (max-width: 760px){ body::before{ transform:scale(1.1); } }
+}
+
+/* النص فوق الصورة يحمل تباينه معه، فلا نضطر إلى تعتيم الصورة كلها */
+body.gate .gate__ar,
+body.gate .gate__en,
+body.gate .gate__tag,
+body.gate .gate__tagen{
+  text-shadow:0 2px 18px rgba(11,11,12,.85), 0 1px 3px rgba(11,11,12,.6);
+}
+body.gate .gate__dome{ filter:drop-shadow(0 2px 14px rgba(11,11,12,.8)); }
+[data-mode="light"] body.gate .gate__ar,
+[data-mode="light"] body.gate .gate__en,
+[data-mode="light"] body.gate .gate__tag,
+[data-mode="light"] body.gate .gate__tagen{ text-shadow:0 1px 10px rgba(247,243,236,.9); }
+[data-mode="light"] body.gate .gate__dome{ filter:drop-shadow(0 1px 8px rgba(247,243,236,.9)); }
+
+/* المشهد السلكي طبقة فحص فوق الجسر المصوّر، لا جسر ثانٍ ينافسه */
+body.gate .scene{ opacity:calc(var(--mark-strength) * .17); }
