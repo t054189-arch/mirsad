@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>تسجيل الدخول — مِرصاد · MIRSAAD</title>
+<title>إنشاء حساب — مِرصاد · MIRSAAD</title>
 <meta name="description" content="مرصاد — منصة ذكية وآمنة لإدارة دورة فحص المنشآت للمكاتب الهندسية." />
 <meta name="theme-color" content="#181613" />
 <script src="assets/boot.js"></script>
@@ -52,14 +52,14 @@
 
   <section class="gate__card">
     <div class="tabsw" role="tablist" aria-label="الدخول أو إنشاء حساب">
-      <button class="tabsw__b is-on" id="tabIn" role="tab" aria-selected="true"
+      <button class="tabsw__b" id="tabIn" role="tab" aria-selected="false"
               aria-controls="paneIn" data-i18n="sc.signin">تسجيل الدخول</button>
-      <button class="tabsw__b" id="tabUp" role="tab" aria-selected="false"
+      <button class="tabsw__b is-on" id="tabUp" role="tab" aria-selected="true"
               aria-controls="paneUp" data-i18n="g.signup">إنشاء حساب</button>
     </div>
 
     <!-- تسجيل الدخول -->
-    <div id="paneIn" role="tabpanel" aria-labelledby="tabIn">
+    <div id="paneIn" role="tabpanel" aria-labelledby="tabIn" hidden>
       <p class="gate__sub" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
 
       <form id="loginForm" novalidate>
@@ -99,7 +99,7 @@
     </div>
 
     <!-- إنشاء حساب -->
-    <div id="paneUp" role="tabpanel" aria-labelledby="tabUp" hidden>
+    <div id="paneUp" role="tabpanel" aria-labelledby="tabUp">
       <p class="gate__sub" data-i18n="g.signupSub">أنشئ حسابك للانضمام إلى فريق المكتب على مرصاد.</p>
 
       <form id="signupForm" novalidate>
