@@ -7,26 +7,57 @@
         "path": "mirsaad",
         "responseMode": "responseNode",
         "options": {
-          "allowedOrigins": "*",
-          "binaryPropertyName": "file"
+          "allowedOrigins": "*"
         }
       },
-      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "id": "aaaaaaaa-0001-4000-8000-000000000001",
       "name": "Webhook (من الموقع)",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [-220, 0],
-      "webhookId": "a1b2c3d4-0001-4000-8000-000000000001"
+      "position": [
+        -460,
+        0
+      ],
+      "webhookId": "aaaaaaaa-0001-4000-8000-000000000001"
     },
     {
       "parameters": {
-        "jsCode": "/* ما يصل من مرصاد:\n     $json.body.structure  اسم المنشأة\n     $json.body.notes      ملاحظات الفنّي\n     $json.body.date / type / engineer / section\n     $binary.file0, file1, …   الصور والتقارير\n\n   استبدل ما تحت هذا السطر بمنطق وكيلك، واحرص أن يخرج بهذا الشكل.\n   الحقل title وحده إلزامي; والباقي يُعرض إن وُجد ويُطوى إن غاب. */\n\nconst body = $json.body || {};\nconst files = Object.keys($binary || {});\n\nreturn [{\n  json: {\n    accuracy: 90,\n    findings: [\n      {\n        title: 'ملاحظة تجريبية من سير العمل',\n        titleEn: 'Test finding from the workflow',\n        location: body.structure || 'غير محدّد',\n        locationEn: body.structure || 'unspecified',\n        severity: 'medium',\n        confidence: 90,\n        note: `وصل ${files.length} ملف · الملاحظات: ${body.notes || '—'}`\n      }\n    ]\n  }\n}];"
+        "jsCode": "/* مرصاد -> سير عملك.\n   يوحّد ما يصل من الموقع: الحقول مسطّحة في الأعلى وبأسماء عربية أيضًا،\n   والملفات ممرّرة كما وصلت وبالاسمين العامّين data و file — فتجدها\n   عقدتك مهما كان الاسم الذي تنتظره، بلا أن تعدّل فيها شيئًا. */\n\nconst item = $input.first();\nconst body = (item.json && item.json.body) || item.json || {};\nconst bin  = item.binary || {};\n\nconst fields = {\n  structure: body.structure || '',\n  notes:     body.notes     || '',\n  date:      body.date      || '',\n  type:      body.type      || '',\n  engineer:  body.engineer  || '',\n  section:   body.section   || '',\n};\n\nconst arabic = {\n  'المنشأة':         fields.structure,\n  'الملاحظات':       fields.notes,\n  'التاريخ':          fields.date,\n  'نوع الفحص':       fields.type,\n  'الموظف المسؤول': fields.engineer,\n  'القطاع':          fields.section,\n};\n\n/* الملفات: file0, file1 … كما وصلت، ومعها data و file للعقد التي تنتظر\n   الاسم العام. النسخ هنا مرجعيّ لا يضاعف الحجم. */\nconst names = Object.keys(bin);\nconst out = Object.assign({}, bin);\nif (names.length) { out.data = bin[names[0]]; out.file = bin[names[0]]; }\n\nreturn [{\n  json: Object.assign({}, fields, arabic, {\n    fileCount: names.length,\n    fileNames: names,\n  }),\n  binary: out,\n}];\n"
       },
-      "id": "a1b2c3d4-0002-4000-8000-000000000002",
-      "name": "صُغ الملاحظات",
+      "id": "aaaaaaaa-0002-4000-8000-000000000002",
+      "name": "جهّز المدخلات",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [0, 0]
+      "position": [
+        -240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "/* ====== ضع عقد وكيلك مكان هذه العقدة ======\n   يصلك من «جهّز المدخلات»:\n     $json.structure  $json.notes  $json.date  $json.type\n     $json.engineer   $json.section   (وبأسمائها العربية أيضًا)\n     الملفات في binary: file0, file1 … ومعها data و file\n   وأخرِج ما شئت — «صُغ الجواب» بعدها تتكفّل بالباقي. */\nreturn $input.all();"
+      },
+      "id": "aaaaaaaa-0003-4000-8000-000000000003",
+      "name": "⬅ عقد وكيلك هنا",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "/* سير عملك -> مرصاد.\n   يقبل ما تخرجه عقدتك على عِلّاته — مصفوفة ملاحظات، أو كائنًا فيه\n   findings، أو نصّ نموذج لغوي فيه JSON — ويردّه بالصيغة الموثّقة.\n   فلا يلزمك أن تعيد تشكيل مخرجات وكيلك. */\n\nconst items = $input.all();\nlet findings = [];\n\nfor (const it of items) {\n  const j = it.json || {};\n\n  if (Array.isArray(j.findings)) { findings = findings.concat(j.findings); continue; }\n  if (Array.isArray(j.results))  { findings = findings.concat(j.results);  continue; }\n  if (Array.isArray(j.output))   { findings = findings.concat(j.output);   continue; }\n  if (j.title || j.label || j.name || j.finding) { findings.push(j); continue; }\n\n  /* نموذج لغوي ردّ بنصّ، وربما حول JSON */\n  const text = ['text', 'output', 'content', 'message', 'response', 'data']\n    .map(k => (typeof j[k] === 'string' ? j[k] : ''))\n    .find(Boolean) || '';\n  const m = text.match(/[[{][\\s\\S]*[\\]}]/);\n  if (m) {\n    try {\n      const p = JSON.parse(m[0]);\n      findings = findings.concat(Array.isArray(p) ? p : (p.findings || p.results || [p]));\n    } catch (e) { /* ليس JSON بعد كل شيء */ }\n  } else if (text.trim()) {\n    findings.push({ title: text.trim().slice(0, 120), severity: 'medium' });\n  }\n}\n\nfindings = findings.filter(f => f && (f.title || f.label || f.name || f.note));\n\nif (!findings.length) {\n  findings = [{\n    title: 'الوصل يعمل — لم تصل ملاحظات بعد',\n    titleEn: 'Connection works — no findings yet',\n    severity: 'medium',\n    note: 'عقدة «صُغ الجواب» لم تجد ملاحظات فيما وصلها. ضع عقد وكيلك قبلها.',\n  }];\n}\n\nconst scored = findings.map(f => Number(f.confidence)).filter(n => !isNaN(n));\nconst accuracy = scored.length\n  ? Math.round(scored.reduce((a, b) => a + b, 0) / scored.length)\n  : null;\n\nreturn [{ json: accuracy === null ? { findings } : { accuracy, findings } }];\n"
+      },
+      "id": "aaaaaaaa-0004-4000-8000-000000000004",
+      "name": "صُغ الجواب",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        0
+      ]
     },
     {
       "parameters": {
@@ -35,26 +66,72 @@
         "options": {
           "responseHeaders": {
             "entries": [
-              { "name": "Access-Control-Allow-Origin", "value": "*" }
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
             ]
           }
         }
       },
-      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "id": "aaaaaaaa-0005-4000-8000-000000000005",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [220, 0]
+      "position": [
+        420,
+        0
+      ]
     }
   ],
   "connections": {
     "Webhook (من الموقع)": {
-      "main": [[{ "node": "صُغ الملاحظات", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "جهّز المدخلات",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "صُغ الملاحظات": {
-      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    "جهّز المدخلات": {
+      "main": [
+        [
+          {
+            "node": "⬅ عقد وكيلك هنا",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬅ عقد وكيلك هنا": {
+      "main": [
+        [
+          {
+            "node": "صُغ الجواب",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "صُغ الجواب": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "pinData": {},
-  "settings": { "executionOrder": "v1" }
+  "settings": {
+    "executionOrder": "v1"
+  }
 }
