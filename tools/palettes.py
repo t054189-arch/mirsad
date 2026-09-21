@@ -4,10 +4,12 @@ import sys
 
 FAM = {
  'mirsaad': {
-  'dark':  dict(bg='#181613',bg_alt='#1d1b17',surface='#22201b',surface_2='#2a2721',ink='#f2ece3',
-                ink_soft='#a89f92',line='#35302a',accent='#ead5b8',accent_deep='#d6bc96',on_accent='#201c16',
-                hi='#dd7b76',mid='#e0a75c',ok='#63b894',grid='rgba(234,213,184,.045)',
-                shadow='0 20px 52px rgba(0,0,0,.5)',mark='.95'),
+  # الوضع الداكن مأخوذ من التطبيق نفسه (app.css): خلفية شبه سوداء محايدة،
+  # نص عاجي دافئ، ألواح زجاجية بحدود بيضاء شفافة، وزر بتدرّج عاجي.
+  'dark':  dict(bg='#0b0b0c',bg_alt='#111113',surface='#16171a',surface_2='#1c1d21',ink='#e6dac6',
+                ink_soft='#a29a8c',line='rgba(255,255,255,.06)',accent='#e6dac6',accent_deep='#d6c6ab',on_accent='#0b0b0c',
+                hi='#dd7b76',mid='#e0a75c',ok='#63b894',grid='rgba(230,218,198,.045)',
+                shadow='0 20px 52px rgba(0,0,0,.55)',mark='.95'),
   'light': dict(bg='#f7f3ec',bg_alt='#fffdf8',surface='#fffdf8',surface_2='#f1e8da',ink='#2b241d',
                 ink_soft='#6a5f52',line='#e4dac9',accent='#8c5e17',accent_deep='#704b12',on_accent='#fffdf8',
                 hi='#a8291b',mid='#8a5a00',ok='#2f6b45',grid='rgba(43,36,29,.05)',
