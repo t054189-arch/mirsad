@@ -85,7 +85,6 @@ window.MIRSAAD_EN = {
   'sd.insp': 'Inspections',
   'sd.rep': 'Reports',
 
-  'a.welcome': 'Welcome back',
   'a.welcomeSub': 'Sign in to continue your structures\u2019 inspections.',
   'a.email': 'Email address',
   'a.pass': 'Password',
@@ -110,6 +109,26 @@ window.MIRSAAD_EN = {
   'a.loopNote': 'What was just saved is what the AI agent will read at the next inspection.',
   'a.next': 'Start a new inspection',
 
+  /* بوابة الدخول وإنشاء الحساب */
+  'g.signup': 'Create account',
+  'g.signupSub': 'Create your account to join your office team on Mirsaad.',
+  'g.name': 'Full name',
+  'g.role': 'Role in the office',
+  'g.rolePick': 'Choose your role\u2026',
+  'g.passRule': 'At least 8 characters, including a letter and a digit.',
+  'g.passConfirm': 'Confirm password',
+  'g.create': 'Create account and sign in',
+  'g.noAcct': 'No account yet?',
+  'g.haveAcct': 'Already have an account?',
+  'e.nameReq': 'Enter your full name.',
+  'e.nameShort': 'That name is too short.',
+  'e.nameLetters': 'The name must contain letters.',
+  'e.taken': 'That email is already registered \u2014 sign in with it instead.',
+  'e.roleReq': 'Choose your role in the office.',
+  'e.passWeak': 'Include at least one letter and one digit.',
+  'e.confirmReq': 'Type the password again.',
+  'e.mismatch': 'The two passwords do not match.',
+
   /* الصفحات */
   'sc.home': 'Home',
   'sc.about': 'About the project',
@@ -117,10 +136,10 @@ window.MIRSAAD_EN = {
   'sd.alerts': 'Notifications',
   'sd.about': 'About',
   'a.logout': 'Sign out',
-  'a.demoNote': 'Demo build: the check runs in the browser, not on a server, and the session is kept in your browser only.',
+  'a.demoNote': 'Demo build: the check runs in the browser, not on a server, and accounts are kept in your browser only.',
   'a.demoH': 'Demo account',
   'a.demoGo': 'Sign in with the demo account',
-  'e.noAccount': 'No account with that email \u2014 use the demo account below.',
+  'e.noAccount': 'No account with that email \u2014 create one, or use the demo account.',
   'e.wrongPass': 'Incorrect password.',
 
   'pg.homeLead': 'A quick look at your office\u2019s structures and what is waiting on you.',

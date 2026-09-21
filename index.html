@@ -51,43 +51,112 @@
   </section>
 
   <section class="gate__card">
-    <h2 data-i18n="a.welcome">مرحبًا بعودتك</h2>
-    <p class="gate__sub" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
+    <div class="tabsw" role="tablist" aria-label="الدخول أو إنشاء حساب">
+      <button class="tabsw__b is-on" id="tabIn" role="tab" aria-selected="true"
+              aria-controls="paneIn" data-i18n="sc.signin">تسجيل الدخول</button>
+      <button class="tabsw__b" id="tabUp" role="tab" aria-selected="false"
+              aria-controls="paneUp" data-i18n="g.signup">إنشاء حساب</button>
+    </div>
 
-    <form id="loginForm" novalidate>
-      <div class="field">
-        <label for="email" data-i18n="a.email">البريد الإلكتروني</label>
-        <input id="email" name="email" type="email" inputmode="email"
-               autocomplete="email" spellcheck="false"
-               placeholder="name@company.com" aria-describedby="emailErr" required />
-        <p class="field__err" id="emailErr" role="alert"></p>
+    <!-- تسجيل الدخول -->
+    <div id="paneIn" role="tabpanel" aria-labelledby="tabIn">
+      <p class="gate__sub" data-i18n="a.welcomeSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email" data-i18n="a.email">البريد الإلكتروني</label>
+          <input id="email" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false"
+                 placeholder="name@company.com" aria-describedby="emailErr" required />
+          <p class="field__err" id="emailErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="pass" data-i18n="a.pass">كلمة المرور</label>
+          <input id="pass" name="password" type="password"
+                 autocomplete="current-password" minlength="8"
+                 placeholder="••••••••" aria-describedby="passErr" required />
+          <p class="field__err" id="passErr" role="alert"></p>
+        </div>
+
+        <label class="remember" for="remember">
+          <input type="checkbox" id="remember" name="remember" />
+          <span data-i18n="a.remember">تذكرني</span>
+        </label>
+
+        <button class="ui ui--go" type="submit" data-i18n="sc.signin">تسجيل الدخول</button>
+      </form>
+
+      <p class="gate__swap"><span data-i18n="g.noAcct">ليس لديك حساب؟</span>
+        <button type="button" class="linkb" id="goUp" data-i18n="g.signup">إنشاء حساب</button></p>
+
+      <div class="demo">
+        <p class="demo__h" data-i18n="a.demoH">الحساب التجريبي</p>
+        <div class="demo__row"><span data-i18n="a.email">البريد الإلكتروني</span><code>staff@mirsaad.kw</code></div>
+        <div class="demo__row"><span data-i18n="a.pass">كلمة المرور</span><code>mirsaad2026</code></div>
+        <button class="ui ui--ghost demo__btn" type="button" id="demoBtn" data-i18n="a.demoGo">الدخول بالحساب التجريبي</button>
       </div>
+    </div>
 
-      <div class="field">
-        <label for="pass" data-i18n="a.pass">كلمة المرور</label>
-        <input id="pass" name="password" type="password"
-               autocomplete="current-password" minlength="8"
-               placeholder="••••••••" aria-describedby="passErr" required />
-        <p class="field__err" id="passErr" role="alert"></p>
-      </div>
+    <!-- إنشاء حساب -->
+    <div id="paneUp" role="tabpanel" aria-labelledby="tabUp" hidden>
+      <p class="gate__sub" data-i18n="g.signupSub">أنشئ حسابك للانضمام إلى فريق المكتب على مرصاد.</p>
 
-      <label class="remember" for="remember">
-        <input type="checkbox" id="remember" name="remember" />
-        <span data-i18n="a.remember">تذكرني</span>
-      </label>
+      <form id="signupForm" novalidate>
+        <div class="field">
+          <label for="sName" data-i18n="g.name">الاسم الكامل</label>
+          <input id="sName" name="name" type="text" autocomplete="name"
+                 placeholder="ريان العجمي" aria-describedby="sNameErr" required />
+          <p class="field__err" id="sNameErr" role="alert"></p>
+        </div>
 
-      <button class="ui ui--go" type="submit" data-i18n="sc.signin">تسجيل الدخول</button>
-    </form>
+        <div class="field">
+          <label for="sEmail" data-i18n="a.email">البريد الإلكتروني</label>
+          <input id="sEmail" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false"
+                 placeholder="name@company.com" aria-describedby="sEmailErr" required />
+          <p class="field__err" id="sEmailErr" role="alert"></p>
+        </div>
 
-    <div class="demo">
-      <p class="demo__h" data-i18n="a.demoH">الحساب التجريبي</p>
-      <div class="demo__row"><span data-i18n="a.email">البريد الإلكتروني</span><code>staff@mirsaad.kw</code></div>
-      <div class="demo__row"><span data-i18n="a.pass">كلمة المرور</span><code>mirsaad2026</code></div>
-      <button class="ui ui--ghost demo__btn" type="button" id="demoBtn" data-i18n="a.demoGo">الدخول بالحساب التجريبي</button>
+        <div class="field">
+          <label for="sRole" data-i18n="g.role">الدور في المكتب</label>
+          <select id="sRole" name="role" aria-describedby="sRoleErr" required>
+            <option value="" data-i18n="g.rolePick">اختر دورك…</option>
+            <option value="tech"  data-i18n="who.t1">الفنّي الميداني</option>
+            <option value="eng"   data-i18n="who.t2">المهندس</option>
+            <option value="rev"   data-i18n="who.t3">المراجِع أو المشرف</option>
+            <option value="mgr"   data-i18n="who.t4">مدير المكتب</option>
+            <option value="admin" data-i18n="who.t5">الموظف الإداري</option>
+          </select>
+          <p class="field__err" id="sRoleErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="sPass" data-i18n="a.pass">كلمة المرور</label>
+          <input id="sPass" name="password" type="password"
+                 autocomplete="new-password" minlength="8"
+                 placeholder="••••••••" aria-describedby="sPassErr" required />
+          <p class="field__hint" data-i18n="g.passRule">٨ أحرف فأكثر، وتحتوي حرفًا ورقمًا.</p>
+          <p class="field__err" id="sPassErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="sPass2" data-i18n="g.passConfirm">تأكيد كلمة المرور</label>
+          <input id="sPass2" name="password2" type="password"
+                 autocomplete="new-password" placeholder="••••••••"
+                 aria-describedby="sPass2Err" required />
+          <p class="field__err" id="sPass2Err" role="alert"></p>
+        </div>
+
+        <button class="ui ui--go" type="submit" data-i18n="g.create">إنشاء الحساب والدخول</button>
+      </form>
+
+      <p class="gate__swap"><span data-i18n="g.haveAcct">لديك حساب بالفعل؟</span>
+        <button type="button" class="linkb" id="goIn" data-i18n="sc.signin">تسجيل الدخول</button></p>
     </div>
 
     <p class="gate__note" data-i18n="a.demoNote">
-      نموذج عرض: التحقق يجري في المتصفح لا على خادم، والجلسة تُحفظ في متصفحك وحده.
+      نموذج عرض: التحقق يجري في المتصفح لا على خادم، والحسابات تُحفظ في متصفحك وحده.
     </p>
   </section>
 </main>
