@@ -8,23 +8,23 @@
 /* ========== مرصاد — الهوية الرسمية ========== */
 /* الوضع الداكن — الأساس */
 :root{
-  --bg:            #181613;
-  --bg-alt:        #1d1b17;
-  --surface:       #22201b;
-  --surface-2:     #2a2721;
-  --ink:           #f2ece3;
-  --ink-soft:      #a89f92;
-  --line:          #35302a;
-  --accent:        #ead5b8;
-  --accent-deep:   #d6bc96;
-  --on-accent:     #201c16;
+  --bg:            #0b0b0c;
+  --bg-alt:        #111113;
+  --surface:       #16171a;
+  --surface-2:     #1c1d21;
+  --ink:           #e6dac6;
+  --ink-soft:      #a29a8c;
+  --line:          rgba(255,255,255,.06);
+  --accent:        #e6dac6;
+  --accent-deep:   #d6c6ab;
+  --on-accent:     #0b0b0c;
   --hi:            #dd7b76;
   --mid:           #e0a75c;
   --ok:            #63b894;
-  --grid-ink:      rgba(234,213,184,.045);
-  --shadow:        0 20px 52px rgba(0,0,0,.5);
+  --grid-ink:      rgba(230,218,198,.045);
+  --shadow:        0 20px 52px rgba(0,0,0,.55);
   --mark-strength: .95;
-  --accent-soft: color-mix(in srgb, #ead5b8 11%, transparent);
+  --accent-soft: color-mix(in srgb, #e6dac6 11%, transparent);
 }
 
 /* الوضع الفاتح */
@@ -55,7 +55,7 @@
 :root{
   --grid: 46px;
   --ease: cubic-bezier(.22,.9,.24,1);
-  --r: 14px;
+  --r: 18px;
   --side: 212px;
   --bar: 62px;
 }
@@ -75,7 +75,12 @@ body{
 }
 body.is-locked{ overflow:hidden; }
 
-h1,h2,h3{ font-weight:700; line-height:1.35; margin:0; letter-spacing:-.01em; }
+h1,h2,h3{
+  font-family:"Noto Kufi Arabic","IBM Plex Sans Arabic",system-ui,sans-serif;
+  font-weight:600; line-height:1.35; margin:0; letter-spacing:-.01em;
+  color:#faf6ef;
+}
+[data-mode="light"] h1,[data-mode="light"] h2,[data-mode="light"] h3{ color:var(--ink); }
 p{ margin:0 0 1em; } p:last-child{ margin-bottom:0; }
 a{ color:inherit; text-decoration:none; }
 ul,ol{ margin:0; padding:0; list-style:none; }
@@ -140,13 +145,13 @@ strong,b{ font-weight:600; }
 
 .gate__ar{ margin:14px 0 0; font-size:clamp(2rem,5vw,3rem); font-weight:600; }
 .gate__en{
-  margin:2px 0 0; font-family:"Space Grotesk",sans-serif;
+  margin:2px 0 0; font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:clamp(.7rem,1.4vw,.9rem); letter-spacing:.5em;
   color:var(--ink-soft); padding-inline-start:.5em;
 }
 .gate__tag{ margin:22px 0 0; color:var(--accent); font-size:1.02rem; }
 .gate__tagen{
-  margin:5px 0 0; font-family:"Space Grotesk",sans-serif;
+  margin:5px 0 0; font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:.68rem; letter-spacing:.24em; color:var(--ink-soft);
 }
 
@@ -208,7 +213,7 @@ strong,b{ font-weight:600; }
 .topbar__lock{ display:grid; line-height:1; gap:3px; }
 .topbar__ar{ font-size:1.02rem; font-weight:500; }
 .topbar__en{
-  font-family:"Space Grotesk",sans-serif;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:.52rem; letter-spacing:.4em; color:var(--ink-soft);
   padding-inline-start:.4em;
 }
@@ -301,7 +306,9 @@ strong,b{ font-weight:600; }
   grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
 }
 .stat{
-  background:var(--surface); border:1px solid var(--line);
+  background:color-mix(in srgb, var(--surface) 70%, transparent);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--line);
   border-radius:var(--r); padding:20px;
   display:grid; gap:4px;
 }
@@ -331,7 +338,9 @@ a.card2:hover{ transform:translateY(-4px); border-color:var(--accent); box-shado
   grid-template-columns:repeat(auto-fit, minmax(290px,1fr));
 }
 .pane{
-  background:var(--surface); border:1px solid var(--line);
+  background:color-mix(in srgb, var(--surface) 70%, transparent);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--line);
   border-radius:var(--r); padding:22px;
 }
 .pane--yes{ border-color:color-mix(in srgb, var(--accent) 45%, var(--line)); }
@@ -362,7 +371,7 @@ a.card2:hover{ transform:translateY(-4px); border-color:var(--accent); box-shado
 }
 .quote__ar{ margin:0 0 8px; font-size:clamp(1.1rem,2.6vw,1.6rem); color:var(--accent); font-weight:500; }
 .quote__en{
-  margin:0; font-family:"Space Grotesk",sans-serif;
+  margin:0; font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:.7rem; letter-spacing:.26em; color:var(--ink-soft);
 }
 
@@ -425,7 +434,7 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
     var(--line);
   opacity:.8;
 }
-.file b{ flex:1; font-weight:500; font-family:"Space Grotesk",sans-serif; font-size:.8rem; }
+.file b{ flex:1; font-weight:500; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.8rem; }
 .file small{ color:var(--ink-soft); font-size:.74rem; }
 
 /* ---------- التحليل ---------- */
@@ -489,18 +498,22 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
   border-inline-start:2px solid var(--line);
   font-size:.86rem;
 }
-.hist__i b{ font-family:"Space Grotesk",sans-serif; font-size:.82rem; flex-shrink:0; }
+.hist__i b{ font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.82rem; flex-shrink:0; }
 .hist__i small{ color:var(--ink-soft); }
 .hist__i.is-now{ border-inline-start-color:var(--ok); }
 
 /* ---------- أزرار ---------- */
 .ui{
   display:inline-block; font:inherit; font-size:.92rem; font-weight:600;
-  border:1px solid transparent; border-radius:10px;
+  border:1px solid transparent; border-radius:14px;
   padding:13px 22px; text-align:center; cursor:pointer;
   transition:transform .25s var(--ease), filter .25s, border-color .25s;
 }
-.ui--go{ background:var(--accent); color:var(--on-accent); width:100%; }
+.ui--go{
+  background:linear-gradient(180deg, var(--accent), var(--accent-deep));
+  color:var(--on-accent); width:100%;
+  box-shadow:0 12px 30px -16px rgba(214,198,171,.9);
+}
 .ui--go:hover{ transform:translateY(-2px); filter:brightness(1.06); }
 .ui--ghost{ background:transparent; color:var(--accent); border-color:var(--accent); }
 .ui--ok{ background:color-mix(in srgb, var(--ok) 20%, transparent); color:var(--ok); }
@@ -540,10 +553,10 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
 [lang="en"] body{ font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.7; }
 [lang="en"] h1,[lang="en"] h2,[lang="en"] h3{ letter-spacing:-.018em; }
 [lang="en"] .topbar__ar,
-[lang="en"] .gate__ar{ font-family:"Space Grotesk",sans-serif; letter-spacing:.02em; }
+[lang="en"] .gate__ar{ font-family:"IBM Plex Mono",ui-monospace,monospace; letter-spacing:.02em; }
 [lang="en"] .topbar__en,
 [lang="en"] .gate__en{ font-family:"IBM Plex Sans Arabic",sans-serif; letter-spacing:.1em; }
-[lang="en"] .file b,[lang="en"] .hist__i b{ font-family:"Space Grotesk",sans-serif; }
+[lang="en"] .file b,[lang="en"] .hist__i b{ font-family:"IBM Plex Mono",ui-monospace,monospace; }
 
 /* ---------- الشاشات الصغيرة ---------- */
 @media (max-width: 900px){
@@ -612,7 +625,7 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
   padding-block:5px; font-size:.82rem; color:var(--ink-soft);
 }
 .demo__row code{
-  font-family:"Space Grotesk",ui-monospace,monospace;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:.82rem; color:var(--ink);
   background:var(--surface); border:1px solid var(--line);
   border-radius:6px; padding:3px 9px;
