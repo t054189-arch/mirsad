@@ -1,0 +1,60 @@
+{
+  "name": "مرصاد — مدخل الموقع",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mirsaad",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "binaryPropertyName": "file"
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Webhook (من الموقع)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-220, 0],
+      "webhookId": "a1b2c3d4-0001-4000-8000-000000000001"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* ما يصل من مرصاد:\n     $json.body.structure  اسم المنشأة\n     $json.body.notes      ملاحظات الفنّي\n     $json.body.date / type / engineer / section\n     $binary.file0, file1, …   الصور والتقارير\n\n   استبدل ما تحت هذا السطر بمنطق وكيلك، واحرص أن يخرج بهذا الشكل.\n   الحقل title وحده إلزامي; والباقي يُعرض إن وُجد ويُطوى إن غاب. */\n\nconst body = $json.body || {};\nconst files = Object.keys($binary || {});\n\nreturn [{\n  json: {\n    accuracy: 90,\n    findings: [\n      {\n        title: 'ملاحظة تجريبية من سير العمل',\n        titleEn: 'Test finding from the workflow',\n        location: body.structure || 'غير محدّد',\n        locationEn: body.structure || 'unspecified',\n        severity: 'medium',\n        confidence: 90,\n        note: `وصل ${files.length} ملف · الملاحظات: ${body.notes || '—'}`\n      }\n    ]\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "صُغ الملاحظات",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [220, 0]
+    }
+  ],
+  "connections": {
+    "Webhook (من الموقع)": {
+      "main": [[{ "node": "صُغ الملاحظات", "type": "main", "index": 0 }]]
+    },
+    "صُغ الملاحظات": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" }
+}
