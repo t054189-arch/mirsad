@@ -710,6 +710,87 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
   }
 }
 
+/* ============================================================
+   خلفية الموقع — صورة جسر الشيخ جابر
+   الصورة أصل حقيقي في assets/hero.webp، تُرسم في طبقة واحدة تحت
+   كل شيء: التدرّج فوقها في الطبقة نفسها، فلا تعلو على الشبكة ولا
+   على المشهد ثلاثي الأبعاد ولا على المحتوى.
+   ============================================================ */
+body::before{
+  content:"";
+  position:fixed; inset:-6vmax; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(to bottom,
+      rgba(11,11,12,.70) 0%,
+      rgba(11,11,12,.24) 26%,
+      rgba(11,11,12,.40) 58%,
+      rgba(11,11,12,.72) 80%,
+      rgba(11,11,12,.93) 100%),
+    url("hero.webp");
+  background-repeat:no-repeat, no-repeat;
+  background-size:cover, cover;
+  /* الإطار مضبوط على الجسر نفسه لا على وسط الصورة، والتكبير يقرّبه */
+  background-position:center, center 42%;
+  transform:translate3d(var(--par-x,0px), var(--par-y,0px), 0) scale(1.06);
+  will-change:transform;
+}
+
+/* الشاشات الضيّقة تقتطع الصورة، فيُزاح الإطار ليبقى الجسر في الكادر */
+@media (max-width: 760px){
+  body::before{
+    background-position:center, center 38%;
+    transform:translate3d(var(--par-x,0px), var(--par-y,0px), 0) scale(1.1);
+  }
+}
+
+/* صفحات التطبيق: الصورة حاضرة لكنها تتنحّى، فالقراءة أولًا */
+body.shellpage::before{
+  background-image:
+    linear-gradient(to bottom,
+      rgba(11,11,12,.985) 0%,
+      rgba(11,11,12,.975) 42%,
+      rgba(11,11,12,.90) 70%,
+      rgba(11,11,12,.74) 100%),
+    url("hero.webp");
+  /* الجسر يستقر عند أسفل الصفحة، والباقي فحمة داكنة كما في المرجع */
+  background-position:center, center bottom;
+  filter:blur(2px);
+  transform:translate3d(0,0,0) scale(1.06);
+}
+
+/* الوضع الفاتح: الصورة داكنة، فتخفت ويعلوها حجاب فاتح */
+[data-mode="light"] body::before{
+  background-image:
+    linear-gradient(to bottom, rgba(247,243,236,.80) 0%, rgba(247,243,236,.62) 40%, rgba(247,243,236,.92) 100%),
+    url("hero.webp");
+}
+[data-mode="light"] body.shellpage::before{
+  background-image:
+    linear-gradient(to bottom,
+      rgba(247,243,236,.985) 0%,
+      rgba(247,243,236,.975) 45%,
+      rgba(247,243,236,.93) 72%,
+      rgba(247,243,236,.88) 100%),
+    url("hero.webp");
+  background-position:center, center bottom;
+}
+
+/* الشبكة الزرقاء كانت تقرأ على لون مصمت؛ فوق صورة تكفيها لمسة */
+body::after{ content:none; }
+.blueprint{ opacity:.35; }
+body.gate .blueprint{ opacity:.5; }
+
+@media (prefers-reduced-motion: reduce){
+  body::before{ transform:none; }
+  @media (max-width: 760px){ body::before{ transform:scale(1.1); } }
+}
+
+
+/* الافتتاحية: المجسّم وحده هو الجسر فيها، فيعود إلى حضوره الكامل */
+body.gate .scene{ opacity:calc(var(--mark-strength) * .55); }
+
+/* الافتتاحية بلا صورة: المجسّم ثلاثي الأبعاد وحده هو الجسر فيها */
+body.gate::before{ background-image:none; }
 /* ---------- الجسر إلى سير العمل (agent.js · flow.js) ---------- */
 
 /* الإخفاء بسمة hidden يسبق display في .ui و.rowcard وغيرهما */
