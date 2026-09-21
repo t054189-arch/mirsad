@@ -216,3 +216,48 @@ html[data-route="dashboard"] .grid.grid-cols-2.gap-4.xl\:grid-cols-4 .stat-value
   outline-offset: 2px;
   border-radius: 0.5rem;
 }
+
+/* ==========================================================================
+   SIMPLIFICATION LAYER
+   Removing what the first-time visitor does not need, so the landing page
+   carries one message and one action. Nothing here deletes functionality:
+   every screen behind the navigation is still reachable.
+   ========================================================================== */
+
+/* 21. The "كيف يعمل مرصاد" section ran 851px down the landing page and
+       explained a workflow the interface already demonstrates. A visitor
+       should not have to read the product before using it. Its nav link
+       goes with it, since an anchor pointing at a hidden section would
+       scroll nowhere. */
+html[data-route="landing"] #how,
+html[data-route="landing"] header a[href="#how"] { display: none; }
+
+/* 22. The hero carried three figures — "خطوات في رحلة الفحص",
+       "خطوات لإنشاء فحص" and "دقة التحليل في العرض". The last two were
+       asked for removal, and the first is dropped with them: a lone
+       statistic under a hero reads as a leftover rather than a decision,
+       and the opening is meant to hold the name, one sentence and one
+       action, nothing else. */
+html[data-route="landing"] .mt-14.flex.flex-wrap.gap-x-12 { display: none; }
+
+/* 23. Two calls to action competed in the hero, and the second pointed at
+       the section removed above. One primary action remains. */
+html[data-route="landing"] .mt-9.flex.flex-wrap.items-center.gap-4 > a[href="#how"] { display: none; }
+
+/* 24. With a single button left, it should sit at its natural width and
+       read as the one thing to do, rather than stretching the full column
+       as it needed to when it had a twin beside it. */
+@media (max-width: 480px) {
+  html[data-route="landing"] .mt-9.flex.flex-wrap.items-center.gap-4 > a { flex: 0 1 auto; }
+}
+
+/* 25. The sidebar listed eight destinations at one weight. A rule before
+       الإشعارات separates the four places work happens from the ones
+       visited occasionally, which is the difference a person actually
+       navigates by. Nothing is hidden — the list simply reads as two
+       groups instead of one long column. */
+aside nav > a:nth-child(6) {
+  margin-top: 0.75rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
