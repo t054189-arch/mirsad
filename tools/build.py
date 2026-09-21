@@ -17,13 +17,13 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / 'src'
 
 NAV = [
-    ('home',        'home.html',        'sd.home',    'الرئيسية'),
+    ('board',       'app.html#/dashboard', 'sd.board','لوحة التحكم'),
+    ('home',        'home.html',        'sd.home',    'نظرة عامة'),
     ('structures',  'structures.html',  'sd.assets',  'المنشآت'),
     ('inspection',  'inspection.html',  'sd.insp',    'فحص جديد'),
     ('results',     'results.html',     'sd.results', 'النتائج'),
     ('record',      'record.html',      'sd.rep',     'السجلات'),
     ('alerts',      'alerts.html',      'sd.alerts',  'الإشعارات'),
-    ('board',       'app.html#/dashboard', 'sd.board','لوحة التحكم'),
     ('about',       'about.html',       'sd.about',   'عن المشروع'),
 ]
 

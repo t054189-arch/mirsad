@@ -80,7 +80,7 @@ window.MIRSAAD_EN = {
   'sc.record': 'Asset record',
   'sc.alerts': 'Notifications',
 
-  'sd.home': 'Home',
+  'sd.home': 'Overview',
   'sd.assets': 'Structures',
   'sd.insp': 'Inspections',
   'sd.rep': 'Reports',
@@ -130,7 +130,7 @@ window.MIRSAAD_EN = {
   'e.mismatch': 'The two passwords do not match.',
 
   /* الصفحات */
-  'sc.home': 'Home',
+  'sc.home': 'Overview',
   'sc.about': 'About the project',
   'sd.results': 'Results',
   'sd.alerts': 'Notifications',
