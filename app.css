@@ -175,35 +175,38 @@ html[data-route="dashboard"] .grid.grid-cols-2.gap-4.xl\:grid-cols-4 .stat-value
   }
 }
 
-/* 17. The password toggle added by ux.js. It sits inside the field on the
-       inline-end edge, clear of the text, and matches the field's own
-       styling rather than announcing itself. */
+/* 17. The password toggle added by ux.js.
+
+       Two things decide its placement. The field carries dir="ltr", because
+       an address and a password read left to right whatever the page
+       direction is, so its text always starts at the physical left and the
+       free end is always the physical right — physical properties, not
+       logical ones, which would follow the RTL page and drop the button
+       straight onto the text.
+
+       And the host is the <label>, so its box covers the caption as well as
+       the field. Anchoring to the bottom of that box, at the height of the
+       field itself, centres the button on the input rather than on the pair. */
 [data-mirsaad-pw-host] { position: relative; }
-[data-mirsaad-pw-host] input { padding-inline-end: 3rem; }
+[data-mirsaad-pw-host] input { padding-right: 3rem; }
 [data-mirsaad-pw-toggle] {
   position: absolute;
-  inset-inline-end: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 0.375rem;
+  bottom: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.625rem;
-  color: rgba(242, 235, 223, 0.45);
-  background: transparent;
+  width: 2.75rem;
+  height: 3rem;
   border: 0;
+  border-radius: 0.625rem;
+  background: transparent;
+  color: rgba(242, 235, 223, 0.45);
   cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition: color 0.15s ease;
 }
-[data-mirsaad-pw-toggle]:hover { color: rgba(242, 235, 223, 0.9); background: rgba(255, 255, 255, 0.05); }
+[data-mirsaad-pw-toggle]:hover { color: rgba(242, 235, 223, 0.92); }
 [data-mirsaad-pw-toggle] svg { width: 1.125rem; height: 1.125rem; }
-/* The label sits above the field, so the toggle is nudged down to stay
-   centred on the input rather than on the pair. */
-[data-mirsaad-pw-host] { --pw-label-offset: 0.85rem; }
-[data-mirsaad-pw-toggle] { margin-top: var(--pw-label-offset); }
-
 
 /* 19. Focus was visible but sat tight against the control and was easy to
        lose on a dark panel. An offset ring separates it from the button
