@@ -15,13 +15,33 @@
   d.setAttribute('lang', lang);
   d.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
 
-  function session() {
+  function read(key) {
+    try { return sessionStorage.getItem(key) || localStorage.getItem(key); }
+    catch (e) { return null; }
+  }
+  function clearAll() {
     try {
-      var raw = sessionStorage.getItem('mirsaad-session') || localStorage.getItem('mirsaad-session');
-      if (!raw) return null;
-      var s = JSON.parse(raw);
+      localStorage.removeItem('mirsaad-session');
+      sessionStorage.removeItem('mirsaad-session');
+      localStorage.removeItem('mirsaad.session');
+      sessionStorage.removeItem('mirsaad.session');
+    } catch (e) { /* التخزين غير متاح */ }
+  }
+  /* الجلسة تُكتب بمفتاحين: مفتاحنا ومفتاح لوحة التحكم. تسجيل الخروج من
+     داخل اللوحة يمسح مفتاحها وحده، فلو اكتفينا بمفتاحنا لأعدنا الزائر
+     إليها وأعادنا حارسها إلى البوابة — تقاذف بلا نهاية. فالجلسة صحيحة
+     فقط حين يوجد المفتاحان، وأي اختلال يمسحهما معًا. */
+  function session() {
+    var ours = read('mirsaad-session');
+    var board = read('mirsaad.session');
+    if (!ours || !board) {
+      if (ours || board) clearAll();
+      return null;
+    }
+    try {
+      var s = JSON.parse(ours);
       return s && s.email ? s : null;
-    } catch (e) { return null; }
+    } catch (e) { clearAll(); return null; }
   }
   window.MirsaadSession = session;
 
@@ -37,6 +57,6 @@
   }
   if (onLogin && signedIn) {
     var next = new URLSearchParams(location.search).get('next');
-    location.replace(/^[a-z-]+\.html$/.test(next || '') ? next : 'home.html');
+    location.replace(/^[a-z-]+\.html$/.test(next || '') ? next : 'app.html#/dashboard');
   }
 })();

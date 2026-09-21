@@ -7,11 +7,19 @@
   'use strict';
   var KEY = 'mirsaad.session';
 
+  var OURS = 'mirsaad-session';
+  function read(k) {
+    try { return sessionStorage.getItem(k) || localStorage.getItem(k); }
+    catch (e) { return null; }
+  }
+  /* الجلسة صحيحة فقط بوجود المفتاحين — القاعدة نفسها في assets/boot.js.
+     وجود أحدهما دون الآخر يعني خروجًا نصفيًا، ولو قبلناه لتقاذف المتصفح
+     بين البوابة واللوحة بلا نهاية. */
   function session() {
+    var board = read(KEY), ours = read(OURS);
+    if (!board || !ours) return null;
     try {
-      var raw = sessionStorage.getItem(KEY) || localStorage.getItem(KEY);
-      if (!raw) return null;
-      var s = JSON.parse(raw);
+      var s = JSON.parse(board);
       return s && s.email ? s : null;
     } catch (e) { return null; }
   }
@@ -26,10 +34,10 @@
     location.replace('index.html');
   }
 
-  if (!session()) { location.replace('index.html'); return; }
+  if (!session()) { leave(); return; }   // leave() يمسح المفتاحين
 
   // تسجيل الخروج داخل التطبيق يمسح الجلسة ولا ينتقل — فنلتقط ذلك
-  setInterval(function () { if (!session()) location.replace('index.html'); }, 1200);
+  setInterval(function () { if (!session()) leave(); }, 1200);
 
   document.addEventListener('click', function (e) {
     if (!e.target || !e.target.closest) return;
