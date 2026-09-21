@@ -160,4 +160,140 @@
       });
     }
   }
+
+  /* ---------- صفحة الفحص الجديد ----------
+     نموذج فارغ: المستخدم يختار المنشأة والتاريخ والنوع والقطاع بنفسه،
+     ويرفع ملفاته. لا شيء هنا مُعبَّأ سلفًا، ولا يُغادر الصفحة شيء. */
+  var inspAsset = document.getElementById('inspAsset');
+  if (inspAsset) {
+    var tr = function (key, fallback) {
+      return lang === 'en' && key in EN ? EN[key] : fallback;
+    };
+
+    /* [الحقل، سطر خطئه، مفتاح الرسالة، الرسالة العربية] */
+    var REQ = [
+      ['inspAsset',   'inspAssetErr',   'e.assetReq',   'اختر المنشأة المفحوصة.'],
+      ['inspDate',    'inspDateErr',    'e.dateReq',    'حدّد تاريخ الفحص.'],
+      ['inspType',    'inspTypeErr',    'e.typeReq',    'اختر نوع الفحص.'],
+      ['inspStaff',   'inspStaffErr',   'e.staffReq',   'اكتب اسم الموظف المسؤول.'],
+      ['inspSection', 'inspSectionErr', 'e.sectionReq', 'اختر القطاع المفحوص.']
+    ];
+
+    var mark = function (el, err, msg) {
+      err.textContent = msg;
+      var field = el.closest('.field');
+      if (field) field.classList.toggle('is-bad', !!msg);
+      return !msg;
+    };
+
+    /* يخفي الخطأ بمجرّد أن يُصلح المستخدم الحقل */
+    REQ.forEach(function (row) {
+      var el = document.getElementById(row[0]);
+      var err = document.getElementById(row[1]);
+      var clear = function () { if (el.value.trim()) mark(el, err, ''); };
+      el.addEventListener('change', clear);
+      el.addEventListener('input', clear);
+    });
+
+    /* ---------- الملفات ---------- */
+    var fileIn = document.getElementById('inspFiles');
+    var dropZone = document.getElementById('inspDrop');
+    var fileList = document.getElementById('inspFileList');
+    var fileNone = document.getElementById('inspFilesNone');
+    var fileErr = document.getElementById('inspFilesErr');
+    var picked = [];                       /* ما يراه المستخدم هو المرجع */
+    var KIND = /\.(jpe?g|png|pdf)$/i;
+
+    var sizeText = function (n) {
+      return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB'
+                          : Math.max(1, Math.round(n / 1024)) + ' KB';
+    };
+
+    var paint = function () {
+      fileList.textContent = '';
+      picked.forEach(function (f, i) {
+        var chip = document.createElement('span');
+        chip.className = 'file';
+        var name = document.createElement('b');
+        name.textContent = f.name;
+        var size = document.createElement('small');
+        size.textContent = sizeText(f.size);
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'file__x';
+        rm.textContent = '✕';
+        rm.setAttribute('aria-label', tr('a.rmFile', 'إزالة الملف'));
+        rm.addEventListener('click', function () { picked.splice(i, 1); paint(); });
+        chip.appendChild(document.createElement('i'));
+        chip.appendChild(name);
+        chip.appendChild(size);
+        chip.appendChild(rm);
+        fileList.appendChild(chip);
+      });
+      fileNone.hidden = picked.length > 0;
+      if (picked.length) fileErr.textContent = '';
+      /* يُعاد بناء قائمة الحقل لتطابق المعروض */
+      try {
+        var dt = new DataTransfer();
+        picked.forEach(function (f) { dt.items.add(f); });
+        fileIn.files = dt.files;
+      } catch (e) { /* متصفح لا يسمح بالكتابة على files — العرض يكفي */ }
+    };
+
+    var take = function (list) {
+      var refused = false;
+      Array.prototype.forEach.call(list, function (f) {
+        if (!KIND.test(f.name)) { refused = true; return; }
+        var seen = picked.some(function (p) { return p.name === f.name && p.size === f.size; });
+        if (!seen) picked.push(f);
+      });
+      paint();
+      if (refused) fileErr.textContent = tr('e.fileKind', 'تُقبل ملفات JPG و PNG و PDF فقط.');
+    };
+
+    fileIn.addEventListener('change', function () { take(fileIn.files); });
+
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      dropZone.addEventListener(ev, function (e) {
+        e.preventDefault();
+        dropZone.classList.add('is-over');
+      });
+    });
+    ['dragleave', 'dragend', 'drop'].forEach(function (ev) {
+      dropZone.addEventListener(ev, function () { dropZone.classList.remove('is-over'); });
+    });
+    dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files) take(e.dataTransfer.files);
+    });
+    /* ملف يسقط خارج المنطقة لا يفتحه المتصفح فيضيّع ما كُتب */
+    ['dragover', 'drop'].forEach(function (ev) {
+      window.addEventListener(ev, function (e) {
+        if (!dropZone.contains(e.target)) e.preventDefault();
+      });
+    });
+
+    paint();
+
+    /* ---------- لا تحليل قبل اكتمال البيانات ---------- */
+    var inspGo = document.getElementById('inspGo');
+    if (inspGo) inspGo.addEventListener('click', function (e) {
+      var stop = null;
+      REQ.forEach(function (row) {
+        var el = document.getElementById(row[0]);
+        var err = document.getElementById(row[1]);
+        var msg = el.value.trim() ? '' : tr(row[2], row[3]);
+        if (!mark(el, err, msg) && !stop) stop = el;
+      });
+      if (!picked.length) {
+        fileErr.textContent = tr('e.filesReq', 'ارفع ملفًا واحدًا على الأقل من الزيارة.');
+        if (!stop) stop = dropZone;
+      }
+      if (stop) {
+        e.preventDefault();
+        stop.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+        if (stop !== dropZone) stop.focus();
+      }
+    });
+  }
 })();

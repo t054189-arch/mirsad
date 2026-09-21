@@ -83,34 +83,89 @@
   </nav>
 
   <main class="page" id="page">
-<p class="page__lead"><span data-i18n="pg.inspLead">بيانات الزيارة للمنشأة</span> <b data-i18n="m2.b">جسر جابر</b></p>
+<p class="page__lead" data-i18n="pg.inspLead">أدخل بيانات الزيارة الميدانية، ثم ارفع صور الفحص وتقاريره.</p>
 
 <div class="panes">
   <section class="pane">
     <h2 class="pane__h" data-i18n="m3.a">البيانات الأساسية</h2>
-    <div class="pair"><span data-i18n="m3.e">تاريخ الفحص</span><b>20 / 09 / 2026</b></div>
-    <div class="pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="m3.g">فحص دوري</b></div>
-    <div class="pair"><span data-i18n="a.engineer">الموظف المسؤول</span><b data-i18n="a.engName">ريان العجمي</b></div>
-    <div class="pair"><span data-i18n="a.section">القطاع</span><b data-i18n="a.sectionV">الركائز والسطح السفلي</b></div>
-    <div class="fld fld--area" data-i18n="a.notes">ملاحظات ميدانية…</div>
+
+    <div class="field">
+      <label for="inspAsset" data-i18n="m3.d">المنشأة</label>
+      <select id="inspAsset" name="asset" aria-describedby="inspAssetErr" required>
+        <option value="" data-i18n="a.pickAsset">اختر المنشأة…</option>
+        <option value="jaber"   data-i18n="m2.b">جسر جابر</option>
+        <option value="office"  data-i18n="m2.d">مبنى إداري</option>
+        <option value="highway" data-i18n="m2.f">طريق سريع</option>
+      </select>
+      <p class="field__err" id="inspAssetErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspDate" data-i18n="m3.e">تاريخ الفحص</label>
+      <input type="date" id="inspDate" name="date" aria-describedby="inspDateErr" required />
+      <p class="field__err" id="inspDateErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspType" data-i18n="m3.f">نوع الفحص</label>
+      <select id="inspType" name="type" aria-describedby="inspTypeErr" required>
+        <option value="" data-i18n="a.pickType">اختر نوع الفحص…</option>
+        <option value="routine"   data-i18n="m3.g">فحص دوري</option>
+        <option value="initial"   data-i18n="a.typeFirst">فحص أولي</option>
+        <option value="follow"    data-i18n="a.typeFollow">فحص متابعة</option>
+        <option value="urgent"    data-i18n="a.typeUrgent">فحص طارئ</option>
+        <option value="post"      data-i18n="a.typeAfter">فحص بعد إصلاح</option>
+      </select>
+      <p class="field__err" id="inspTypeErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspStaff" data-i18n="a.engineer">الموظف المسؤول</label>
+      <input type="text" id="inspStaff" name="staff" autocomplete="name"
+             aria-describedby="inspStaffErr"
+             data-i18n-attr="placeholder:a.staffHint" placeholder="اسم الموظف الذي أجرى الزيارة" required />
+      <p class="field__err" id="inspStaffErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspSection" data-i18n="a.section">القطاع</label>
+      <select id="inspSection" name="section" aria-describedby="inspSectionErr" required>
+        <option value="" data-i18n="a.pickSection">اختر القطاع المفحوص…</option>
+        <option value="piers"  data-i18n="a.sectionV">الركائز والسطح السفلي</option>
+        <option value="deck"   data-i18n="a.sectionDeck">سطح الجسر والتبليط</option>
+        <option value="joints" data-i18n="a.sectionJoints">الفواصل والمساند</option>
+        <option value="rails"  data-i18n="a.sectionRails">الحواجز والدرابزين</option>
+        <option value="whole"  data-i18n="a.sectionAll">المنشأة كاملة</option>
+      </select>
+      <p class="field__err" id="inspSectionErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspNotes" data-i18n="a.notesLabel">ملاحظات ميدانية</label>
+      <textarea id="inspNotes" name="notes" rows="3"
+                data-i18n-attr="placeholder:a.notes" placeholder="ملاحظات ميدانية…"></textarea>
+      <p class="field__hint" data-i18n="a.notesHint">اختيارية — اكتب ما لا تُظهره الصور.</p>
+    </div>
   </section>
 
   <section class="pane">
     <h2 class="pane__h" data-i18n="sc.upload">رفع الملفات</h2>
-    <div class="drop">
+
+    <input class="drop__in" type="file" id="inspFiles" name="files" multiple
+           accept="image/jpeg,image/png,application/pdf" aria-describedby="inspFilesErr" />
+    <label class="drop" id="inspDrop" for="inspFiles">
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 16V5m0 0L8 9m4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span data-i18n="m4.c">اسحب الملفات هنا</span>
+      <span data-i18n="m4.c">اسحب الملفات هنا أو اضغط للاختيار</span>
       <small>JPG · PNG · PDF</small>
-    </div>
-    <div class="files">
-      <span class="file"><i></i><b>pier-02-crack.jpg</b><small>2.4 MB</small></span>
-      <span class="file"><i></i><b>soffit-east.jpg</b><small>1.8 MB</small></span>
-      <span class="file"><i></i><b>survey-2026.pdf</b><small>640 KB</small></span>
-    </div>
+    </label>
+
+    <div class="files" id="inspFileList"></div>
+    <p class="field__hint" id="inspFilesNone" data-i18n="a.noFiles">لم تُرفع ملفات بعد.</p>
+    <p class="field__err" id="inspFilesErr" role="alert"></p>
   </section>
 </div>
 
-<a class="ui ui--go page__go" href="analysis.html" data-i18n="a.startAnalysis">بدء التحليل</a>
+<a class="ui ui--go page__go" id="inspGo" href="analysis.html" data-i18n="a.startAnalysis">بدء التحليل</a>
 
   </main>
 </div>
