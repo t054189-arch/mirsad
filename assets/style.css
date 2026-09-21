@@ -436,6 +436,25 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
 }
 .file b{ flex:1; font-weight:500; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.8rem; }
 .file small{ color:var(--ink-soft); font-size:.74rem; }
+.file__x{
+  flex-shrink:0; font:inherit; font-size:1rem; line-height:1;
+  color:var(--ink-soft); background:none; border:0;
+  padding:2px 4px; border-radius:6px; cursor:pointer;
+  transition:color .2s;
+}
+.file__x:hover{ color:var(--hi); }
+
+/* منطقة الرفع لصيقة بحقل ملفات حقيقي: النقر والسحب كلاهما يصل إليه */
+.drop{ cursor:pointer; transition:border-color .22s, background .22s; }
+.drop:hover{ border-color:color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.drop.is-over{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.drop__in{
+  position:absolute; width:1px; height:1px;
+  padding:0; margin:-1px; border:0; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
+}
+.drop__in:focus-visible + .drop{ border-color:var(--accent); }
+.files:not(:empty){ margin-block-end:12px; }
 
 /* ---------- التحليل ---------- */
 .mid{
@@ -574,7 +593,7 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
     background:var(--bg-alt); border-inline-end:1px solid var(--line);
     transform:translateX(-102%); transition:transform .3s var(--ease);
   }
-  [dir="rtl"] .sidenav{ inset-inline-start:auto; inset-inline-end:0; transform:translateX(102%); }
+  [dir="rtl"] .sidenav{ transform:translateX(102%); }
   .sidenav.is-open{ transform:none; }
 }
 @media (max-width: 560px){
@@ -665,6 +684,20 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
 }
 .field select:focus{ outline:none; border-color:var(--accent); }
 .field.is-bad select{ border-color:var(--hi); }
+
+.field textarea{
+  width:100%; font:inherit; font-size:.92rem; line-height:1.75;
+  color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:10px;
+  padding:12px 14px; min-height:84px; resize:vertical;
+  transition:border-color .2s;
+}
+.field textarea::placeholder{ color:var(--ink-soft); opacity:.65; }
+.field textarea:focus{ outline:none; border-color:var(--accent); }
+
+/* داخل الألواح: لا يحجز سطر الخطأ فراغًا قبل أن يظهر خطأ */
+.pane .field__err:empty{ min-height:0; margin:0; }
+.pane .field:last-child{ margin-bottom:0; }
 .field__hint{ margin:6px 0 0; color:var(--ink-soft); font-size:.74rem; line-height:1.5; }
 .field__hint + .field__err:empty{ min-height:0; margin:0; }
 
