@@ -1,23 +1,30 @@
 مرصاد · MIRSAAD — the website
 =============================
 
-Three files. That is the whole site.
+Four files. That is the whole site.
 
   index.html   the page
   app.css      all styling
   app.js       the entire application
+  ux.js        a small layer of usability improvements, loaded last
+
+ux.js never modifies app.js. It publishes the current route on the <html>
+element so the stylesheet can address one screen at a time, shows the sign-in
+validation messages in Arabic, stops an incomplete sign-in, adds a show/hide
+control to the password field, and closes the mobile menu on Escape. Remove it
+and the site still runs; it simply loses those improvements.
 
 HOW TO OPEN IT
 --------------
 Double-click index.html. It opens in any modern browser and runs completely —
 no installation, no server, no build step.
 
-Keep the three files together in the same folder. index.html loads app.css and
+Keep the four files together in the same folder. index.html loads app.css and
 app.js from beside it, so moving one on its own breaks the page.
 
 HOW TO PUT IT ONLINE
 --------------------
-Upload all three files to any web host and open index.html. It is a plain
+Upload all four files to any web host and open index.html. It is a plain
 static site, so anything works: GitHub Pages, Netlify (drag the folder onto
 netlify.com/drop), Vercel, or ordinary shared hosting over FTP.
 

@@ -120,3 +120,96 @@ body { -webkit-tap-highlight-color: rgba(211, 175, 120, 0.18); }
        at all. The legend is a colour key with no controls of its own, so
        it can let taps through to the map beneath it. */
 .absolute.bottom-3.end-3.flex.flex-wrap.gap-3 { pointer-events: none; }
+
+/* ==========================================================================
+   UX LAYER — hierarchy, focus and clarity
+   Relies on <html data-route> published by ux.js, which lets a rule address
+   one screen at a time. Each block records the problem it solves.
+   ========================================================================== */
+
+/* 13. Two identical "إجراء فحص جديد" buttons competed on the dashboard and
+       on the inspections list — one in the header, one in the page body. A
+       screen should offer a single obvious next action, so those two screens
+       keep the button that sits in the content, where the eye already is.
+       Every other screen keeps the header button, which is its only one. */
+html[data-route="dashboard"] header a[href="#/inspections/new"],
+html[data-route="inspections"] header a[href="#/inspections/new"] { display: none; }
+
+/* 14. The primary action now has to carry the screen on its own, so it is
+       given the weight to do it. */
+html[data-route="dashboard"] main a[href="#/inspections/new"] {
+  padding-inline: 1.75rem;
+  padding-block: 0.95rem;
+  font-size: 15.5px;
+  box-shadow: 0 18px 44px -18px rgba(214, 198, 171, 0.95);
+}
+
+/* 15. Four metric tiles opened the dashboard at the same visual weight as
+       the primary action, and two of them ("ملاحظات مفتوحة", "تحتاج إلى
+       مراجعة") report nearly the same thing. They are context, not the
+       point of the screen, so they read as a quieter strip: the figures stay
+       legible, the boxes stop shouting. */
+html[data-route="dashboard"] .grid.grid-cols-2.gap-4.xl\:grid-cols-4 > * {
+  padding: 0.9rem 1rem;
+}
+html[data-route="dashboard"] .grid.grid-cols-2.gap-4.xl\:grid-cols-4 .stat-value {
+  font-size: 27px;
+  line-height: 1.15;
+  margin-top: 0.6rem;
+}
+
+/* 16. The site map is a 16:10 panel, which made it 674px tall on a laptop
+       and pushed the recent inspections and the agent panel below the fold —
+       the dashboard could not be read in one screen. The drawing is an
+       svg with viewBox="0 0 800 500" and no preserveAspectRatio, so it
+       letterboxes the moment the ratio changes while the pins, which are
+       positioned against the container, stay put and drift out of register.
+       Constraining the width instead scales the drawing and the pins
+       together, so the map keeps its proportions and its alignment and
+       simply takes less of the page. Phones are left alone: the map is
+       already narrow there and needs every pixel. */
+@media (min-width: 768px) {
+  html[data-route="dashboard"] .relative.aspect-\[16\/10\] {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+}
+
+/* 17. The password toggle added by ux.js. It sits inside the field on the
+       inline-end edge, clear of the text, and matches the field's own
+       styling rather than announcing itself. */
+[data-mirsaad-pw-host] { position: relative; }
+[data-mirsaad-pw-host] input { padding-inline-end: 3rem; }
+[data-mirsaad-pw-toggle] {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  color: rgba(242, 235, 223, 0.45);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+[data-mirsaad-pw-toggle]:hover { color: rgba(242, 235, 223, 0.9); background: rgba(255, 255, 255, 0.05); }
+[data-mirsaad-pw-toggle] svg { width: 1.125rem; height: 1.125rem; }
+/* The label sits above the field, so the toggle is nudged down to stay
+   centred on the input rather than on the pair. */
+[data-mirsaad-pw-host] { --pw-label-offset: 0.85rem; }
+[data-mirsaad-pw-toggle] { margin-top: var(--pw-label-offset); }
+
+
+/* 19. Focus was visible but sat tight against the control and was easy to
+       lose on a dark panel. An offset ring separates it from the button
+       edge and reads at a glance while tabbing. */
+:focus-visible {
+  outline: 2px solid rgba(211, 175, 120, 0.9);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
