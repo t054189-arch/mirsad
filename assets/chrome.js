@@ -98,6 +98,8 @@
     try {
       localStorage.removeItem(K.session);
       sessionStorage.removeItem(K.session);
+      localStorage.removeItem('mirsaad.session');
+      sessionStorage.removeItem('mirsaad.session');
     } catch (e) { /* التخزين غير متاح */ }
     location.href = 'index.html';
   });

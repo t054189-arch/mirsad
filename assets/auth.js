@@ -109,6 +109,11 @@
         email: user.email, name: user.name, nameEn: user.nameEn,
         role: user.role, roleEn: user.roleEn, at: new Date().toISOString()
       }));
+      // ولوحة التحكم (app.html) تقرأ مفتاحها الخاص بشكله الخاص،
+      // فنكتبه أيضًا ليفتحها تسجيل الدخول نفسه
+      store.setItem('mirsaad.session', JSON.stringify({
+        userId: 'usr-001', email: user.email
+      }));
     } catch (e) { return false; }
     var next = new URLSearchParams(location.search).get('next');
     var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'home.html';

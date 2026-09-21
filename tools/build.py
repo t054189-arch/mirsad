@@ -23,6 +23,7 @@ NAV = [
     ('results',     'results.html',     'sd.results', 'النتائج'),
     ('record',      'record.html',      'sd.rep',     'السجلات'),
     ('alerts',      'alerts.html',      'sd.alerts',  'الإشعارات'),
+    ('board',       'app.html#/dashboard', 'sd.board','لوحة التحكم'),
     ('about',       'about.html',       'sd.about',   'عن المشروع'),
 ]
 
