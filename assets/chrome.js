@@ -1,5 +1,6 @@
 /* مِرصاد — ما تشترك فيه كل الصفحات: اللغة، الوضع، الشريط الجانبي،
-   الخروج، وحركة شاشة التحليل. */
+   والخروج. شاشة التحليل انتقلت إلى assets/flow.js لأنها صارت تنتظر
+   جواب سير العمل لا مؤقّتًا. */
 (function () {
   'use strict';
 
@@ -66,6 +67,9 @@
     save(K.lang, next);
     if (whoSync) whoSync();
     if (window.MirsaadScene) window.MirsaadScene.refresh();
+    /* ما رسمه JavaScript ليس في لقطة nodes أعلاه، فيُعاد رسمه على الخبر */
+    try { document.dispatchEvent(new CustomEvent('mirsaad:lang', { detail: next })); }
+    catch (e) { /* متصفح بلا CustomEvent */ }
   }
   applyLang(lang);
 
@@ -129,35 +133,4 @@
     });
   }
 
-  /* ---------- صفحة التحليل ---------- */
-  var steps = document.getElementById('analysisSteps');
-  if (steps) {
-    var lines = Array.prototype.slice.call(steps.querySelectorAll('.stepline'));
-    var bar = document.getElementById('analysisBar');
-    var pct = document.getElementById('analysisPct');
-    var go = document.getElementById('analysisGo');
-    var fmt = function (n) {
-      var s = n + '%';
-      return root.lang === 'en' ? s
-        : s.replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'[+d]; }).replace('%', '٪');
-    };
-
-    if (reduced) {
-      lines.forEach(function (l) { l.classList.add('is-done'); });
-      bar.style.width = '100%';
-      pct.textContent = fmt(100);
-      go.classList.add('is-ready');
-    } else {
-      go.classList.remove('is-ready');
-      lines.forEach(function (line, n) {
-        setTimeout(function () {
-          line.classList.add('is-done');
-          var v = Math.round(((n + 1) / lines.length) * 100);
-          bar.style.width = v + '%';
-          pct.textContent = fmt(v);
-          if (n === lines.length - 1) setTimeout(function () { go.classList.add('is-ready'); }, 450);
-        }, 500 + n * 650);
-      });
-    }
-  }
 })();

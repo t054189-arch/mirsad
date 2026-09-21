@@ -213,6 +213,28 @@ window.MIRSAAD_EN = {
   's.t3': 'The agent assists, it does not replace',
   's.d3': 'The agent approves nothing by itself. Its output is a set of sourced suggestions; the decision stays with the responsible reviewer.',
 
+  /* الجسر إلى سير العمل */
+  'ag.pick': 'Choose files',
+  'ag.none': 'No files chosen yet.',
+  'ag.count': 'files ready to send',
+  'ag.remove': 'Remove file',
+  'ag.sending': 'Sending the inspection to the agent\u2026',
+  'ag.working': 'The agent is working \u2014 this can take a minute\u2026',
+  'ag.failed': 'Could not reach the agent',
+  'ag.retry': 'Try again',
+  'ag.backInsp': 'Back to the inspection',
+  'ag.errNet': 'The webhook did not answer. Check the URL, and that your workflow allows this site (CORS).',
+  'ag.errHttp': 'The workflow answered with an error code',
+  'ag.errShape': 'The workflow answered, but with no findings in a shape Mirsaad understands.',
+  'ag.errTime': 'The agent took longer than the allowed wait.',
+  'ag.errNoDraft': 'No inspection data saved \u2014 start from the inspection page.',
+  'ag.live': 'Live results from your workflow',
+  'ag.demo': 'Demo results \u2014 no agent connected',
+  'ag.norun': 'Run an inspection to see your agent\u2019s results here.',
+  'ag.empty': 'The agent returned no findings for this inspection.',
+  'ag.acc': 'Analysis confidence',
+  'ag.noPick': 'No finding selected \u2014 go back to the results and pick one.',
+
   /* الخاتمة */
   'c.quote': '« Safer infrastructure .. through smarter decisions »',
 };

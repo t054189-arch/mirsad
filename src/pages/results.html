@@ -1,23 +1,29 @@
 <!--slug: results--><!--nav: results--><!--key: sc.results--><!--ar: النتائج-->
 <div class="page__bar">
   <p class="page__lead" data-i18n="pg.resLead">ما استخرجه الوكيل الذكي من فحص جسر جابر، مرتبًا حسب الأولوية.</p>
-  <span class="chipacc" data-i18n="m6.b">دقة التحليل ٨٧٪</span>
+  <span class="chipacc" id="resAcc" data-i18n="m6.b">دقة التحليل ٨٧٪</span>
 </div>
 
-<a class="rowcard rowcard--go" href="review.html">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.c">احتمال وجود تشقق</b><small data-i18n="m6.d">الركيزة رقم ٢</small></span>
-  <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
-</a>
-<a class="rowcard rowcard--go" href="review.html">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.e">تآكل سطحي</b><small data-i18n="m6.f">السطح السفلي</small></span>
-  <span class="pill pill--mid" data-i18n="lv.mid">متوسطة</span>
-</a>
-<div class="rowcard">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.g">لا توجد مشكلة</b><small data-i18n="m6.h">الجزء العلوي</small></span>
-  <span class="pill pill--ok" data-i18n="lv.ok">سليم</span>
+<p class="srcnote" id="resSrc" data-i18n="ag.demo">نتائج تجريبية — لا يوجد وكيل موصول</p>
+
+<div id="liveFindings" hidden></div>
+
+<div id="demoFindings">
+  <a class="rowcard rowcard--go" href="review.html">
+    <span class="rowcard__img"></span>
+    <span class="rowcard__t"><b data-i18n="m6.c">احتمال وجود تشقق</b><small data-i18n="m6.d">الركيزة رقم ٢</small></span>
+    <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
+  </a>
+  <a class="rowcard rowcard--go" href="review.html">
+    <span class="rowcard__img"></span>
+    <span class="rowcard__t"><b data-i18n="m6.e">تآكل سطحي</b><small data-i18n="m6.f">السطح السفلي</small></span>
+    <span class="pill pill--mid" data-i18n="lv.mid">متوسطة</span>
+  </a>
+  <div class="rowcard">
+    <span class="rowcard__img"></span>
+    <span class="rowcard__t"><b data-i18n="m6.g">لا توجد مشكلة</b><small data-i18n="m6.h">الجزء العلوي</small></span>
+    <span class="pill pill--ok" data-i18n="lv.ok">سليم</span>
+  </div>
 </div>
 
 <a class="ui ui--go page__go" href="review.html" data-i18n="m6.i">مراجعة النتائج</a>

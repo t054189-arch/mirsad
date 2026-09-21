@@ -84,8 +84,8 @@
 
   <main class="page" id="page">
 <div class="mid">
-  <p class="mid__big" data-i18n="m5.a">جارٍ التحليل…</p>
-  <p class="page__lead" data-i18n="a.analysingSub">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
+  <p class="mid__big" id="analysisBig" data-i18n="m5.a">جارٍ التحليل…</p>
+  <p class="page__lead" id="analysisSub" data-i18n="a.analysingSub">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
 
   <div class="steps" id="analysisSteps">
     <div class="stepline"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
@@ -97,6 +97,15 @@
   <div class="bar"><b id="analysisBar"></b></div>
   <p class="mid__pct" id="analysisPct">٠٪</p>
 
+  <div class="agerr" id="analysisErr" role="alert" hidden>
+    <span id="analysisErrMsg"></span>
+    <code id="analysisErrDetail" hidden></code>
+    <span class="acts">
+      <button type="button" class="ui ui--ghost" id="analysisRetry" data-i18n="ag.retry">إعادة المحاولة</button>
+      <a class="ui ui--no" href="inspection.html" data-i18n="ag.backInsp">العودة إلى الفحص</a>
+    </span>
+  </div>
+
   <a class="ui ui--go" id="analysisGo" href="results.html" data-i18n="m6.i">مراجعة النتائج</a>
 </div>
 
@@ -105,5 +114,7 @@
 
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
+<script src="assets/agent.js"></script>
+<script src="assets/flow.js"></script>
 </body>
 </html>

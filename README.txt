@@ -57,6 +57,24 @@ offline, the site still works — it falls back to the system Arabic typeface.
 The 3D bridge needs WebGL. Where that is unavailable, or where the visitor has
 asked for reduced motion, the page shows a still architectural view instead.
 
+CONNECTING YOUR WORKFLOW
+-----------------------
+Put your n8n / Make / Zapier webhook URL at the top of assets/agent.js:
+
+    var CONFIG = { url: 'https://n8n.example.com/webhook/mirsaad', ... };
+
+Then the inspection page uploads your real files and notes to it, the
+analysis page waits for its answer, and the results and review pages show
+what it found. Leave the URL empty and everything behaves exactly as the
+demo did before.
+
+Your workflow must answer with JSON like
+{"accuracy":91,"findings":[{"title":"…","location":"…","severity":"high"}]}
+and must allow this site in its CORS headers. README.md has the full
+contract, the accepted field names, and the security caveat: the URL sits
+in a file every visitor downloads, so do not put a paid or writing
+workflow behind it without a server in between.
+
 THIS IS A DEMONSTRATION
 -----------------------
 There is no server, no database and no artificial intelligence behind this.
