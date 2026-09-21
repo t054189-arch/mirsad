@@ -3,21 +3,164 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>مرصاد · MIRSAAD</title>
-    <meta
-      name="description"
-      content="منصة ذكية لإدارة وتحليل بيانات فحص المنشآت باستخدام الذكاء الاصطناعي — واجهة تجريبية ببيانات افتراضية."
-    />
+    <title>تسجيل الدخول — مرصاد · MIRSAAD</title>
+    <meta name="description" content="مرصاد — منصة ذكية لإدارة وتحليل بيانات فحص المنشآت. سجّل الدخول أو أنشئ حسابًا للمتابعة." />
+    <meta name="robots" content="noindex" />
+    <script>
+      /* إن كانت هناك جلسة، ادخل التطبيق مباشرةً قبل أول رسم */
+      (function () {
+        try {
+          var r = sessionStorage.getItem('mirsaad.session') || localStorage.getItem('mirsaad.session');
+          if (r && JSON.parse(r).email) { location.replace('app.html#/dashboard'); return; }
+        } catch (e) { /* التخزين غير متاح */ }
+        try {
+          var l = localStorage.getItem('mirsaad.locale');
+          if (l === 'en') {
+            document.documentElement.lang = 'en';
+            document.documentElement.dir = 'ltr';
+          }
+        } catch (e) { /* التخزين غير متاح */ }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="auth.css" />
   </head>
-  <body class="min-h-screen">
-    <div id="root"></div>
-    <script src="app.js"></script>
+  <body class="gate">
+    <div class="gate__tools">
+      <button class="chip" id="langBtn" type="button" aria-label="تغيير اللغة">
+        <span id="langLabel">EN</span>
+      </button>
+    </div>
+
+    <main class="wrap">
+      <section class="brand">
+        <svg class="brand__dome" viewBox="0 0 100 52" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+            <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+            <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+            <path d="M50 5 C 24 5, 6 20, 6 48"/>
+          </g>
+        </svg>
+        <p class="brand__ar" data-t="brand">مرصاد</p>
+        <p class="brand__en">MIRSAAD</p>
+        <p class="brand__tag" data-t="tag">نفحص اليوم... لننشئ غدًا أكثر أمانًا</p>
+        <p class="brand__tagen">SAFER STRUCTURES &nbsp;·&nbsp; BRIGHTER TOMORROW</p>
+      </section>
+
+      <section class="card">
+        <div class="tabs" role="tablist" aria-label="الدخول أو إنشاء حساب">
+          <button class="is-on" id="tabIn" role="tab" aria-selected="true"
+                  aria-controls="paneIn" type="button" data-t="signin">تسجيل الدخول</button>
+          <button id="tabUp" role="tab" aria-selected="false"
+                  aria-controls="paneUp" type="button" data-t="signup">إنشاء حساب</button>
+        </div>
+
+        <!-- تسجيل الدخول -->
+        <div id="paneIn" role="tabpanel" aria-labelledby="tabIn">
+          <p class="sub" data-t="inSub">سجّل دخولك لمتابعة فحوصات منشآتك.</p>
+
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="email" data-t="email">البريد الإلكتروني</label>
+              <input id="email" type="email" inputmode="email" autocomplete="email"
+                     spellcheck="false" placeholder="name@company.com"
+                     aria-describedby="emailErr" required />
+              <p class="field__err" id="emailErr" role="alert"></p>
+            </div>
+
+            <div class="field">
+              <label for="pass" data-t="pass">كلمة المرور</label>
+              <input id="pass" type="password" autocomplete="current-password" minlength="8"
+                     placeholder="••••••••" aria-describedby="passErr" required />
+              <p class="field__err" id="passErr" role="alert"></p>
+            </div>
+
+            <label class="remember" for="remember">
+              <input type="checkbox" id="remember" />
+              <span data-t="remember">تذكرني</span>
+            </label>
+
+            <button class="go" type="submit" data-t="signin">تسجيل الدخول</button>
+          </form>
+
+          <p class="swap"><span data-t="noAcct">ليس لديك حساب؟</span><button
+            type="button" class="linkb" id="goUp" data-t="signup">إنشاء حساب</button></p>
+
+          <div class="demo">
+            <p class="demo__h" data-t="demoH">الحساب التجريبي</p>
+            <div class="demo__row"><span data-t="email">البريد الإلكتروني</span><code>dalal@mirsaad.demo</code></div>
+            <div class="demo__row"><span data-t="pass">كلمة المرور</span><code>mirsaad2026</code></div>
+            <button class="demo__btn" type="button" id="demoBtn" data-t="demoGo">الدخول بالحساب التجريبي</button>
+          </div>
+        </div>
+
+        <!-- إنشاء حساب -->
+        <div id="paneUp" role="tabpanel" aria-labelledby="tabUp" hidden>
+          <p class="sub" data-t="upSub">أنشئ حسابك للانضمام إلى فريق المكتب على مرصاد.</p>
+
+          <form id="signupForm" novalidate>
+            <div class="field">
+              <label for="sName" data-t="name">الاسم الكامل</label>
+              <input id="sName" type="text" autocomplete="name" placeholder="دلال العتيبي"
+                     aria-describedby="sNameErr" required />
+              <p class="field__err" id="sNameErr" role="alert"></p>
+            </div>
+
+            <div class="field">
+              <label for="sEmail" data-t="email">البريد الإلكتروني</label>
+              <input id="sEmail" type="email" inputmode="email" autocomplete="email"
+                     spellcheck="false" placeholder="name@company.com"
+                     aria-describedby="sEmailErr" required />
+              <p class="field__err" id="sEmailErr" role="alert"></p>
+            </div>
+
+            <div class="field">
+              <label for="sRole" data-t="role">الدور في المكتب</label>
+              <select id="sRole" aria-describedby="sRoleErr" required>
+                <option value="" data-t="rolePick">اختر دورك…</option>
+                <option value="tech"  data-t="rTech">الفنّي الميداني</option>
+                <option value="eng"   data-t="rEng">المهندس</option>
+                <option value="rev"   data-t="rRev">المراجِع أو المشرف</option>
+                <option value="mgr"   data-t="rMgr">مدير المكتب</option>
+                <option value="admin" data-t="rAdmin">الموظف الإداري</option>
+              </select>
+              <p class="field__err" id="sRoleErr" role="alert"></p>
+            </div>
+
+            <div class="field">
+              <label for="sPass" data-t="pass">كلمة المرور</label>
+              <input id="sPass" type="password" autocomplete="new-password" minlength="8"
+                     placeholder="••••••••" aria-describedby="sPassErr" required />
+              <p class="field__hint" data-t="passRule">٨ أحرف فأكثر، وتحتوي حرفًا ورقمًا.</p>
+              <p class="field__err" id="sPassErr" role="alert"></p>
+            </div>
+
+            <div class="field">
+              <label for="sPass2" data-t="passConfirm">تأكيد كلمة المرور</label>
+              <input id="sPass2" type="password" autocomplete="new-password"
+                     placeholder="••••••••" aria-describedby="sPass2Err" required />
+              <p class="field__err" id="sPass2Err" role="alert"></p>
+            </div>
+
+            <button class="go" type="submit" data-t="create">إنشاء الحساب والدخول</button>
+          </form>
+
+          <p class="swap"><span data-t="haveAcct">لديك حساب بالفعل؟</span><button
+            type="button" class="linkb" id="goIn" data-t="signin">تسجيل الدخول</button></p>
+        </div>
+
+        <p class="note" data-t="note">
+          عرض تجريبي: التحقق يجري في المتصفح لا على خادم، والحسابات تُحفظ في متصفحك وحده.
+        </p>
+      </section>
+    </main>
+
+    <script src="auth.js"></script>
   </body>
 </html>
