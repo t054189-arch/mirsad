@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>التحليل — مرصاد · MIRSAAD</title>
+    <meta name="robots" content="noindex" />
+    <script src="guard.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="auth.css" />
+    <link rel="stylesheet" href="steps.css" />
+  </head>
+  <body class="steps">
+    <header class="bar2">
+      <a class="bar2__brand" href="app.html#/dashboard">
+        <svg viewBox="0 0 100 52" width="28" height="15" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+            <path d="M50 5 C 76 5, 94 20, 94 48"/><path d="M50 5 C 70 5, 80 22, 80 48"/>
+            <path d="M50 5 C 62 6, 66 24, 66 48"/><path d="M50 5 V48"/>
+            <path d="M50 5 C 38 6, 34 24, 34 48"/><path d="M50 5 C 30 5, 20 22, 20 48"/>
+            <path d="M50 5 C 24 5, 6 20, 6 48"/>
+          </g>
+        </svg>
+        <span>مرصاد</span>
+      </a>
+      <span class="bar2__crumb" data-t="newInsp">إجراء فحص جديد</span>
+      <div class="bar2__tools">
+        <span class="who2"><i aria-hidden="true"></i><b class="who-name">—</b></span>
+        <button class="chip" id="langBtn" type="button"><span id="langLabel">EN</span></button>
+        <button class="chip" id="outBtn" type="button" data-t="signout">خروج</button>
+      </div>
+    </header>
+
+    <main class="page2">
+      <nav class="stepper" aria-label="خطوات الفحص">
+          <a class="stepper__s is-done" href="step-1.html"><i>1</i><span data-t="n1">بيانات الفحص</span></a>
+          <a class="stepper__s is-done" href="step-2.html"><i>2</i><span data-t="n2">رفع البيانات</span></a>
+          <a class="stepper__s is-on" href="step-3.html"><i>3</i><span data-t="n3">التحليل</span></a>
+          <a class="stepper__s" href="step-4.html"><i>4</i><span data-t="n4">المراجعة</span></a>
+          <a class="stepper__s" href="step-5.html"><i>5</i><span data-t="n5">السجل والإشعار</span></a>
+      </nav>
+
+      <h1 class="page2__h" data-t="h3">التحليل</h1>
+
+      <p class="lede" data-t="s3lede">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
+      <div class="pane mid">
+        <div class="ticks" id="ticks">
+          <div class="tick"><i></i><span data-t="t1">تحليل الصور بالذكاء الاصطناعي</span></div>
+          <div class="tick"><i></i><span data-t="t2">البحث في سجل المنشأة</span></div>
+          <div class="tick"><i></i><span data-t="t3">استرجاع الفحوصات السابقة</span></div>
+          <div class="tick"><i></i><span data-t="t4">مقارنة النتائج</span></div>
+          <div class="tick"><i></i><span data-t="t5">تحديد الملاحظات المحتملة</span></div>
+        </div>
+        <div class="bar"><b id="bar"></b></div>
+        <p class="pct" id="pct">٠٪</p>
+      </div>
+
+      <div class="nav2">
+        <a class="go gh" href="step-2.html" data-t="back">رجوع</a>
+        <a class="go" id="goNext" href="step-4.html" data-t="next">التالي</a>
+      </div>
+    </main>
+
+    <script src="steps.js"></script>
+  </body>
+</html>
