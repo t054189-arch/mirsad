@@ -41,6 +41,10 @@
   Array.prototype.forEach.call(nodes, function (el) {
     var k = el.getAttribute('data-i18n');
     if (!(k in AR)) AR[k] = el.innerHTML;
+    /* وقد يشترك عنصران في مفتاح واحد ويختلف نصّهما العربي — عنوان
+       الصفحة يحمل اسم المنصّة وترويستها لا تحمله. فالقاموس لا يكفي
+       للعودة إلى العربية، ويحفظ كلُّ عنصر عربيَّته عند نفسه. */
+    if (!el.hasAttribute('data-ar')) el.setAttribute('data-ar', el.innerHTML);
   });
   Array.prototype.forEach.call(attrNodes, function (el) {
     var p = el.getAttribute('data-i18n-attr').split(':');
@@ -55,6 +59,10 @@
     root.setAttribute('dir', next === 'en' ? 'ltr' : 'rtl');
     Array.prototype.forEach.call(nodes, function (el) {
       var k = el.getAttribute('data-i18n');
+      if (next !== 'en') {
+        var own = el.getAttribute('data-ar');
+        if (own !== null) { el.innerHTML = own; return; }
+      }
       if (k in dict) el.innerHTML = dict[k];
     });
     Array.prototype.forEach.call(attrNodes, function (el) {
