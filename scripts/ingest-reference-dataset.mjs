@@ -9,10 +9,14 @@
 //   node scripts/ingest-reference-dataset.mjs --archive /path/to/dataset.zip
 //
 // Requires a secret (service-role) key, because the reference-images bucket is
-// admin-write. Never put this key in .env.local or anywhere the browser bundle
-// can reach it:
+// admin-write. It bypasses row level security, so keep it out of git (.env* is
+// already ignored) and never give it a NEXT_PUBLIC_ prefix, which would put it
+// in the browser bundle:
 //
 //   NEXT_PUBLIC_SUPABASE_URL=...  SUPABASE_SECRET_KEY=sb_secret_...
+//
+// Passing it inline for a single run keeps it off disk entirely; a plain
+// SUPABASE_SECRET_KEY in .env.local works too and is not exposed to the browser.
 //
 // Options:
 //   --archive <path>   Publisher's zip. Required unless every row is uploaded.
@@ -49,7 +53,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const secret = process.env.SUPABASE_SECRET_KEY;
 if (!url || !secret) {
   console.error('Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY.');
-  console.error('The secret key is the service-role key from the Supabase dashboard. It bypasses RLS: keep it out of .env.local and out of git.');
+  console.error('The secret key is the service-role key from the Supabase dashboard (Project Settings -> API Keys). It bypasses RLS: keep it out of git and never prefix it with NEXT_PUBLIC_.');
   process.exit(1);
 }
 
