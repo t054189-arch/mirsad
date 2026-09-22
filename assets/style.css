@@ -826,9 +826,10 @@ body.gate .scene{ opacity:calc(var(--mark-strength) * .55); }
 body.gate::before{ background-image:none; }
 
 /* ============================================================
-   الخريطة — شريط المرشّحات، الرسم، المفتاح، العلامات والنافذة
-   الخريطة رسم SVG في الصفحة (assets/kuwait.js + assets/map.js):
-   لا بلاطات ولا مزوّد ولا شبكة، فلا مربّع رمادي ولا صورة مكسورة.
+   الخريطة — مشهد ثلاثي الأبعاد للكويت
+   لوحٌ مائل في فضاء ذي منظور: الماء تحته، والبلاد كتلةٌ لها سُمك،
+   وفوقها أعمدة المنشآت. كلّه CSS و SVG في الصفحة — لا بلاطات ولا
+   مزوّد ولا مكتبة ولا مفتاح. انظر assets/map.js و assets/kuwait.js.
    ============================================================ */
 .mapbar{
   display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px;
@@ -852,72 +853,192 @@ body.gate::before{ background-image:none; }
   border:1px solid var(--line); border-radius:var(--r);
   overflow:hidden; box-shadow:var(--shadow);
   isolation:isolate;
-  /* ألوان الخريطة وحدها. ألوان السطوح في الثيم متقاربة عمدًا — تصلح
-     للبطاقات ولا تفرّق يابسةً من بحر. فللخريطة تدرّجها الخاص، من
-     عائلة الثيم نفسها لكن بفارق يُرى من بعيد. */
-  --sea:      #0d1317;
-  --land:     #2c2f35;
-  --land-alt: #363940;
-  --edge:     #0b0b0c;
-  background:var(--sea);
+  /* ألوان المشهد وحدها. ألوان السطوح في الثيم متقاربة عمدًا — تصلح
+     للبطاقات ولا تفرّق يابسةً من بحر ولا وجهًا من جانب. */
+  --sea:      #070c11;
+  --sea-far:  #101c27;
+  --land:     #2f333b;
+  --land-lit: #464b55;
+  --side:     #14161a;
+  --edge:     #0a0c0f;
+  background:
+    radial-gradient(120% 80% at 50% 8%, var(--sea-far) 0%, var(--sea) 62%);
 }
 [data-mode="light"] .mapbox{
-  --sea:      #d9e6ee;
-  --land:     #f7f1e5;
-  --land-alt: #ece2d0;
-  --edge:     #b9ab92;
+  --sea:      #c3d7e6;
+  --sea-far:  #e4eef5;
+  --land:     #efe6d5;
+  --land-lit: #fbf6ec;
+  --side:     #b9a98c;
+  --edge:     #8e7f66;
 }
 .mapbox--short{ height:clamp(420px, 52vh, 500px); }
 
-.kwmap__svg{ display:block; width:100%; height:100%; }
-
-/* اليابسة والحدود. المحافظة المرشَّح بها تُبرَز، وما عداها يخفت. */
-.kwmap__gov{
-  fill:var(--land); stroke:var(--edge); stroke-width:2.5;
-  stroke-linejoin:round; transition:fill .25s var(--ease), opacity .25s var(--ease);
+/* ---------- الفضاء واللوح ---------- */
+.kwscene{
+  position:absolute; inset:0;
+  perspective:1500px; perspective-origin:50% 40%;
 }
-.kwmap__gov:nth-child(even){ fill:var(--land-alt); }
-.kwmap__gov.is-on{ fill:var(--land-alt); stroke:var(--accent); stroke-width:3; }
-.mapbox:has(.kwmap__gov.is-on) .kwmap__gov:not(.is-on){ opacity:.45; }
+.kwstage{
+  position:absolute; inset-block-start:50%; inset-inline-start:50%;
+  transform-style:preserve-3d;
+  transform:rotateX(var(--kwtilt,42deg)) rotateZ(var(--kwspin,-9deg));
+  /* حركة الكاميرا مرّةً واحدة عند الفتح ثم تستقرّ. ولو دامت لصارت
+     العلامات أهدافًا متحرّكة لا تُنقر. */
+  animation:kwenter 1.5s cubic-bezier(.22,.68,.24,1) both;
+}
+@keyframes kwenter{
+  from{
+    transform:rotateX(calc(var(--kwtilt,42deg) + 13deg))
+              rotateZ(calc(var(--kwspin,-9deg) - 11deg)) scale(.93);
+    opacity:0;
+  }
+  to{
+    transform:rotateX(var(--kwtilt,42deg)) rotateZ(var(--kwspin,-9deg)) scale(1);
+    opacity:1;
+  }
+}
 
-.kwmap__lead{ stroke:var(--ink-soft); stroke-width:1.6; opacity:.8; }
-.kwmap__leaddot{ fill:var(--ink-soft); opacity:.85; }
-.kwmap__name{
-  /* الاتجاه هنا مادّي لا منطقي: ‎text-anchor‎ ينقلب مع ‎rtl‎، فتنقلب
-     جهة الاسم وتصطدم الأسماء. والعربية تُشكَّل وتُرتَّب صحيحةً داخل
-     مقطعها على كل حال. */
-  direction:ltr;
-  /* الحجم على الشاشة ثابت مهما ضاق الإطار — كالعلامات تمامًا */
-  font:inherit; font-size:calc(26px * var(--kwmap-scale, 1)); font-weight:700;
-  fill:var(--ink); paint-order:stroke;
-  stroke:var(--sea); stroke-width:calc(6px * var(--kwmap-scale, 1));
-  stroke-linejoin:round;
+/* الماء: هالة تحت البلاد وحلقات خافتة تعطي الفضاء مقياسًا */
+.kwplane{
+  position:absolute; inset:-55% -40%;
+  transform:translateZ(-22px);
+  background:
+    repeating-radial-gradient(circle at 50% 50%,
+      transparent 0 62px, color-mix(in srgb, var(--accent) 7%, transparent) 62px 63px),
+    radial-gradient(60% 60% at 50% 50%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 70%);
+  -webkit-mask-image:radial-gradient(58% 58% at 50% 50%, #000 32%, transparent 78%);
+  mask-image:radial-gradient(58% 58% at 50% 50%, #000 32%, transparent 78%);
   pointer-events:none;
 }
-.kwmap__name--far{ font-size:calc(23px * var(--kwmap-scale, 1)); }
 
-/* العلامة: قرص بلون الحالة في حلقة فاتحة، وحجمها على الشاشة ثابت
-   مهما تبدّل الإطار — ‎--kwmap-scale‎ يعاكس تكبير الإطار. */
-.kwpin{ cursor:pointer; }
-.kwpin__ring{
-  fill:#fff; stroke:rgba(0,0,0,.5); stroke-width:1.2;
-  transform:scale(var(--kwmap-scale,1));
-  transform-box:fill-box; transform-origin:center;
-}
-.kwpin__dot{
-  transform:scale(var(--kwmap-scale,1));
-  transform-box:fill-box; transform-origin:center;
-  transition:r .15s var(--ease);
-}
-.kwpin:hover .kwpin__ring, .kwpin:focus .kwpin__ring{ stroke:var(--accent); stroke-width:2; }
-.kwpin.is-on .kwpin__ring{ stroke:var(--accent); stroke-width:2.4; }
-.kwpin:focus{ outline:none; }
-.kwpin:focus-visible .kwpin__ring{ stroke:var(--accent); stroke-width:2.4; }
+.kwslabs, .kwtop, .kwanchors{ position:absolute; inset:0; transform-style:preserve-3d; }
+/* الطبقات تغطّي اللوح كلّه، فلو أخذت النقر لحجبت الأعمدة فوقها.
+   النقر للرؤوس وحدها، وما عداها يمرّ إلى المشهد فيغلق النافذة. */
+.kwscene, .kwstage, .kwslabs, .kwtop, .kwplane, .kwanchors{ pointer-events:none; }
+/* المربط نقطة لا تُرى على اللوح، منها يُقرأ موضع قدم العمود */
+.kwanchor{ position:absolute; width:0; height:0; }
+.kwslabs svg, .kwtop svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
 
-/* نافذة المنشأة — تتبع الثيم، وتُوضع فوق العلامة أو تحتها */
+/* السُمك: كلّ طبقة أغمق من التي فوقها، فيبدو الجانب كتلةً مصمتة */
+.kwslab path{ fill:var(--side); stroke:var(--side); stroke-width:2; }
+.kwslab{ opacity:calc(.35 + .65 * var(--k, 1)); }
+
+/* وجه البلاد. الضوء من أعلى اليسار، فالوجه أفتح من الجانب. */
+.kwmap__gov{
+  fill:var(--land); stroke:var(--edge); stroke-width:2;
+  stroke-linejoin:round;
+  transition:fill .25s var(--ease), opacity .25s var(--ease);
+}
+.kwmap__gov:nth-child(even){ fill:var(--land-lit); }
+.kwmap__gov.is-on{ fill:var(--land-lit); stroke:var(--accent); stroke-width:3; }
+.kwtop:has(.kwmap__gov.is-on) .kwmap__gov:not(.is-on){ opacity:.4; }
+
+/* الأسماء ترقد على اللوح، فتُمطّ رأسيًا بمقدار ما يضغطها الميل —
+   فتعود إلى نسبتها الصحيحة وقد بقيت في المستوى. */
+.kwmap__names{ transform:scaleY(var(--kwstretch, 1.27)); transform-origin:center; }
+.kwmap__name{
+  /* الاتجاه مادّي لا منطقي: ‎text-anchor‎ ينقلب مع ‎rtl‎ فتنقلب جهة
+     الاسم وتصطدم الأسماء. والعربية تُشكَّل صحيحةً داخل مقطعها. */
+  direction:ltr;
+  font:inherit; font-size:calc(25px * var(--kwmap-scale, 1)); font-weight:700;
+  fill:var(--ink); paint-order:stroke;
+  stroke:var(--sea); stroke-width:calc(6px * var(--kwmap-scale, 1));
+  stroke-linejoin:round; pointer-events:none;
+}
+.kwmap__name--far{ font-size:calc(22px * var(--kwmap-scale, 1)); }
+.kwmap__lead{ stroke:var(--ink-soft); stroke-width:1.6; opacity:.75; }
+.kwmap__leaddot{ fill:var(--ink-soft); opacity:.9; }
+
+/* ---------- أعمدة المنشآت ---------- */
+/* طبقة مسطّحة فوق المشهد. عمودٌ قائم على لوح مائل يقع على الشاشة
+   خطًّا رأسيًّا مهما دار اللوح في مستواه، وطوله المرئي طولُه في جيب
+   زاوية الميل — فيُرسم ببكسلات مستوية ولا يُترك لعمق المتصفّح. */
+.kwpins{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+
+.kwpin{
+  position:absolute; width:0; height:0;
+  --beam:30px;     /* ما يُرى من طول العمود على الشاشة */
+  --dot:15px;
+}
+
+/* القدم: قرص يرقد على اللوح، فيُرى بيضويًّا لميلِه */
+.kwpin__foot{
+  position:absolute;
+  width:calc(20px * var(--d,1)); height:calc(20px * var(--d,1) * .62);
+  inset-inline-start:calc(-10px * var(--d,1));
+  inset-block-start:calc(-6.2px * var(--d,1));
+  border-radius:50%;
+  border:1.5px solid color-mix(in srgb, var(--c) 70%, transparent);
+  background:radial-gradient(circle, color-mix(in srgb, var(--c) 45%, transparent) 0 40%, transparent 72%);
+  animation:kwping 3.4s var(--ease) infinite;
+}
+@keyframes kwping{
+  0%,70%,100%{ transform:scale(1); opacity:.95; }
+  35%{ transform:scale(1.5); opacity:.4; }
+}
+
+/* العمود: من القدم صعودًا */
+.kwpin__beam{
+  position:absolute;
+  width:2.5px; inset-inline-start:-1.25px;
+  height:calc((var(--beam) + var(--bump,0px)) * var(--d,1));
+  inset-block-start:calc(-1 * (var(--beam) + var(--bump,0px)) * var(--d,1));
+  border-radius:2px;
+  background:linear-gradient(to top,
+    var(--c) 0%,
+    color-mix(in srgb, var(--c) 75%, transparent) 60%,
+    color-mix(in srgb, var(--c) 25%, transparent) 100%);
+  box-shadow:0 0 12px color-mix(in srgb, var(--c) 60%, transparent);
+}
+
+/* الرأس في قمّة العمود، وهو الزرّ */
+.kwpin__head{
+  position:absolute; padding:0;
+  width:calc(var(--dot) * var(--d,1)); height:calc(var(--dot) * var(--d,1));
+  inset-inline-start:calc(-.5 * var(--dot) * var(--d,1));
+  inset-block-start:calc(-1 * (var(--beam) + var(--bump,0px)) * var(--d,1)
+                        - .5 * var(--dot) * var(--d,1));
+  border-radius:50%;
+  background:var(--c); border:2.5px solid #fff; cursor:pointer;
+  pointer-events:auto;
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.6), 0 0 16px color-mix(in srgb, var(--c) 75%, transparent);
+  transition:transform .15s var(--ease);
+}
+/* مساحة لمس أوسع من القرص دون تكبيره */
+.kwpin__head::after{
+  content:""; position:absolute; inset:-6px; border-radius:50%;
+}
+.kwpin__head:hover, .kwpin__head:focus-visible, .kwpin.is-on .kwpin__head{
+  border-color:var(--accent); transform:scale(1.18);
+  box-shadow:0 0 0 2px rgba(0,0,0,.6), 0 0 24px color-mix(in srgb, var(--c) 95%, transparent);
+}
+.kwpin__head:focus{ outline:none; }
+.kwpin__head:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+/* ---------- جوّ المشهد ---------- */
+.kwhorizon{
+  position:absolute; inset-block-start:0; inset-inline:0; height:46%;
+  background:linear-gradient(to bottom,
+    color-mix(in srgb, var(--accent) 12%, transparent), transparent 78%);
+  pointer-events:none;
+}
+.kwvignette{
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(78% 68% at 50% 46%, transparent 42%,
+    color-mix(in srgb, var(--sea) 85%, transparent) 100%);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .kwstage{ animation:none; }
+  .kwpin__foot{ animation:none; }
+  .kwpin__head{ transition:none; }
+}
+
+/* ---------- النافذة والمفتاح ---------- */
 .kwpop{
   position:absolute; z-index:3; width:min(266px, 78%);
-  /* الرأسيّ يُحسب في map.js بالقياس؛ وهنا التوسيط الأفقي فقط */
   transform:translateX(-50%);
   background:var(--surface); color:var(--ink);
   border:1px solid var(--line); border-radius:var(--r);
@@ -950,12 +1071,11 @@ body.gate::before{ background-image:none; }
 
 @media (max-width: 560px){
   .mapbar__f{ flex:1 1 100%; }
-  /* الشاشة الضيّقة تحدّ العرض، فالارتفاع يتبعه ولا يبقى فراغ */
   .mapbox{ height:clamp(340px, 48vh, 430px); }
   .mapbox--short{ height:clamp(300px, 40vh, 360px); }
+  .kwpin{ --beam:26px; --dot:13px; }
 
-  /* النافذة على الهاتف تستقرّ في أسفل الخريطة بدل أن تطفو فوقها،
-     فالخريطة قصيرة هناك ولا تحتمل بطاقةً عائمة. */
+  /* النافذة على الهاتف تستقرّ في أسفل المشهد بدل أن تطفو فوقه */
   .kwpop{
     inset-block-end:8px; inset-inline:8px;
     left:auto !important; top:auto !important;
