@@ -17,6 +17,24 @@
     </div>
 
     <div class="field">
+      <label for="inspFacility" data-i18n="a.facilityType">نوع المنشأة</label>
+      <select id="inspFacility" name="facilityType" aria-describedby="inspFacilityErr" required>
+        <option value="" data-i18n="a.pickFacility">اختر نوع المنشأة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js — المصدر الواحد للقائمة -->
+      </select>
+      <p class="field__err" id="inspFacilityErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspGov" data-i18n="a.governorate">المحافظة</label>
+      <select id="inspGov" name="governorate" aria-describedby="inspGovErr" required>
+        <option value="" data-i18n="a.pickGov">اختر المحافظة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js -->
+      </select>
+      <p class="field__err" id="inspGovErr" role="alert"></p>
+    </div>
+
+    <div class="field">
       <label for="inspDate" data-i18n="m3.e">تاريخ الفحص</label>
       <input type="date" id="inspDate" name="date" aria-describedby="inspDateErr" required />
       <p class="field__err" id="inspDateErr" role="alert"></p>

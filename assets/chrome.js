@@ -170,9 +170,19 @@
       return lang === 'en' && key in EN ? EN[key] : fallback;
     };
 
+    /* نوع المنشأة والمحافظة يُملآن من القائمة المشتركة، فالتسميات واحدة
+       أينما ظهرت. الإضافة إليهما تكون في assets/facility-types.js وحده. */
+    var lists = window.MIRSAAD_LISTS;
+    if (lists) {
+      lists.fill(document.getElementById('inspFacility'), lists.FACILITY_TYPES, lang);
+      lists.fill(document.getElementById('inspGov'), lists.GOVERNORATES, lang);
+    }
+
     /* [الحقل، سطر خطئه، مفتاح الرسالة، الرسالة العربية] */
     var REQ = [
       ['inspAsset',   'inspAssetErr',   'e.assetReq',   'اختر المنشأة المفحوصة.'],
+      ['inspFacility','inspFacilityErr','e.facilityReq','اختر نوع المنشأة.'],
+      ['inspGov',     'inspGovErr',     'e.govReq',     'اختر المحافظة.'],
       ['inspDate',    'inspDateErr',    'e.dateReq',    'حدّد تاريخ الفحص.'],
       ['inspType',    'inspTypeErr',    'e.typeReq',    'اختر نوع الفحص.'],
       ['inspStaff',   'inspStaffErr',   'e.staffReq',   'اكتب اسم الموظف المسؤول.'],
