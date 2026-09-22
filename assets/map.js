@@ -1,8 +1,13 @@
-/* مِرصاد — خريطة المنشآت على الكويت.
+/* مِرصاد — خريطة المنشآت على الكويت، مشهدًا ثلاثي الأبعاد.
 
    رسم SVG داخل الصفحة، بلا بلاطات ولا مزوّد خرائط ولا مفتاح ولا شبكة:
    الهندسة في assets/kuwait.js، والمنشآت في assets/facilities.js، وكلاهما
    يُحمَّل مع الصفحة. فلا مربّع رمادي ينتظر، ولا بلاطة تتأخّر أو تنقص.
+
+   المشهد: لوحٌ مائل في فضاء ذي منظور. البلاد تُرسم مرّات فوق بعضها
+   بإزاحة في العمق فتبدو كتلةً لها سُمك، ويقوم فوقها عمودٌ لكل منشأة
+   برأسٍ يواجه الناظر. والأعماق والوهج والظلّ كلّها CSS، فلا مكتبة ولا
+   بيانات تُجلب.
 
    تُستدعى على كل صفحة فيها عنصر ‎[data-mirsaad-map]‎ — صفحة الخريطة،
    وقسم الخريطة في الرئيسية — فالمكوّن واحد والبيانات واحدة. */
@@ -27,6 +32,10 @@
   }
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  /* ميل اللوح ودورانه. الميل معتدل عن قصد: كلّما اشتدّ ازداد المشهد
+     عمقًا ونقصت قراءة الأسماء، وهذه حدّ يجمع الأمرين. */
+  var TILT = 38, SPIN = -9, DEPTH = 34;
 
   /* ---------- المرشّحات ---------- */
   var filters = { type: '', status: '', gov: '' };
@@ -72,36 +81,70 @@
     });
   }
 
-  /* ---------- بناء الرسم ---------- */
+  /* ---------- بناء المشهد ---------- */
   host.classList.add('kwmap');
   host.innerHTML = '';
+  host.style.setProperty('--kwtilt', TILT + 'deg');
+  host.style.setProperty('--kwspin', SPIN + 'deg');
+  /* الميل يضغط الرأسيّ بجيب تمامه، فتُمطّ الأسماء بمقلوبه لتعود
+     إلى نسبتها وقد بقيت راقدةً على اللوح. */
+  host.style.setProperty('--kwstretch',
+    (1 / Math.cos(TILT * Math.PI / 180)).toFixed(3));
 
-  var svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('class', 'kwmap__svg');
-  svg.setAttribute('xmlns', SVG_NS);
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', t('map.alt', 'خريطة الكويت ومواقع المنشآت'));
-  host.appendChild(svg);
+  function div(cls, parent) {
+    var d = document.createElement('div');
+    d.className = cls;
+    (parent || host).appendChild(d);
+    return d;
+  }
+
+  var scene = div('kwscene');
+  var stage = div('kwstage', scene);
+  var plane = div('kwplane', stage);      // الماء تحت البلاد
+  var slabs = div('kwslabs', stage);      // سُمك الكتلة
+  var top = div('kwtop', stage);          // وجه البلاد وأسماؤها
+  var anchors = div('kwanchors', stage);  // مرابط على اللوح تحمل مواضع المنشآت
+
+  div('kwhorizon');                       // وهج الأفق
+  div('kwvignette');                      // إظلام الأطراف
+
+  /* الأعمدة طبقةٌ مسطّحة فوق المشهد، لا داخل اللوح المائل.
+
+     السبب: رفع الرأس في العمق بـ‎translateZ‎ لا يُعوَّل عليه — رأيتُ
+     متصفّحًا يحسب موضعه مرفوعًا ثم يرسمه غير مرفوع، فيقع ما يُرى في
+     غير ما يُنقر. والحساب هنا لا يحتاج إليه أصلًا: عمودٌ قائم على لوح
+     مائل يقع ظلّه على الشاشة خطًّا رأسيًّا مهما دار اللوح في مستواه،
+     وطوله المرئي طولُه في جيب زاوية الميل. فتُرسم الأعمدة ببكسلات
+     مستوية، وتُقرأ مواضع أقدامها من مرابطها على اللوح. */
+  var pins = div('kwpins');
 
   /* هامش حول البلاد. وإلى الشرق هامش أوسع، فأسماء المحافظات الأربع
      المتجاورة تخرج إلى هناك — ولولاه لقُطعت على الشاشات الضيّقة. */
   var PAD = 26, PAD_E = 185;
   var FULL = [-PAD, -PAD, geo.W + PAD + PAD_E, geo.H + PAD * 2];
+  var view = FULL.slice();
 
-  function layer(cls) {
-    var g = document.createElementNS(SVG_NS, 'g');
-    g.setAttribute('class', cls);
-    svg.appendChild(g);
-    return g;
+  function svgIn(parent, cls) {
+    var s = document.createElementNS(SVG_NS, 'svg');
+    s.setAttribute('class', cls);
+    s.setAttribute('preserveAspectRatio', 'none');
+    s.setAttribute('aria-hidden', 'true');
+    parent.appendChild(s);
+    return s;
   }
 
-  var gLand = layer('kwmap__land');
-  var gNames = layer('kwmap__names');
-  var gPins = layer('kwmap__pins');
+  /* وجه البلاد */
+  var face = svgIn(top, 'kwmap__svg');
+  face.setAttribute('role', 'img');
+  face.removeAttribute('aria-hidden');
+  face.setAttribute('aria-label', t('map.alt', 'خريطة الكويت ومواقع المنشآت'));
 
-  /* المحافظات: لكل واحدة مساحتها وحدّها، والمفتاح هو مفتاح القائمة
-     المشتركة، فيمكن إبرازها حين يُرشَّح بها. */
+  var gLand = document.createElementNS(SVG_NS, 'g');
+  var gNames = document.createElementNS(SVG_NS, 'g');
+  gNames.setAttribute('class', 'kwmap__names');
+  face.appendChild(gLand);
+  face.appendChild(gNames);
+
   geo.AREAS.forEach(function (a) {
     var p = document.createElementNS(SVG_NS, 'path');
     p.setAttribute('d', a.d);
@@ -113,11 +156,21 @@
     gLand.appendChild(p);
   });
 
-  /* أسماء المحافظات. الأربع الصغيرة متجاورة حول الجون فلا تتّسع
-     لأسمائها، وتخرج إلى فراغ مجاور بخيط رفيع يصلها بمدينتها.
+  /* السُمك: نسخٌ من الشكل تنزل في العمق طبقةً بعد طبقة */
+  var LAYERS = 9;
+  for (var i = LAYERS; i >= 1; i--) {
+    var s = svgIn(slabs, 'kwslab');
+    s.style.transform = 'translateZ(' + (-i * DEPTH / LAYERS).toFixed(2) + 'px)';
+    s.style.setProperty('--k', (i / LAYERS).toFixed(3));
+    geo.AREAS.forEach(function (a) {
+      var p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', a.d);
+      s.appendChild(p);
+    });
+  }
+  var allSvg = [face].concat([].slice.call(slabs.querySelectorAll('svg')));
 
-     وحين يُرشَّح بمحافظة يضيق الإطار عليها، فيعود اسمها إلى داخلها بلا
-     خيط — وموضعه البعيد قد يقع خارج الإطار عندئذ — وتُطوى بقية الأسماء. */
+  /* ---------- الأسماء ---------- */
   function renderNames(sel) {
     gNames.innerHTML = '';
     geo.AREAS.forEach(function (a) {
@@ -144,32 +197,19 @@
       text.setAttribute('x', tx);
       text.setAttribute('y', ty + (far ? 0 : 4));
       text.setAttribute('class', 'kwmap__name' + (far ? ' kwmap__name--far' : ''));
-      text.setAttribute('data-gov', a.key);
       text.setAttribute('text-anchor', far ? (a.side > 0 ? 'start' : 'end') : 'middle');
       text.setAttribute('dominant-baseline', 'middle');
       text.textContent = lists.governorateLabel(a.key);
       gNames.appendChild(text);
     });
   }
-  renderNames('');
 
-  /* ---------- الإطار: البلاد كاملةً، أو محافظةً حين يُرشَّح بها ---------- */
+  /* ---------- الإطار ---------- */
   function boxOf(key) {
     for (var i = 0; i < geo.AREAS.length; i++) {
       if (geo.AREAS[i].key === key) return geo.AREAS[i].box;
     }
     return null;
-  }
-
-  var view = FULL.slice();
-
-  function setView(next) {
-    view = next;
-    svg.setAttribute('viewBox', next.join(' '));
-    /* العلامات تُرسم في فضاء الرسم، فلولا معاكسة التكبير لتضخّمت مع
-       الإطار. النسبة إلى الإطار الكامل تُبقي حجمها على الشاشة ثابتًا. */
-    var k = next[2] / FULL[2];
-    host.style.setProperty('--kwmap-scale', k.toFixed(4));
   }
 
   function frameFor(gov) {
@@ -180,7 +220,32 @@
     return [b[0] - m, b[1] - m, w + m * 2, h + m * 2];
   }
 
-  setView(FULL.slice());
+  /* اللوح يأخذ نسبة الإطار نفسها، فالنِسب المئوية للأعمدة تطابق
+     إحداثيات الرسم تمامًا ولا يبقى فرق بين الطبقتين. */
+  function layout() {
+    var box = host.getBoundingClientRect();
+    if (!box.width) return;
+    var ar = view[2] / view[3];
+    var c = Math.cos(TILT * Math.PI / 180);
+    /* المنظور يكبّر الحافة القريبة، فالتقدير المسطّح وحده يُخرج البلاد
+       عن الإطار. هذان المعاملان يتركان لذلك متّسعًا. */
+    var w = Math.min(box.width * 0.90, (box.height * 0.80) / c * ar);
+    var h = w / ar;
+    stage.style.width = w + 'px';
+    stage.style.height = h + 'px';
+    stage.style.marginInlineStart = (-w / 2) + 'px';
+    stage.style.marginTop = (-h / 2) + 'px';
+    /* الأسماء والرؤوس تقاوم الميل والتصغير فيبقى حجمها مقروءًا */
+    host.style.setProperty('--kwmap-scale', (view[2] / FULL[2]).toFixed(4));
+  }
+
+  function setView(next) {
+    view = next;
+    var vb = next.join(' ');
+    allSvg.forEach(function (s) { s.setAttribute('viewBox', vb); });
+    layout();
+    placePins();
+  }
 
   /* ---------- النافذة ---------- */
   var pop = document.createElement('div');
@@ -190,7 +255,7 @@
 
   function closePop() {
     pop.hidden = true;
-    var on = gPins.querySelector('.is-on');
+    var on = pins.querySelector('.is-on');
     if (on) on.classList.remove('is-on');
   }
 
@@ -225,35 +290,22 @@
     pop.innerHTML = popHtml(f);
     pop.hidden = false;
 
-    /* الرسم يُطبع داخل الحاوية بهامشين، فالنسبة المئوية من الحاوية
-       تُخطئ موضع العلامة. مصفوفة الرسم نفسها تعطي الموضع الحقيقي. */
-    var p = geo.project(f.lat, f.lng);
+    /* رأس العمود مائل في الفضاء، لكن موضعه على الشاشة معلوم. النافذة
+       خارج اللوح فتُوضع بذلك الموضع لا بحساب في فضاء الرسم. */
     var box = host.getBoundingClientRect();
-    var m = svg.getScreenCTM();
-    var left, top;
-    if (m && svg.createSVGPoint) {
-      var pt = svg.createSVGPoint();
-      pt.x = p.x; pt.y = p.y;
-      var sp = pt.matrixTransform(m);
-      left = sp.x - box.left;
-      top = sp.y - box.top;
-    } else {
-      left = (p.x - view[0]) / view[2] * box.width;
-      top = (p.y - view[1]) / view[3] * box.height;
-    }
+    var head = node.querySelector('.kwpin__head').getBoundingClientRect();
+    var left = head.left + head.width / 2 - box.left;
+    var top = head.top - box.top;
 
     pop.style.left = left + 'px';
     pop.style.top = '0px';
 
-    /* فوق العلامة إن اتّسع ما فوقها، وإلا تحتها، وإلا حيث تتّسع —
-       بالقياس لا بالتخمين، فارتفاع النافذة يتبدّل بطول اسم المنشأة. */
-    var ph = pop.offsetHeight, GAP = 16, EDGE = 6;
+    var ph = pop.offsetHeight, GAP = 14, EDGE = 6;
     var y = top - ph - GAP;
-    if (y < EDGE) y = top + GAP;
+    if (y < EDGE) y = top + head.height + GAP;
     if (y + ph > box.height - EDGE) y = Math.max(EDGE, box.height - ph - EDGE);
     pop.style.top = y + 'px';
 
-    /* ولا تخرج عن الحاوية عرضًا */
     var r = pop.getBoundingClientRect();
     var over = (r.left < box.left + EDGE) ? (box.left + EDGE - r.left)
              : (r.right > box.right - EDGE) ? (box.right - EDGE - r.right) : 0;
@@ -262,51 +314,138 @@
     pop.querySelector('.kwpop__x').addEventListener('click', closePop);
   }
 
-  /* ---------- العلامات ---------- */
+  /* ---------- الأعمدة ---------- */
+  var shown = [];
+
   function draw() {
-    var was = pop.hidden;
     closePop();
-    gPins.innerHTML = '';
-    visible().forEach(function (f) {
+    pins.innerHTML = '';
+    anchors.innerHTML = '';
+    shown = visible();
+    shown.forEach(function (f) {
       var s = data.statusOf(f.status);
-      var p = geo.project(f.lat, f.lng);
 
-      var g = document.createElementNS(SVG_NS, 'g');
-      g.setAttribute('class', 'kwpin');
-      g.setAttribute('tabindex', '0');
-      g.setAttribute('role', 'button');
-      g.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ')');
+      anchors.appendChild(document.createElement('i')).className = 'kwanchor';
 
-      var ring = document.createElementNS(SVG_NS, 'circle');
-      ring.setAttribute('class', 'kwpin__ring');
-      ring.setAttribute('r', 9);
-      g.appendChild(ring);
+      var pin = document.createElement('div');
+      pin.className = 'kwpin';
+      pin.style.setProperty('--c', s.color);
 
-      var dot = document.createElementNS(SVG_NS, 'circle');
-      dot.setAttribute('class', 'kwpin__dot');
-      dot.setAttribute('r', 6);
-      dot.setAttribute('fill', s.color);
-      g.appendChild(dot);
+      var foot = document.createElement('span');
+      foot.className = 'kwpin__foot';
+      pin.appendChild(foot);
 
-      var title = document.createElementNS(SVG_NS, 'title');
-      title.textContent = (isEn() ? f.nameEn : f.name) + ' — ' + (isEn() ? s.en : s.ar);
-      g.appendChild(title);
+      var beam = document.createElement('span');
+      beam.className = 'kwpin__beam';
+      pin.appendChild(beam);
 
-      function open(e) { e.preventDefault(); e.stopPropagation(); openPop(f, g); }
-      g.addEventListener('click', open);
-      g.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') open(e);
+      /* الرأس نفسه هو الزرّ: هو ما يُرى في قمّة العمود وما يُنقر */
+      var head = document.createElement('button');
+      head.type = 'button';
+      head.className = 'kwpin__head';
+      head.title = (isEn() ? f.nameEn : f.name) + ' — ' + (isEn() ? s.en : s.ar);
+      head.setAttribute('aria-label', head.title);
+      head.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        openPop(f, pin);
       });
-      gPins.appendChild(g);
+      pin.appendChild(head);
+
+      pins.appendChild(pin);
     });
-    if (!was) closePop();
+    placePins();
   }
 
-  draw();
+  function placePins() {
+    var nodes = anchors.children;
+    for (var i = 0; i < nodes.length && i < shown.length; i++) {
+      var p = geo.project(shown[i].lat, shown[i].lng);
+      nodes[i].style.left = ((p.x - view[0]) / view[2] * 100) + '%';
+      nodes[i].style.top = ((p.y - view[1]) / view[3] * 100) + '%';
+    }
+    syncPins();
+  }
 
-  svg.addEventListener('click', closePop);
+  /* كل عمود يقف حيث يقع مربطه على اللوح */
+  function syncPins() {
+    var box = host.getBoundingClientRect();
+    if (!box.width) return;
+    var marks = anchors.children, nodes = pins.children;
+    for (var i = 0; i < marks.length && i < nodes.length; i++) {
+      var r = marks[i].getBoundingClientRect();
+      nodes[i].style.left = (r.left + r.width / 2 - box.left) + 'px';
+      nodes[i].style.top = (r.top + r.height / 2 - box.top) + 'px';
+      /* الأبعد إلى الخلف أصغر قليلًا، فيعمّق المشهد */
+      var d = (r.top + r.height / 2 - box.top) / Math.max(box.height, 1);
+      nodes[i].style.setProperty('--d', (0.82 + 0.3 * d).toFixed(3));
+      nodes[i].style.zIndex = String(100 + Math.round(d * 100));
+    }
+    stagger();
+  }
+
+  /* المنشآت المتجاورة على الأرض تتراكب رؤوسها عند عرض البلاد كلّها،
+     فيحجب رأسٌ رأسًا ولا يُنقر المحجوب. فتُطال أعمدة المتزاحمين بعضها
+     فوق بعض حتى تفترق الرؤوس — وهو صنيع راسمي هذه الخرائط.
+
+     والقياس على الرؤوس أنفسها بعد رسمها، لا على أقدامها: الحساب
+     التقريبي يترك متزاحمَين هنا أو هناك، والقياس لا يترك. */
+  var STEP = 11, GUARD = 16;
+
+  function stagger() {
+    var nodes = [].slice.call(pins.children);
+    if (!nodes.length) return;
+    nodes.forEach(function (n) { n.style.setProperty('--bump', '0px'); });
+
+    /* من الخلف إلى الأمام، فيعلو الأقربُ الأبعدَ */
+    var order = nodes.slice().sort(function (a, b) {
+      return (parseFloat(a.style.top) || 0) - (parseFloat(b.style.top) || 0);
+    });
+
+    var placed = [];
+    order.forEach(function (n) {
+      var head = n.querySelector('.kwpin__head');
+      if (!head) return;
+      var bump = 0, r;
+      for (var i = 0; i <= GUARD; i++) {
+        n.style.setProperty('--bump', bump + 'px');
+        r = head.getBoundingClientRect();
+        var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        var gap = r.width + 3;
+        var clash = placed.some(function (q) {
+          return Math.abs(q.x - cx) < gap && Math.abs(q.y - cy) < gap;
+        });
+        if (!clash) break;
+        bump += STEP;
+      }
+      r = head.getBoundingClientRect();
+      placed.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    });
+  }
+
+  /* حركة الدخول تنقل اللوح حتى يستقرّ، فتتبعه الأعمدة حتى تسكن */
+  function trackEntrance() {
+    var until = Date.now() + 1800;
+    (function step() {
+      syncPins();
+      if (Date.now() < until) requestAnimationFrame(step);
+    })();
+  }
+
+  renderNames('');
+  setView(FULL.slice());
+  draw();
+  trackEntrance();
+
+  scene.addEventListener('click', closePop);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closePop();
+  });
+
+  var pending = false;
+  window.addEventListener('resize', function () {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () { pending = false; closePop(); layout(); syncPins(); });
   });
 
   /* ---------- ربط المرشّحات ---------- */
@@ -318,11 +457,11 @@
     sel.addEventListener('change', function () {
       filters[KEY[id]] = sel.value;
       if (id === 'mapGov') {
-        setView(frameFor(sel.value));
         gLand.querySelectorAll('.kwmap__gov').forEach(function (p) {
           p.classList.toggle('is-on', !!sel.value && p.getAttribute('data-gov') === sel.value);
         });
         renderNames(sel.value);
+        setView(frameFor(sel.value));
       }
       draw();
       var count = document.getElementById('mapCount');

@@ -162,10 +162,11 @@
   }
 
   /* ---------- صفحة الفحص الجديد ----------
-     نموذج فارغ: المستخدم يختار المنشأة والتاريخ والنوع والقطاع بنفسه،
-     ويرفع ملفاته. لا شيء هنا مُعبَّأ سلفًا، ولا يُغادر الصفحة شيء. */
-  var inspAsset = document.getElementById('inspAsset');
-  if (inspAsset) {
+     نموذج فارغ: المستخدم يختار نوع المنشأة والمحافظة والتاريخ والنوع
+     والقطاع بنفسه، ويرفع ملفاته. لا شيء هنا مُعبَّأ سلفًا، ولا يُغادر
+     الصفحة شيء. */
+  var inspFacility = document.getElementById('inspFacility');
+  if (inspFacility) {
     var tr = function (key, fallback) {
       return lang === 'en' && key in EN ? EN[key] : fallback;
     };
@@ -180,7 +181,6 @@
 
     /* [الحقل، سطر خطئه، مفتاح الرسالة، الرسالة العربية] */
     var REQ = [
-      ['inspAsset',   'inspAssetErr',   'e.assetReq',   'اختر المنشأة المفحوصة.'],
       ['inspFacility','inspFacilityErr','e.facilityReq','اختر نوع المنشأة.'],
       ['inspGov',     'inspGovErr',     'e.govReq',     'اختر المحافظة.'],
       ['inspDate',    'inspDateErr',    'e.dateReq',    'حدّد تاريخ الفحص.'],
