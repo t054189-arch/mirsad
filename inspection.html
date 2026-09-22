@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body class="shellpage">
@@ -73,6 +76,7 @@
       <a class="sidenav__item" href="app.html#/dashboard"><i aria-hidden="true"></i><span data-i18n="sd.board">لوحة التحكم</span></a>
       <a class="sidenav__item" href="home.html"><i aria-hidden="true"></i><span data-i18n="sd.home">نظرة عامة</span></a>
       <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
+      <a class="sidenav__item" href="map.html"><i aria-hidden="true"></i><span data-i18n="sd.map">الخريطة</span></a>
       <a class="sidenav__item is-on" href="inspection.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.insp">فحص جديد</span></a>
       <a class="sidenav__item" href="analysis.html"><i aria-hidden="true"></i><span data-i18n="sd.analysis">التحليل</span></a>
       <a class="sidenav__item" href="results.html"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
@@ -98,6 +102,24 @@
         <option value="highway" data-i18n="m2.f">طريق سريع</option>
       </select>
       <p class="field__err" id="inspAssetErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspFacility" data-i18n="a.facilityType">نوع المنشأة</label>
+      <select id="inspFacility" name="facilityType" aria-describedby="inspFacilityErr" required>
+        <option value="" data-i18n="a.pickFacility">اختر نوع المنشأة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js — المصدر الواحد للقائمة -->
+      </select>
+      <p class="field__err" id="inspFacilityErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspGov" data-i18n="a.governorate">المحافظة</label>
+      <select id="inspGov" name="governorate" aria-describedby="inspGovErr" required>
+        <option value="" data-i18n="a.pickGov">اختر المحافظة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js -->
+      </select>
+      <p class="field__err" id="inspGovErr" role="alert"></p>
     </div>
 
     <div class="field">
@@ -141,6 +163,17 @@
     </div>
 
     <div class="field">
+      <label for="inspLat" data-i18n="a.coords">إحداثيات الموقع</label>
+      <div class="coords">
+        <input type="number" id="inspLat" name="lat" step="0.0001" min="28.5" max="30.1"
+               data-i18n-attr="placeholder:a.latHint" placeholder="خط العرض — مثال 29.3759" />
+        <input type="number" id="inspLng" name="lng" step="0.0001" min="46.5" max="48.5"
+               data-i18n-attr="placeholder:a.lngHint" placeholder="خط الطول — مثال 47.9774" />
+      </div>
+      <p class="field__hint" data-i18n="a.coordsHint">اختيارية — تُحدّد موضع المنشأة على الخريطة.</p>
+    </div>
+
+    <div class="field">
       <label for="inspNotes" data-i18n="a.notesLabel">ملاحظات ميدانية</label>
       <textarea id="inspNotes" name="notes" rows="3"
                 data-i18n-attr="placeholder:a.notes" placeholder="ملاحظات ميدانية…"></textarea>
@@ -170,7 +203,12 @@
   </main>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="assets/facility-types.js"></script>
+<script src="assets/facilities.js"></script>
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
+<script src="assets/map.js"></script>
 </body>
 </html>

@@ -17,6 +17,24 @@
     </div>
 
     <div class="field">
+      <label for="inspFacility" data-i18n="a.facilityType">نوع المنشأة</label>
+      <select id="inspFacility" name="facilityType" aria-describedby="inspFacilityErr" required>
+        <option value="" data-i18n="a.pickFacility">اختر نوع المنشأة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js — المصدر الواحد للقائمة -->
+      </select>
+      <p class="field__err" id="inspFacilityErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspGov" data-i18n="a.governorate">المحافظة</label>
+      <select id="inspGov" name="governorate" aria-describedby="inspGovErr" required>
+        <option value="" data-i18n="a.pickGov">اختر المحافظة…</option>
+        <!-- الخيارات تُملأ من assets/facility-types.js -->
+      </select>
+      <p class="field__err" id="inspGovErr" role="alert"></p>
+    </div>
+
+    <div class="field">
       <label for="inspDate" data-i18n="m3.e">تاريخ الفحص</label>
       <input type="date" id="inspDate" name="date" aria-describedby="inspDateErr" required />
       <p class="field__err" id="inspDateErr" role="alert"></p>
@@ -54,6 +72,17 @@
         <option value="whole"  data-i18n="a.sectionAll">المنشأة كاملة</option>
       </select>
       <p class="field__err" id="inspSectionErr" role="alert"></p>
+    </div>
+
+    <div class="field">
+      <label for="inspLat" data-i18n="a.coords">إحداثيات الموقع</label>
+      <div class="coords">
+        <input type="number" id="inspLat" name="lat" step="0.0001" min="28.5" max="30.1"
+               data-i18n-attr="placeholder:a.latHint" placeholder="خط العرض — مثال 29.3759" />
+        <input type="number" id="inspLng" name="lng" step="0.0001" min="46.5" max="48.5"
+               data-i18n-attr="placeholder:a.lngHint" placeholder="خط الطول — مثال 47.9774" />
+      </div>
+      <p class="field__hint" data-i18n="a.coordsHint">اختيارية — تُحدّد موضع المنشأة على الخريطة.</p>
     </div>
 
     <div class="field">

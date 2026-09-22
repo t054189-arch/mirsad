@@ -20,6 +20,7 @@ NAV = [
     ('board',       'app.html#/dashboard', 'sd.board','لوحة التحكم'),
     ('home',        'home.html',        'sd.home',    'نظرة عامة'),
     ('structures',  'structures.html',  'sd.assets',  'المنشآت'),
+    ('map',         'map.html',         'sd.map',     'الخريطة'),
     ('inspection',  'inspection.html',  'sd.insp',    'فحص جديد'),
     ('analysis',    'analysis.html',    'sd.analysis','التحليل'),
     ('results',     'results.html',     'sd.results', 'النتائج'),

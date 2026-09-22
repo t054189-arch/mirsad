@@ -14,6 +14,7 @@
  *   3. Blocks sign-in while the form is incomplete.
  *   4. A show/hide control for the password field.
  *   5. Escape closes the mobile navigation drawer.
+ *   6. Closes routes withdrawn from the product (see WITHDRAWN).
  */
 (function () {
   "use strict";
@@ -33,8 +34,27 @@
     root.setAttribute("data-path", path || "landing");
   }
 
-  publishRoute();
-  window.addEventListener("hashchange", publishRoute);
+  /* Screens withdrawn from the product. Their components still sit inside
+     the minified bundle and cannot be deleted from it, so the route is
+     closed here instead: anyone arriving at one is sent to the dashboard
+     before it paints. Authentication, sessions and roles are untouched. */
+  var WITHDRAWN = { users: "#/dashboard" };
+
+  function closeWithdrawnRoute() {
+    var segment = (location.hash || "").replace(/^#\/?/, "").split("/")[0];
+    var target = WITHDRAWN[segment];
+    if (!target) return false;
+    location.replace(target);
+    return true;
+  }
+
+  function onRouteChange() {
+    if (closeWithdrawnRoute()) return;
+    publishRoute();
+  }
+
+  onRouteChange();
+  window.addEventListener("hashchange", onRouteChange);
 
   /* ---------------------------------------------------------------------
    * 2 & 3. Sign-in form: Arabic messages, and no empty submissions
@@ -171,6 +191,7 @@
    * Re-apply after the app renders, and whenever it renders again.
    * ------------------------------------------------------------------- */
   function apply() {
+    if (closeWithdrawnRoute()) return;
     publishRoute();
     addPasswordToggle();
   }

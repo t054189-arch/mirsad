@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title data-i18n="sc.results">النتائج — مِرصاد</title>
+<title data-i18n="sc.map">الخريطة — مِرصاد</title>
 <meta name="theme-color" content="#0b0b0c" />
 <meta name="robots" content="noindex" />
 <script src="assets/boot.js"></script>
@@ -37,7 +37,7 @@
     </span>
   </a>
 
-  <h1 class="topbar__page" data-i18n="sc.results">النتائج</h1>
+  <h1 class="topbar__page" data-i18n="sc.map">الخريطة</h1>
 
   <div class="topbar__tools">
     <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b><em class="who__role"></em></span>
@@ -76,10 +76,10 @@
       <a class="sidenav__item" href="app.html#/dashboard"><i aria-hidden="true"></i><span data-i18n="sd.board">لوحة التحكم</span></a>
       <a class="sidenav__item" href="home.html"><i aria-hidden="true"></i><span data-i18n="sd.home">نظرة عامة</span></a>
       <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
-      <a class="sidenav__item" href="map.html"><i aria-hidden="true"></i><span data-i18n="sd.map">الخريطة</span></a>
+      <a class="sidenav__item is-on" href="map.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.map">الخريطة</span></a>
       <a class="sidenav__item" href="inspection.html"><i aria-hidden="true"></i><span data-i18n="sd.insp">فحص جديد</span></a>
       <a class="sidenav__item" href="analysis.html"><i aria-hidden="true"></i><span data-i18n="sd.analysis">التحليل</span></a>
-      <a class="sidenav__item is-on" href="results.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
+      <a class="sidenav__item" href="results.html"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
       <a class="sidenav__item" href="review.html"><i aria-hidden="true"></i><span data-i18n="sd.review">المراجعة</span></a>
       <a class="sidenav__item" href="record.html"><i aria-hidden="true"></i><span data-i18n="sd.rep">السجلات</span></a>
       <a class="sidenav__item" href="alerts.html"><i aria-hidden="true"></i><span data-i18n="sd.alerts">الإشعارات</span></a>
@@ -87,28 +87,26 @@
   </nav>
 
   <main class="page" id="page">
-<div class="page__bar">
-  <p class="page__lead" data-i18n="pg.resLead">ما استخرجه الوكيل الذكي من فحص جسر جابر، مرتبًا حسب الأولوية.</p>
-  <span class="chipacc" data-i18n="m6.b">دقة التحليل ٨٧٪</span>
+<p class="page__lead" data-i18n="pg.mapLead">مواقع المنشآت التي لها سجل فحص على خريطة الكويت. اضغط علامة لتفتح تفاصيلها.</p>
+
+<div class="mapbar">
+  <label class="mapbar__f">
+    <span data-i18n="a.facilityType">نوع المنشأة</span>
+    <select id="mapType"><option value="" data-i18n="map.allTypes">كل الأنواع</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="map.status">حالة الفحص</span>
+    <select id="mapStatus"><option value="" data-i18n="map.allStatus">كل الحالات</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="a.governorate">المحافظة</span>
+    <select id="mapGov"><option value="" data-i18n="map.allGov">كل المحافظات</option></select>
+  </label>
+  <p class="mapbar__n"><b id="mapCount">0</b> <span data-i18n="map.shown">منشأة معروضة</span></p>
 </div>
 
-<a class="rowcard rowcard--go" href="review.html">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.c">احتمال وجود تشقق</b><small data-i18n="m6.d">الركيزة رقم ٢</small></span>
-  <span class="pill pill--hi" data-i18n="lv.hi">عالية</span>
-</a>
-<a class="rowcard rowcard--go" href="review.html">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.e">تآكل سطحي</b><small data-i18n="m6.f">السطح السفلي</small></span>
-  <span class="pill pill--mid" data-i18n="lv.mid">متوسطة</span>
-</a>
-<div class="rowcard">
-  <span class="rowcard__img"></span>
-  <span class="rowcard__t"><b data-i18n="m6.g">لا توجد مشكلة</b><small data-i18n="m6.h">الجزء العلوي</small></span>
-  <span class="pill pill--ok" data-i18n="lv.ok">سليم</span>
-</div>
-
-<a class="ui ui--go page__go" href="review.html" data-i18n="m6.i">مراجعة النتائج</a>
+<div class="mapbox" id="mapMain" data-mirsaad-map></div>
+<div class="maplegend" id="mapLegend" aria-label="مفتاح الخريطة"></div>
 
   </main>
 </div>
