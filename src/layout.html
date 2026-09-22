@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-mode="dark">
+<html lang="ar" dir="rtl" data-mode="dark"{{HTML_ATTR}}>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/style.css" />
+<link rel="stylesheet" href="assets/style.css" />{{HEAD_EXTRA}}
 </head>
 <body class="shellpage">
 
@@ -37,8 +37,7 @@
   <h1 class="topbar__page" data-i18n="{{TITLE_KEY}}">{{TITLE_AR}}</h1>
 
   <div class="topbar__tools">
-    <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b><em class="who__role"></em></span>
-
+{{WHO}}
     <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
       <span id="langLabel">EN</span>
     </button>
@@ -54,14 +53,7 @@
       </svg>
     </button>
 
-    <button class="iconbtn" id="outBtn" data-i18n-attr="aria-label:a.logout" aria-label="تسجيل الخروج">
-      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
-        <path d="M15 5.5V4a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 4v16a1.5 1.5 0 0 0 1.5 1.5h8A1.5 1.5 0 0 0 15 20v-1.5"
-              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M9.5 12h11m0 0-3.2-3.2M20.5 12l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-
+{{OUT}}
     <button class="navtoggle" id="sideToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -77,11 +69,6 @@
 {{BODY}}
   </main>
 </div>
-<script src="assets/facility-types.js"></script>
-<script src="assets/kuwait.js"></script>
-<script src="assets/facilities.js"></script>
-<script src="assets/i18n.js"></script>
-<script src="assets/chrome.js"></script>
-<script src="assets/map.js"></script>
+{{SCRIPTS}}{{FOOT_EXTRA}}
 </body>
 </html>
