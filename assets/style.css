@@ -849,11 +849,11 @@ body.gate::before{ background-image:none; }
   height:min(62vh, 560px);
   border:1px solid var(--line); border-radius:var(--r);
   overflow:hidden; background:var(--surface-2);
-  /* الخريطة أرضية فاتحة، فتهدأ قليلًا لتجاور الثيم الداكن */
   isolation:isolate;
 }
 .mapbox--short{ height:min(46vh, 380px); }
-[data-mode="dark"] .mapbox .leaflet-tile-pane{ filter:saturate(.72) brightness(.72) contrast(1.06); }
+/* لا مرشّح لون هنا: البلاطات نفسها داكنة في الوضع الداكن — انظر
+   TILES في assets/map.js. تعتيم خريطة فاتحة يطمس أسماءها. */
 .mapbox--plain{ height:auto; padding:16px; background:transparent; border-style:dashed; }
 
 .maplegend{ display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; }
