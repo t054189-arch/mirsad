@@ -110,52 +110,75 @@
     return render;
   }
 
-  /* ---------- البلاطات ----------
+  /* ---------- الخلفيات ----------
 
-     في الوضع الداكن نستعمل خريطة داكنة جاهزة، لا خريطةً فاتحة نعتّمها:
-     التعتيم يخفض الورق والحبر معًا، فتبهت أسماء الشوارع والمناطق حتى
-     تكاد لا تُقرأ. وكلا المصدرين بلا مفتاح API. */
-  var TILES = {
-    dark: {
+     الوضوح أوّلًا. خرائط CARTO الداكنة من طراز «اللوحة» (canvas): وُضعت
+     لتكون أرضيةً هادئة تحت البيانات، فأسماؤها قليلة وطرقها رمادية على
+     رمادي — لا تصلح حين يكون المطلوب قراءة الطرق والمناطق والسواحل.
+     فالافتراضية عندنا هي خريطة OpenStreetMap التفصيلية في الوضعين،
+     بلا أي مرشّح لون: هي أغزر الخرائط المجانية تفصيلًا وأقواها تباينًا،
+     تُظهر الساحل والطرق الرئيسة وأسماء المدن والمناطق وحدود المحافظات.
+
+     والداكنة تبقى خيارًا بضغطة لمن أرادها. كلاهما بلا مفتاح API. */
+  var BASEMAPS = [
+    {
+      value: 'detail', ar: 'تفصيلية', en: 'Detailed',
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      sub: 'abc', maxZoom: 19, dark: false,
+      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    },
+    {
+      value: 'dark', ar: 'داكنة', en: 'Dark',
       url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-      sub: 'abcd', maxZoom: 19,
+      sub: 'abcd', maxZoom: 19, dark: true,
       attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
             ' &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    },
-    light: {
-      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      sub: 'abc', maxZoom: 18,
-      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }
-  };
+  ];
 
-  function themeMode() {
-    return document.documentElement.getAttribute('data-mode') === 'light' ? 'light' : 'dark';
+  var BASEMAP_KEY = 'mirsaad-basemap';
+
+  function basemapOf(value) {
+    for (var i = 0; i < BASEMAPS.length; i++) {
+      if (BASEMAPS[i].value === value) return BASEMAPS[i];
+    }
+    return BASEMAPS[0];
   }
 
-  var tiles = null, tilesMode = null;
+  function savedBasemap() {
+    try { return basemapOf(localStorage.getItem(BASEMAP_KEY)).value; }
+    catch (e) { return BASEMAPS[0].value; }
+  }
 
-  function setTiles(map, which) {
-    if (tilesMode === which) return;
-    tilesMode = which;
+  var tiles = null, tilesValue = null;
 
-    var spec = TILES[which];
+  function setBasemap(map, value) {
+    if (tilesValue === value) return;
+    tilesValue = value;
+
+    var spec = basemapOf(value);
+    /* العلامات تُقرأ على أرضية فاتحة بخلاف الداكنة، فتعرف الصفحة أيّهما */
+    host.setAttribute('data-basemap', spec.dark ? 'dark' : 'light');
+
     var next = L.tileLayer(spec.url, {
       subdomains: spec.sub,
       maxZoom: spec.maxZoom,
-      minZoom: 7,
+      minZoom: data.MIN_ZOOM,
+      /* الشاشات عالية الكثافة: البلاطة العادية تبدو ضبابية عليها */
+      detectRetina: true,
       attribution: spec.attr
     });
 
-    /* لو تعذّر مصدر الوضع الداكن، نرجع إلى OpenStreetMap: خريطة فاتحة
-       أوضح من إطار فارغ. بضع بلاطات ناقصة أمر عادي، فلا ننتقل إلا بعد
-       تكرارها. */
-    if (which === 'dark') {
+    /* لو تعذّر المصدر المختار رجعنا إلى الافتراضي بدل إطار فارغ. ونقص
+       بضع بلاطات أمر عادي، فلا ننتقل إلا بعد تكراره. */
+    if (value !== BASEMAPS[0].value) {
       var misses = 0;
       next.on('tileerror', function () {
-        if (++misses < 6 || tilesMode !== 'dark') return;
+        if (++misses < 6 || tilesValue !== value) return;
         next.off('tileerror');
-        setTiles(map, 'light');
+        setBasemap(map, BASEMAPS[0].value);
+        var pick = document.getElementById('mapBase');
+        if (pick) pick.value = BASEMAPS[0].value;
       });
     }
 
@@ -172,18 +195,22 @@
     var map = L.map(host, {
       center: data.CENTRE,
       zoom: data.ZOOM,
-      maxBounds: data.BOUNDS,
-      maxBoundsViscosity: 0.85,
+      minZoom: data.MIN_ZOOM,
+      /* حدود التجوال أوسع من الكويت قليلًا، فاليد تتحرّك ولا تصطدم */
+      maxBounds: data.PAN_BOUNDS,
+      maxBoundsViscosity: 0.7,
       scrollWheelZoom: false,
+      /* مستويات كسرية، ليضبط الإطارُ البلادَ تمامًا لا مقتطعةً */
+      zoomSnap: 0.25,
+      zoomControl: true,
       attributionControl: true
     });
-    map.fitBounds(data.BOUNDS, { padding: [18, 18] });
 
-    setTiles(map, themeMode());
+    /* الإطار الأوّل: الكويت كاملةً وقد ملأت الإطار — قريبة بما يكفي
+       لقراءة الطرق الرئيسة وأسماء المناطق، لا نقطةً في بحر فراغ. */
+    map.fitBounds(data.BOUNDS, { padding: [8, 8] });
 
-    /* الثيم يتبدّل من الشريط العلوي، فتتبعه البلاطات حيّةً */
-    new MutationObserver(function () { setTiles(map, themeMode()); })
-      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+    setBasemap(map, savedBasemap());
 
     // التكبير بعجلة الفأرة بعد الضغط فقط، فلا تختطف الخريطة تمرير الصفحة
     map.on('click', function () { map.scrollWheelZoom.enable(); });
@@ -199,9 +226,9 @@
       return L.divIcon({
         className: 'mappin',
         html: '<span style="background:' + colour + '"></span>',
-        iconSize: [18, 18],
-        iconAnchor: [9, 9],
-        popupAnchor: [0, -10]
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+        popupAnchor: [0, -13]
       });
     }
 
@@ -217,10 +244,12 @@
       });
     }
     draw();
+    mapInstance = map;
     setTimeout(function () { map.invalidateSize(); }, 120);
     return draw;
   }
 
+  var mapInstance = null;
   var redraw = (typeof L === 'undefined') ? fallback() : build();
 
   /* ---------- ربط المرشّحات ---------- */
@@ -234,6 +263,31 @@
       if (count) count.textContent = String(visible().length);
     });
   });
+
+  /* ---------- مبدّل الخلفية ---------- */
+  var base = document.getElementById('mapBase');
+  if (base) {
+    if (typeof L === 'undefined') {
+      /* بلا خريطة لا معنى للمبدّل */
+      var wrap = base.closest('.mapbar__f');
+      if (wrap) wrap.hidden = true;
+    } else {
+      base.innerHTML = '';
+      BASEMAPS.forEach(function (b) {
+        var o = document.createElement('option');
+        o.value = b.value;
+        o.textContent = isEn() ? b.en : b.ar;
+        o.setAttribute('data-ar', b.ar);
+        o.setAttribute('data-en', b.en);
+        base.appendChild(o);
+      });
+      base.value = savedBasemap();
+      base.addEventListener('change', function () {
+        try { localStorage.setItem(BASEMAP_KEY, base.value); } catch (e) { /* التخزين غير متاح */ }
+        if (mapInstance) setBasemap(mapInstance, base.value);
+      });
+    }
+  }
 
   var count = document.getElementById('mapCount');
   if (count) count.textContent = String(visible().length);

@@ -845,27 +845,76 @@ body.gate::before{ background-image:none; }
 .mapbar__n{ margin:0; flex:0 0 auto; color:var(--ink-soft); font-size:.86rem; padding-block-end:10px; }
 .mapbar__n b{ color:var(--accent); font-size:1.05rem; }
 
+/* الخريطة واجهةٌ قائمة بذاتها لا عنصرًا صغيرًا مدرجًا، فلها ارتفاع
+   يليق بذلك. ولا مرشّح لون ولا حجاب ولا ضباب فوق البلاطات: الوضوح
+   يأتي من اختيار الخلفية نفسها — انظر BASEMAPS في assets/map.js. */
 .mapbox{
-  height:min(62vh, 560px);
+  height:clamp(550px, 66vh, 650px);
   border:1px solid var(--line); border-radius:var(--r);
   overflow:hidden; background:var(--surface-2);
+  box-shadow:var(--shadow);
   isolation:isolate;
 }
-.mapbox--short{ height:min(46vh, 380px); }
-/* لا مرشّح لون هنا: البلاطات نفسها داكنة في الوضع الداكن — انظر
-   TILES في assets/map.js. تعتيم خريطة فاتحة يطمس أسماءها. */
-.mapbox--plain{ height:auto; padding:16px; background:transparent; border-style:dashed; }
+/* الخريطة المدرجة في الرئيسية أقصر، وتبقى خريطةً لا شريطًا */
+.mapbox--short{ height:clamp(420px, 52vh, 500px); }
+.mapbox--plain{
+  height:auto; padding:16px; background:transparent;
+  border-style:dashed; box-shadow:none;
+}
 
 .maplegend{ display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; }
 .maplegend__i{ display:flex; align-items:center; gap:8px; font-size:.84rem; color:var(--ink-soft); }
-.maplegend__i i{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
-
-/* العلامة: قرص ملوّن بحلقة، يُقرأ فوق أي بلاطة */
-.mappin span{
-  display:block; width:18px; height:18px; border-radius:50%;
-  border:2.5px solid rgba(255,255,255,.92);
-  box-shadow:0 2px 8px rgba(0,0,0,.5);
+.maplegend__i i{
+  width:13px; height:13px; border-radius:50%; flex-shrink:0;
+  border:2px solid var(--surface); box-shadow:0 0 0 1px rgba(0,0,0,.35);
 }
+
+/* العلامة: قرص ملوّن بحلقتين — بيضاء للفصل عن الخريطة، وداكنة حولها
+   لتبقى مفصولةً حتى فوق البلاطات الفاتحة. الحلقتان تنعكسان فوق
+   الخلفية الداكنة فلا تذوب العلامة في أيّهما. */
+.mappin span{
+  display:block; width:22px; height:22px; border-radius:50%;
+  border:3px solid #fff;
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.55), 0 2px 9px rgba(0,0,0,.45);
+}
+[data-basemap="dark"] .mappin span{
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.75), 0 2px 10px rgba(0,0,0,.6);
+}
+
+/* التجميع: قرص بلون النصّ لا الأخضر الافتراضي، ويُقرأ فوق الخلفيتين */
+.mapbox .marker-cluster,
+.mapbox .marker-cluster div{
+  background:transparent; border:0;
+}
+.mapbox .marker-cluster div{
+  width:38px; height:38px; margin:0; line-height:34px;
+  border-radius:50%; font:inherit; font-size:.9rem; font-weight:700;
+  color:#0b0b0c; background:#e6dac6;
+  border:2px solid #fff;
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.55), 0 3px 10px rgba(0,0,0,.45);
+}
+.mapbox .marker-cluster span{ line-height:34px; }
+
+/* أزرار التكبير: مربّعان واضحان لا شفافان يذوبان في الخريطة */
+.mapbox .leaflet-control-zoom{
+  border:0; box-shadow:0 3px 12px rgba(0,0,0,.4);
+}
+.mapbox .leaflet-control-zoom a{
+  width:36px; height:36px; line-height:34px;
+  color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); font-size:1.25rem; font-weight:600;
+}
+.mapbox .leaflet-control-zoom a:first-child{ border-radius:10px 10px 0 0; }
+.mapbox .leaflet-control-zoom a:last-child{ border-radius:0 0 10px 10px; border-block-start:0; }
+.mapbox .leaflet-control-zoom a:hover{ background:var(--surface-2); color:var(--accent); }
+.mapbox .leaflet-control-zoom a.leaflet-disabled{ color:var(--ink-soft); opacity:.55; }
+
+/* الإسناد يبقى مقروءًا فوق الخلفيتين */
+.mapbox .leaflet-control-attribution{
+  background:var(--surface); color:var(--ink-soft);
+  font-size:.7rem; padding:2px 8px; border-radius:8px 0 0 0;
+}
+.mapbox .leaflet-control-attribution a{ color:var(--accent); }
 
 /* النافذة تتبع الثيم بدل أبيض Leaflet الافتراضي */
 .leaflet-popup-content-wrapper{
@@ -889,7 +938,8 @@ body.gate::before{ background-image:none; }
 
 @media (max-width: 560px){
   .mapbar__f{ flex:1 1 100%; }
-  .mapbox{ height:min(56vh, 420px); }
+  .mapbox{ height:clamp(450px, 70vh, 550px); }
+  .mapbox--short{ height:clamp(420px, 60vh, 480px); }
 }
 
 /* حقلا الإحداثيات جنبًا إلى جنب، ويتراصّان على الشاشات الضيّقة */

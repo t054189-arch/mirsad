@@ -206,6 +206,7 @@ window.MIRSAAD_EN = {
   'map.allTypes': 'All types',
   'map.allStatus': 'All statuses',
   'map.allGov': 'All governorates',
+  'map.base': 'Map style',
   'map.shown': 'facilities shown',
   'map.offline': 'The map could not load — these are the recorded facilities and their places.',
   'map.none': 'No matching facilities.',
