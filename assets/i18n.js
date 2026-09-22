@@ -258,6 +258,21 @@ window.MIRSAAD_EN = {
   's.t3': 'The agent assists, it does not replace',
   's.d3': 'The agent approves nothing by itself. Its output is a set of sourced suggestions; the decision stays with the responsible reviewer.',
 
+  /* البيانات المرجعية */
+  'sc.ref': 'Reference data',
+  'sd.ref': 'Reference data',
+  'pg.refLead': 'A real, hand-labelled set of concrete surface photographs, used to measure how well the agent reads inspection imagery.',
+  'ref.warnH': 'These are not Kuwaiti structures',
+  'ref.warnB': 'They were taken during actual bridge and infrastructure inspections in the Île-de-France region of France, under the French IQOA structural evaluation framework. They are used here to develop and measure the analysis against genuine field conditions — variable light, shadow, weathering — not to judge any particular Kuwaiti structure. A result drawn from them says nothing about a specific asset in Kuwait.',
+  'ref.sImg': 'images',
+  'ref.sCrack': 'cracked',
+  'ref.sOk': 'uncracked',
+  'ref.sSplit': 'train / validation / test',
+  'ref.fAll': 'All',
+  'ref.fCrack': 'Cracked',
+  'ref.fOk': 'Uncracked',
+  'ref.creditH': 'Source and licence',
+
   /* الخاتمة */
   'c.quote': '« Safer infrastructure .. through smarter decisions »',
 };

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-mode="dark">
+<html lang="ar" dir="rtl" data-mode="dark" data-public>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title data-i18n="sc.analyse">التحليل — مِرصاد</title>
+<title data-i18n="sc.ref">بيانات مرجعية — مِرصاد</title>
 <meta name="theme-color" content="#0b0b0c" />
 <meta name="robots" content="noindex" />
 <script src="assets/boot.js"></script>
@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/style.css" />
+<link rel="stylesheet" href="assets/dataset.css" />
 </head>
 <body class="shellpage">
 
@@ -34,10 +35,9 @@
     </span>
   </a>
 
-  <h1 class="topbar__page" data-i18n="sc.analyse">التحليل</h1>
+  <h1 class="topbar__page" data-i18n="sc.ref">بيانات مرجعية</h1>
 
   <div class="topbar__tools">
-    <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b><em class="who__role"></em></span>
 
     <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
       <span id="langLabel">EN</span>
@@ -54,13 +54,6 @@
       </svg>
     </button>
 
-    <button class="iconbtn" id="outBtn" data-i18n-attr="aria-label:a.logout" aria-label="تسجيل الخروج">
-      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
-        <path d="M15 5.5V4a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 4v16a1.5 1.5 0 0 0 1.5 1.5h8A1.5 1.5 0 0 0 15 20v-1.5"
-              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M9.5 12h11m0 0-3.2-3.2M20.5 12l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
 
     <button class="navtoggle" id="sideToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -75,40 +68,53 @@
       <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
       <a class="sidenav__item" href="map.html"><i aria-hidden="true"></i><span data-i18n="sd.map">الخريطة</span></a>
       <a class="sidenav__item" href="inspection.html"><i aria-hidden="true"></i><span data-i18n="sd.insp">فحص جديد</span></a>
-      <a class="sidenav__item is-on" href="analysis.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.analysis">التحليل</span></a>
+      <a class="sidenav__item" href="analysis.html"><i aria-hidden="true"></i><span data-i18n="sd.analysis">التحليل</span></a>
       <a class="sidenav__item" href="results.html"><i aria-hidden="true"></i><span data-i18n="sd.results">النتائج</span></a>
       <a class="sidenav__item" href="review.html"><i aria-hidden="true"></i><span data-i18n="sd.review">المراجعة</span></a>
       <a class="sidenav__item" href="record.html"><i aria-hidden="true"></i><span data-i18n="sd.rep">السجلات</span></a>
       <a class="sidenav__item" href="alerts.html"><i aria-hidden="true"></i><span data-i18n="sd.alerts">الإشعارات</span></a>
-      <a class="sidenav__item" href="dataset.html"><i aria-hidden="true"></i><span data-i18n="sd.ref">بيانات مرجعية</span></a>
+      <a class="sidenav__item is-on" href="dataset.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="sd.ref">بيانات مرجعية</span></a>
       <a class="sidenav__item" href="about.html"><i aria-hidden="true"></i><span data-i18n="sd.about">عن المشروع</span></a>
   </nav>
 
   <main class="page" id="page">
-<div class="mid">
-  <p class="mid__big" data-i18n="m5.a">جارٍ التحليل…</p>
-  <p class="page__lead" data-i18n="a.analysingSub">يقرأ الوكيل الذكي الملفات ويقارنها بسجل المنشأة.</p>
-
-  <div class="steps" id="analysisSteps">
-    <div class="stepline"><i></i><span data-i18n="m5.b">تحليل الصور بالذكاء الاصطناعي</span></div>
-    <div class="stepline"><i></i><span data-i18n="m5.c">البحث في سجل المنشأة</span></div>
-    <div class="stepline"><i></i><span data-i18n="m5.d">مقارنة النتائج بالفحوصات السابقة</span></div>
-    <div class="stepline"><i></i><span data-i18n="m5.e">تحديد الملاحظات المحتملة</span></div>
-  </div>
-
-  <div class="bar"><b id="analysisBar"></b></div>
-  <p class="mid__pct" id="analysisPct">٠٪</p>
-
-  <a class="ui ui--go" id="analysisGo" href="results.html" data-i18n="m6.i">مراجعة النتائج</a>
+<div class="page__bar">
+  <p class="page__lead" data-i18n="pg.refLead">مجموعة صور حقيقية لأسطح خرسانية، مصنّفة يدويًا، تُقاس عليها قدرة الوكيل الذكي على قراءة صور الفحص.</p>
 </div>
+
+<div class="refwarn">
+  <b data-i18n="ref.warnH">هذه الصور ليست منشآت كويتية</b>
+  <span data-i18n="ref.warnB">التُقطت أثناء فحوصات فعلية لجسور وبنية تحتية في إقليم إيل-دو-فرانس بفرنسا، ضمن إطار التقييم الإنشائي الفرنسي IQOA. تُستخدم هنا لتطوير قدرة التحليل وقياسها على ظروف ميدانية حقيقية — إضاءة متغيّرة وظلال وتعرية — لا للحكم على أي منشأة كويتية بعينها. نتيجة مأخوذة منها لا تقول شيئًا عن أصل بعينه في الكويت.</span>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>476</b><span data-i18n="ref.sImg">صورة</span></div>
+  <div class="stat"><b>238</b><span data-i18n="ref.sCrack">مشقّقة</span></div>
+  <div class="stat"><b>238</b><span data-i18n="ref.sOk">سليمة</span></div>
+  <div class="stat"><b dir="ltr">334 / 72 / 70</b><span data-i18n="ref.sSplit">تدريب / تحقّق / اختبار</span></div>
+</div>
+
+<div class="reffilters" id="refFilters">
+  <button class="ui ui--ghost" type="button" data-label="" aria-pressed="true" data-i18n="ref.fAll">الكل</button>
+  <button class="ui ui--ghost" type="button" data-label="cracked" aria-pressed="false" data-i18n="ref.fCrack">مشقّق</button>
+  <button class="ui ui--ghost" type="button" data-label="uncracked" aria-pressed="false" data-i18n="ref.fOk">سليم</button>
+</div>
+
+<p class="refstatus" id="refStatus" role="status" aria-live="polite"></p>
+
+<div class="refgrid" id="refGrid"></div>
+
+<div class="refmore" id="refMore" hidden>
+  <button class="ui ui--ghost" type="button" id="refMoreBtn">عرض المزيد</button>
+</div>
+
+<h2 class="page__h" data-i18n="ref.creditH">المصدر والرخصة</h2>
+<div class="refcredit" id="refCredit"></div>
 
   </main>
 </div>
-<script src="assets/facility-types.js"></script>
-<script src="assets/kuwait.js"></script>
-<script src="assets/facilities.js"></script>
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
-<script src="assets/map.js"></script>
+<script src="assets/dataset.js"></script>
 </body>
 </html>
