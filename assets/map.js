@@ -1,12 +1,11 @@
-/* مِرصاد — خريطة المنشآت.
+/* مِرصاد — خريطة المنشآت على الكويت.
 
-   Leaflet مع بلاطات OpenStreetMap، بلا مفتاح API. تُستدعى على كل صفحة
-   فيها عنصر ‎[data-mirsaad-map]‎ — صفحة الخريطة، وقسم الخريطة في الرئيسية —
-   فالمكوّن واحد والبيانات واحدة.
+   رسم SVG داخل الصفحة، بلا بلاطات ولا مزوّد خرائط ولا مفتاح ولا شبكة:
+   الهندسة في assets/kuwait.js، والمنشآت في assets/facilities.js، وكلاهما
+   يُحمَّل مع الصفحة. فلا مربّع رمادي ينتظر، ولا بلاطة تتأخّر أو تنقص.
 
-   إن تعذّر تحميل Leaflet (شبكة محجوبة، أو تصفّح بلا إنترنت) لا تنكسر
-   الصفحة: يظهر مكانها جدول بالمنشآت نفسها وروابطها، فيبقى المحتوى
-   قابلًا للوصول. */
+   تُستدعى على كل صفحة فيها عنصر ‎[data-mirsaad-map]‎ — صفحة الخريطة،
+   وقسم الخريطة في الرئيسية — فالمكوّن واحد والبيانات واحدة. */
 (function () {
   'use strict';
 
@@ -15,13 +14,19 @@
 
   var data = window.MIRSAAD_FACILITIES;
   var lists = window.MIRSAAD_LISTS;
-  if (!data || !lists) return;
+  var geo = window.MIRSAAD_KUWAIT;
+  if (!data || !lists || !geo) return;
 
   var EN = window.MIRSAAD_EN || {};
-  function t(key, fallback) {
-    return document.documentElement.lang === 'en' && key in EN ? EN[key] : fallback;
-  }
   function isEn() { return document.documentElement.lang === 'en'; }
+  function t(key, fallback) { return isEn() && key in EN ? EN[key] : fallback; }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
 
   /* ---------- المرشّحات ---------- */
   var filters = { type: '', status: '', gov: '' };
@@ -44,6 +49,8 @@
       var o = document.createElement('option');
       o.value = item.value;
       o.textContent = isEn() ? item.en : item.ar;
+      o.setAttribute('data-ar', item.ar);
+      o.setAttribute('data-en', item.en);
       sel.appendChild(o);
     });
   }
@@ -60,13 +67,134 @@
       var row = document.createElement('span');
       row.className = 'maplegend__i';
       row.innerHTML = '<i style="background:' + s.color + '"></i>' +
-                      '<span>' + (isEn() ? s.en : s.ar) + '</span>';
+                      '<span>' + esc(isEn() ? s.en : s.ar) + '</span>';
       legend.appendChild(row);
     });
   }
 
-  /* ---------- نافذة العلامة ---------- */
-  function popupHtml(f) {
+  /* ---------- بناء الرسم ---------- */
+  host.classList.add('kwmap');
+  host.innerHTML = '';
+
+  var svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('class', 'kwmap__svg');
+  svg.setAttribute('xmlns', SVG_NS);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', t('map.alt', 'خريطة الكويت ومواقع المنشآت'));
+  host.appendChild(svg);
+
+  /* هامش حول البلاد. وإلى الشرق هامش أوسع، فأسماء المحافظات الأربع
+     المتجاورة تخرج إلى هناك — ولولاه لقُطعت على الشاشات الضيّقة. */
+  var PAD = 26, PAD_E = 185;
+  var FULL = [-PAD, -PAD, geo.W + PAD + PAD_E, geo.H + PAD * 2];
+
+  function layer(cls) {
+    var g = document.createElementNS(SVG_NS, 'g');
+    g.setAttribute('class', cls);
+    svg.appendChild(g);
+    return g;
+  }
+
+  var gLand = layer('kwmap__land');
+  var gNames = layer('kwmap__names');
+  var gPins = layer('kwmap__pins');
+
+  /* المحافظات: لكل واحدة مساحتها وحدّها، والمفتاح هو مفتاح القائمة
+     المشتركة، فيمكن إبرازها حين يُرشَّح بها. */
+  geo.AREAS.forEach(function (a) {
+    var p = document.createElementNS(SVG_NS, 'path');
+    p.setAttribute('d', a.d);
+    p.setAttribute('class', 'kwmap__gov');
+    p.setAttribute('data-gov', a.key);
+    var title = document.createElementNS(SVG_NS, 'title');
+    title.textContent = lists.governorateLabel(a.key);
+    p.appendChild(title);
+    gLand.appendChild(p);
+  });
+
+  /* أسماء المحافظات. الأربع الصغيرة متجاورة حول الجون فلا تتّسع
+     لأسمائها، وتخرج إلى فراغ مجاور بخيط رفيع يصلها بمدينتها.
+
+     وحين يُرشَّح بمحافظة يضيق الإطار عليها، فيعود اسمها إلى داخلها بلا
+     خيط — وموضعه البعيد قد يقع خارج الإطار عندئذ — وتُطوى بقية الأسماء. */
+  function renderNames(sel) {
+    gNames.innerHTML = '';
+    geo.AREAS.forEach(function (a) {
+      if (sel && a.key !== sel) return;
+      var far = a.side !== 0 && !sel;
+      var tx = far ? a.tx : a.ax;
+      var ty = far ? a.ty : a.ay;
+
+      if (far) {
+        var line = document.createElementNS(SVG_NS, 'line');
+        line.setAttribute('x1', a.ax); line.setAttribute('y1', a.ay);
+        line.setAttribute('x2', a.tx); line.setAttribute('y2', a.ty);
+        line.setAttribute('class', 'kwmap__lead');
+        gNames.appendChild(line);
+
+        var dot = document.createElementNS(SVG_NS, 'circle');
+        dot.setAttribute('cx', a.ax); dot.setAttribute('cy', a.ay);
+        dot.setAttribute('r', 3.5);
+        dot.setAttribute('class', 'kwmap__leaddot');
+        gNames.appendChild(dot);
+      }
+
+      var text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('x', tx);
+      text.setAttribute('y', ty + (far ? 0 : 4));
+      text.setAttribute('class', 'kwmap__name' + (far ? ' kwmap__name--far' : ''));
+      text.setAttribute('data-gov', a.key);
+      text.setAttribute('text-anchor', far ? (a.side > 0 ? 'start' : 'end') : 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.textContent = lists.governorateLabel(a.key);
+      gNames.appendChild(text);
+    });
+  }
+  renderNames('');
+
+  /* ---------- الإطار: البلاد كاملةً، أو محافظةً حين يُرشَّح بها ---------- */
+  function boxOf(key) {
+    for (var i = 0; i < geo.AREAS.length; i++) {
+      if (geo.AREAS[i].key === key) return geo.AREAS[i].box;
+    }
+    return null;
+  }
+
+  var view = FULL.slice();
+
+  function setView(next) {
+    view = next;
+    svg.setAttribute('viewBox', next.join(' '));
+    /* العلامات تُرسم في فضاء الرسم، فلولا معاكسة التكبير لتضخّمت مع
+       الإطار. النسبة إلى الإطار الكامل تُبقي حجمها على الشاشة ثابتًا. */
+    var k = next[2] / FULL[2];
+    host.style.setProperty('--kwmap-scale', k.toFixed(4));
+  }
+
+  function frameFor(gov) {
+    var b = gov && boxOf(gov);
+    if (!b) return FULL.slice();
+    var w = b[2] - b[0], h = b[3] - b[1];
+    var m = Math.max(w, h) * 0.12 + 14;
+    return [b[0] - m, b[1] - m, w + m * 2, h + m * 2];
+  }
+
+  setView(FULL.slice());
+
+  /* ---------- النافذة ---------- */
+  var pop = document.createElement('div');
+  pop.className = 'kwpop';
+  pop.hidden = true;
+  host.appendChild(pop);
+
+  function closePop() {
+    pop.hidden = true;
+    var on = gPins.querySelector('.is-on');
+    if (on) on.classList.remove('is-on');
+  }
+
+  function popHtml(f) {
     var s = data.statusOf(f.status);
     var gmaps = 'https://www.google.com/maps/search/?api=1&query=' + f.lat + ',' + f.lng;
     var rows = [
@@ -75,219 +203,132 @@
       [t('map.status', 'حالة الفحص'), isEn() ? s.en : s.ar],
       [t('map.last', 'آخر فحص'), f.last]
     ].map(function (r) {
-      return '<div class="mappop__r"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>';
+      return '<div class="mappop__r"><span>' + esc(r[0]) + '</span><b>' + esc(r[1]) + '</b></div>';
     }).join('');
 
-    return '<div class="mappop" dir="' + (isEn() ? 'ltr' : 'rtl') + '">' +
-      '<h3 class="mappop__h">' + (isEn() ? f.nameEn : f.name) + '</h3>' +
+    return '<button type="button" class="kwpop__x" aria-label="' +
+             esc(t('map.close', 'إغلاق')) + '">&times;</button>' +
+      '<h3 class="mappop__h">' + esc(isEn() ? f.nameEn : f.name) + '</h3>' +
       rows +
       '<div class="mappop__go">' +
-        '<a class="ui ui--ghost" href="' + gmaps + '" target="_blank" rel="noopener noreferrer">' +
-          t('map.gmaps', 'فتح في خرائط جوجل') + '</a>' +
-        '<a class="ui ui--go" href="' + f.detail + '">' +
-          t('map.detail', 'عرض تفاصيل الفحص') + '</a>' +
-      '</div></div>';
+        '<a class="ui ui--ghost" href="' + esc(gmaps) + '" target="_blank" rel="noopener noreferrer">' +
+          esc(t('map.gmaps', 'فتح في خرائط جوجل')) + '</a>' +
+        '<a class="ui ui--go" href="' + esc(f.detail) + '">' +
+          esc(t('map.detail', 'عرض تفاصيل الفحص')) + '</a>' +
+      '</div>';
   }
 
-  /* ---------- البديل حين يتعذّر Leaflet ---------- */
-  function fallback() {
-    host.classList.add('mapbox--plain');
-    function render() {
-      var rows = visible().map(function (f) {
-        var s = data.statusOf(f.status);
-        return '<a class="rowcard rowcard--go" href="' + f.detail + '">' +
-          '<span class="rowcard__img" style="background:' + s.color + ';opacity:.6"></span>' +
-          '<span class="rowcard__t"><b>' + (isEn() ? f.nameEn : f.name) + '</b>' +
-          '<small>' + lists.facilityLabel(f.type) + ' · ' + lists.governorateLabel(f.gov) + '</small></span>' +
-          '<span class="pill" style="background:' + s.color + '22;color:' + s.color + '">' +
-          (isEn() ? s.en : s.ar) + '</span></a>';
-      }).join('');
-      host.innerHTML = '<p class="field__hint">' +
-        t('map.offline', 'تعذّر تحميل الخريطة — هذه منشآت السجل وأماكنها.') +
-        '</p>' + (rows || '<p class="field__hint">' + t('map.none', 'لا منشآت مطابقة.') + '</p>');
+  function openPop(f, node) {
+    closePop();
+    node.classList.add('is-on');
+    pop.dir = isEn() ? 'ltr' : 'rtl';
+    pop.innerHTML = popHtml(f);
+    pop.hidden = false;
+
+    /* الرسم يُطبع داخل الحاوية بهامشين، فالنسبة المئوية من الحاوية
+       تُخطئ موضع العلامة. مصفوفة الرسم نفسها تعطي الموضع الحقيقي. */
+    var p = geo.project(f.lat, f.lng);
+    var box = host.getBoundingClientRect();
+    var m = svg.getScreenCTM();
+    var left, top;
+    if (m && svg.createSVGPoint) {
+      var pt = svg.createSVGPoint();
+      pt.x = p.x; pt.y = p.y;
+      var sp = pt.matrixTransform(m);
+      left = sp.x - box.left;
+      top = sp.y - box.top;
+    } else {
+      left = (p.x - view[0]) / view[2] * box.width;
+      top = (p.y - view[1]) / view[3] * box.height;
     }
-    render();
-    return render;
+
+    pop.style.left = left + 'px';
+    pop.style.top = '0px';
+
+    /* فوق العلامة إن اتّسع ما فوقها، وإلا تحتها، وإلا حيث تتّسع —
+       بالقياس لا بالتخمين، فارتفاع النافذة يتبدّل بطول اسم المنشأة. */
+    var ph = pop.offsetHeight, GAP = 16, EDGE = 6;
+    var y = top - ph - GAP;
+    if (y < EDGE) y = top + GAP;
+    if (y + ph > box.height - EDGE) y = Math.max(EDGE, box.height - ph - EDGE);
+    pop.style.top = y + 'px';
+
+    /* ولا تخرج عن الحاوية عرضًا */
+    var r = pop.getBoundingClientRect();
+    var over = (r.left < box.left + EDGE) ? (box.left + EDGE - r.left)
+             : (r.right > box.right - EDGE) ? (box.right - EDGE - r.right) : 0;
+    if (over) pop.style.left = (left + over) + 'px';
+
+    pop.querySelector('.kwpop__x').addEventListener('click', closePop);
   }
 
-  /* ---------- الخلفيات ----------
+  /* ---------- العلامات ---------- */
+  function draw() {
+    var was = pop.hidden;
+    closePop();
+    gPins.innerHTML = '';
+    visible().forEach(function (f) {
+      var s = data.statusOf(f.status);
+      var p = geo.project(f.lat, f.lng);
 
-     الوضوح أوّلًا. خرائط CARTO الداكنة من طراز «اللوحة» (canvas): وُضعت
-     لتكون أرضيةً هادئة تحت البيانات، فأسماؤها قليلة وطرقها رمادية على
-     رمادي — لا تصلح حين يكون المطلوب قراءة الطرق والمناطق والسواحل.
-     فالافتراضية عندنا هي خريطة OpenStreetMap التفصيلية في الوضعين،
-     بلا أي مرشّح لون: هي أغزر الخرائط المجانية تفصيلًا وأقواها تباينًا،
-     تُظهر الساحل والطرق الرئيسة وأسماء المدن والمناطق وحدود المحافظات.
+      var g = document.createElementNS(SVG_NS, 'g');
+      g.setAttribute('class', 'kwpin');
+      g.setAttribute('tabindex', '0');
+      g.setAttribute('role', 'button');
+      g.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ')');
 
-     والداكنة تبقى خيارًا بضغطة لمن أرادها. كلاهما بلا مفتاح API. */
-  var BASEMAPS = [
-    {
-      value: 'detail', ar: 'تفصيلية', en: 'Detailed',
-      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      sub: 'abc', maxZoom: 19, dark: false,
-      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    },
-    {
-      value: 'dark', ar: 'داكنة', en: 'Dark',
-      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-      sub: 'abcd', maxZoom: 19, dark: true,
-      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
-            ' &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    }
-  ];
+      var ring = document.createElementNS(SVG_NS, 'circle');
+      ring.setAttribute('class', 'kwpin__ring');
+      ring.setAttribute('r', 9);
+      g.appendChild(ring);
 
-  var BASEMAP_KEY = 'mirsaad-basemap';
+      var dot = document.createElementNS(SVG_NS, 'circle');
+      dot.setAttribute('class', 'kwpin__dot');
+      dot.setAttribute('r', 6);
+      dot.setAttribute('fill', s.color);
+      g.appendChild(dot);
 
-  function basemapOf(value) {
-    for (var i = 0; i < BASEMAPS.length; i++) {
-      if (BASEMAPS[i].value === value) return BASEMAPS[i];
-    }
-    return BASEMAPS[0];
-  }
+      var title = document.createElementNS(SVG_NS, 'title');
+      title.textContent = (isEn() ? f.nameEn : f.name) + ' — ' + (isEn() ? s.en : s.ar);
+      g.appendChild(title);
 
-  function savedBasemap() {
-    try { return basemapOf(localStorage.getItem(BASEMAP_KEY)).value; }
-    catch (e) { return BASEMAPS[0].value; }
-  }
-
-  var tiles = null, tilesValue = null;
-
-  function setBasemap(map, value) {
-    if (tilesValue === value) return;
-    tilesValue = value;
-
-    var spec = basemapOf(value);
-    /* العلامات تُقرأ على أرضية فاتحة بخلاف الداكنة، فتعرف الصفحة أيّهما */
-    host.setAttribute('data-basemap', spec.dark ? 'dark' : 'light');
-
-    var next = L.tileLayer(spec.url, {
-      subdomains: spec.sub,
-      maxZoom: spec.maxZoom,
-      minZoom: data.MIN_ZOOM,
-      /* الشاشات عالية الكثافة: البلاطة العادية تبدو ضبابية عليها */
-      detectRetina: true,
-      attribution: spec.attr
+      function open(e) { e.preventDefault(); e.stopPropagation(); openPop(f, g); }
+      g.addEventListener('click', open);
+      g.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') open(e);
+      });
+      gPins.appendChild(g);
     });
-
-    /* لو تعذّر المصدر المختار رجعنا إلى الافتراضي بدل إطار فارغ. ونقص
-       بضع بلاطات أمر عادي، فلا ننتقل إلا بعد تكراره. */
-    if (value !== BASEMAPS[0].value) {
-      var misses = 0;
-      next.on('tileerror', function () {
-        if (++misses < 6 || tilesValue !== value) return;
-        next.off('tileerror');
-        setBasemap(map, BASEMAPS[0].value);
-        var pick = document.getElementById('mapBase');
-        if (pick) pick.value = BASEMAPS[0].value;
-      });
-    }
-
-    next.addTo(map);
-    if (tiles) {
-      var previous = tiles;
-      setTimeout(function () { map.removeLayer(previous); }, 260);
-    }
-    tiles = next;
+    if (!was) closePop();
   }
 
-  /* ---------- الخريطة ---------- */
-  function build() {
-    var map = L.map(host, {
-      center: data.CENTRE,
-      zoom: data.ZOOM,
-      minZoom: data.MIN_ZOOM,
-      /* حدود التجوال أوسع من الكويت قليلًا، فاليد تتحرّك ولا تصطدم */
-      maxBounds: data.PAN_BOUNDS,
-      maxBoundsViscosity: 0.7,
-      scrollWheelZoom: false,
-      /* مستويات كسرية، ليضبط الإطارُ البلادَ تمامًا لا مقتطعةً */
-      zoomSnap: 0.25,
-      zoomControl: true,
-      attributionControl: true
-    });
+  draw();
 
-    /* الإطار الأوّل: الكويت كاملةً وقد ملأت الإطار — قريبة بما يكفي
-       لقراءة الطرق الرئيسة وأسماء المناطق، لا نقطةً في بحر فراغ. */
-    map.fitBounds(data.BOUNDS, { padding: [8, 8] });
-
-    setBasemap(map, savedBasemap());
-
-    // التكبير بعجلة الفأرة بعد الضغط فقط، فلا تختطف الخريطة تمرير الصفحة
-    map.on('click', function () { map.scrollWheelZoom.enable(); });
-    map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
-
-    var canCluster = typeof L.markerClusterGroup === 'function';
-    var layer = canCluster
-      ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 44 })
-      : L.layerGroup();
-    layer.addTo(map);
-
-    function pin(colour) {
-      return L.divIcon({
-        className: 'mappin',
-        html: '<span style="background:' + colour + '"></span>',
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
-        popupAnchor: [0, -13]
-      });
-    }
-
-    function draw() {
-      layer.clearLayers();
-      visible().forEach(function (f) {
-        var s = data.statusOf(f.status);
-        L.marker([f.lat, f.lng], {
-          icon: pin(s.color),
-          title: isEn() ? f.nameEn : f.name,
-          alt: isEn() ? f.nameEn : f.name
-        }).bindPopup(popupHtml(f), { maxWidth: 280 }).addTo(layer);
-      });
-    }
-    draw();
-    mapInstance = map;
-    setTimeout(function () { map.invalidateSize(); }, 120);
-    return draw;
-  }
-
-  var mapInstance = null;
-  var redraw = (typeof L === 'undefined') ? fallback() : build();
+  svg.addEventListener('click', closePop);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePop();
+  });
 
   /* ---------- ربط المرشّحات ---------- */
-  ['mapType', 'mapStatus', 'mapGov'].forEach(function (id) {
+  var KEY = { mapType: 'type', mapStatus: 'status', mapGov: 'gov' };
+
+  Object.keys(KEY).forEach(function (id) {
     var sel = document.getElementById(id);
     if (!sel) return;
     sel.addEventListener('change', function () {
-      filters[id === 'mapType' ? 'type' : id === 'mapStatus' ? 'status' : 'gov'] = sel.value;
-      redraw();
+      filters[KEY[id]] = sel.value;
+      if (id === 'mapGov') {
+        setView(frameFor(sel.value));
+        gLand.querySelectorAll('.kwmap__gov').forEach(function (p) {
+          p.classList.toggle('is-on', !!sel.value && p.getAttribute('data-gov') === sel.value);
+        });
+        renderNames(sel.value);
+      }
+      draw();
       var count = document.getElementById('mapCount');
       if (count) count.textContent = String(visible().length);
     });
   });
-
-  /* ---------- مبدّل الخلفية ---------- */
-  var base = document.getElementById('mapBase');
-  if (base) {
-    if (typeof L === 'undefined') {
-      /* بلا خريطة لا معنى للمبدّل */
-      var wrap = base.closest('.mapbar__f');
-      if (wrap) wrap.hidden = true;
-    } else {
-      base.innerHTML = '';
-      BASEMAPS.forEach(function (b) {
-        var o = document.createElement('option');
-        o.value = b.value;
-        o.textContent = isEn() ? b.en : b.ar;
-        o.setAttribute('data-ar', b.ar);
-        o.setAttribute('data-en', b.en);
-        base.appendChild(o);
-      });
-      base.value = savedBasemap();
-      base.addEventListener('change', function () {
-        try { localStorage.setItem(BASEMAP_KEY, base.value); } catch (e) { /* التخزين غير متاح */ }
-        if (mapInstance) setBasemap(mapInstance, base.value);
-      });
-    }
-  }
 
   var count = document.getElementById('mapCount');
   if (count) count.textContent = String(visible().length);
