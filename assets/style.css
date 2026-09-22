@@ -1093,3 +1093,17 @@ body.gate::before{ background-image:none; }
 .coords{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .coords input{ min-width:0; }
 @media (max-width: 480px){ .coords{ grid-template-columns:1fr; } }
+
+/* ---------- صور مرجعية داخل الصفوف ---------- */
+/* صورة حقيقية تحلّ محل المربّع النائب في .rowcard__img، مع إبقاء النائب
+   كما هو حيث لا صورة. */
+.rowcard__img--photo{
+  width:64px; height:48px; object-fit:cover;
+  background:var(--bg-alt); border:1px solid var(--line); opacity:1;
+}
+/* الصور مرجعية لا صور المنشأة نفسها، والسطر يقول ذلك قبل أن يُساء فهمه. */
+.refnote{ color:var(--ink-soft); font-size:.82rem; margin:0 0 14px; }
+.refnote a{ color:var(--accent); }
+/* باب الصفحة العامة من البوابة — بلا خطّ فاصل ثانٍ فوقه. */
+.gate__note--link{ border-block-start:0; padding-block-start:0; margin-block-start:8px; }
+.gate__note--link a{ color:var(--accent); font-weight:600; }
