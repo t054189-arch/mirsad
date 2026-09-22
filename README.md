@@ -184,13 +184,19 @@ row count records what is actually in the archive.
 
 All 476 rows are loaded, each with the file's own sha256, its dimensions and a
 deterministic 70/15/15 `train` / `validation` / `test` split that is balanced
-within each class. What is *not* loaded is the image bytes: pushing them needs a
-secret key, so `scripts/ingest-reference-dataset.mjs` does that as a separate
-step. It re-verifies the archive checksum, then per image re-verifies the file's
-own checksum, downscales to a 1024 px longest edge (~130 MB for the set, against
-2.5 GB of originals) and stamps `uploaded_at`. Re-running it skips what is
-already up. Until it runs, `reference_images.storage_path` says where an image
-*will* live and `uploaded_at` is null.
+within each class (334 / 72 / 70, half cracked and half uncracked in each).
+
+The images themselves are in the `reference-images` bucket: 476 objects,
+127,299,107 bytes, downscaled to a 1024 px longest edge from 2,586,124,614 bytes
+of originals. Row count, object count and the two byte totals reconcile exactly,
+and no row is missing an object or the other way round.
+
+`scripts/ingest-reference-dataset.mjs` is what put them there, and is how a
+future dataset gets uploaded. It needs a secret key, since the bucket is
+admin-write. It re-verifies the archive checksum, then each file's own checksum
+before resizing, and stamps `uploaded_at` and `stored_bytes` per row, so a
+re-run skips what is already up and an interrupted run is simply resumed. A row
+with a `storage_path` but no `uploaded_at` has metadata only.
 
 **These are not Kuwaiti structures**, which is why `reference_datasets` carries
 an `is_kuwaiti` flag set to false. They measure whether the agent can read real
