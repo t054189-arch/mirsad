@@ -824,3 +824,75 @@ body.gate .scene{ opacity:calc(var(--mark-strength) * .55); }
 
 /* الافتتاحية بلا صورة: المجسّم ثلاثي الأبعاد وحده هو الجسر فيها */
 body.gate::before{ background-image:none; }
+
+/* ============================================================
+   الخريطة — شريط المرشّحات، الإطار، المفتاح، العلامات والنوافذ
+   Leaflet يرسم داخل .mapbox، وما دونه تنسيقنا نحن ليتبع الثيم.
+   ============================================================ */
+.mapbar{
+  display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px;
+  margin:18px 0 14px;
+}
+.mapbar__f{ display:grid; gap:6px; flex:1 1 180px; min-width:0; }
+.mapbar__f > span{ font-size:.8rem; font-weight:600; color:var(--ink-soft); }
+.mapbar__f select{
+  width:100%; font:inherit; font-size:.9rem;
+  color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:10px;
+  padding:10px 13px; cursor:pointer;
+}
+.mapbar__f select:focus{ outline:none; border-color:var(--accent); }
+.mapbar__n{ margin:0; flex:0 0 auto; color:var(--ink-soft); font-size:.86rem; padding-block-end:10px; }
+.mapbar__n b{ color:var(--accent); font-size:1.05rem; }
+
+.mapbox{
+  height:min(62vh, 560px);
+  border:1px solid var(--line); border-radius:var(--r);
+  overflow:hidden; background:var(--surface-2);
+  /* الخريطة أرضية فاتحة، فتهدأ قليلًا لتجاور الثيم الداكن */
+  isolation:isolate;
+}
+.mapbox--short{ height:min(46vh, 380px); }
+[data-mode="dark"] .mapbox .leaflet-tile-pane{ filter:saturate(.72) brightness(.72) contrast(1.06); }
+.mapbox--plain{ height:auto; padding:16px; background:transparent; border-style:dashed; }
+
+.maplegend{ display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; }
+.maplegend__i{ display:flex; align-items:center; gap:8px; font-size:.84rem; color:var(--ink-soft); }
+.maplegend__i i{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+
+/* العلامة: قرص ملوّن بحلقة، يُقرأ فوق أي بلاطة */
+.mappin span{
+  display:block; width:18px; height:18px; border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.92);
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+
+/* النافذة تتبع الثيم بدل أبيض Leaflet الافتراضي */
+.leaflet-popup-content-wrapper{
+  background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow);
+}
+.leaflet-popup-tip{ background:var(--surface); border:1px solid var(--line); }
+.leaflet-popup-content{ margin:14px 16px; font-family:inherit; }
+.leaflet-container{ font-family:inherit; background:var(--surface-2); }
+.leaflet-container a{ color:var(--accent); }
+.mappop__h{ margin:0 0 10px; font-size:1rem; }
+.mappop__r{
+  display:flex; justify-content:space-between; gap:14px;
+  padding-block:6px; border-block-end:1px dashed var(--line); font-size:.85rem;
+}
+.mappop__r:last-of-type{ border-block-end:0; }
+.mappop__r span{ color:var(--ink-soft); }
+.mappop__go{ display:grid; gap:8px; margin-top:12px; }
+.mappop__go .ui{ width:100%; padding:9px 14px; font-size:.84rem; }
+
+@media (max-width: 560px){
+  .mapbar__f{ flex:1 1 100%; }
+  .mapbox{ height:min(56vh, 420px); }
+}
+
+/* حقلا الإحداثيات جنبًا إلى جنب، ويتراصّان على الشاشات الضيّقة */
+.coords{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.coords input{ min-width:0; }
+@media (max-width: 480px){ .coords{ grid-template-columns:1fr; } }

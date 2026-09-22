@@ -33,6 +33,25 @@
   </a>
 </div>
 
+<h2 class="page__h" data-i18n="sc.map">الخريطة</h2>
+<div class="mapbar">
+  <label class="mapbar__f">
+    <span data-i18n="a.facilityType">نوع المنشأة</span>
+    <select id="mapType"><option value="" data-i18n="map.allTypes">كل الأنواع</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="map.status">حالة الفحص</span>
+    <select id="mapStatus"><option value="" data-i18n="map.allStatus">كل الحالات</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="a.governorate">المحافظة</span>
+    <select id="mapGov"><option value="" data-i18n="map.allGov">كل المحافظات</option></select>
+  </label>
+  <p class="mapbar__n"><b id="mapCount">0</b> <span data-i18n="map.shown">منشأة معروضة</span></p>
+</div>
+<div class="mapbox mapbox--short" id="mapHome" data-mirsaad-map></div>
+<div class="maplegend" id="mapLegend" aria-label="مفتاح الخريطة"></div>
+
 <h2 class="page__h" data-i18n="pg.recent">آخر النشاط</h2>
 <div class="hist">
   <span class="hist__i is-now"><b>20 / 09 / 2026</b><small data-i18n="a.h1">تشقق الركيزة ٢ — معتمد</small></span>

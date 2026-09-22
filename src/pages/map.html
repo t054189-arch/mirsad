@@ -1,0 +1,21 @@
+<!--slug: map--><!--nav: map--><!--key: sc.map--><!--ar: الخريطة-->
+<p class="page__lead" data-i18n="pg.mapLead">مواقع المنشآت التي لها سجل فحص على خريطة الكويت. اضغط علامة لتفتح تفاصيلها.</p>
+
+<div class="mapbar">
+  <label class="mapbar__f">
+    <span data-i18n="a.facilityType">نوع المنشأة</span>
+    <select id="mapType"><option value="" data-i18n="map.allTypes">كل الأنواع</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="map.status">حالة الفحص</span>
+    <select id="mapStatus"><option value="" data-i18n="map.allStatus">كل الحالات</option></select>
+  </label>
+  <label class="mapbar__f">
+    <span data-i18n="a.governorate">المحافظة</span>
+    <select id="mapGov"><option value="" data-i18n="map.allGov">كل المحافظات</option></select>
+  </label>
+  <p class="mapbar__n"><b id="mapCount">0</b> <span data-i18n="map.shown">منشأة معروضة</span></p>
+</div>
+
+<div class="mapbox" id="mapMain" data-mirsaad-map></div>
+<div class="maplegend" id="mapLegend" aria-label="مفتاح الخريطة"></div>
