@@ -45,6 +45,10 @@
   }
   window.MirsaadSession = session;
 
+  /* الصفحة العامة تُقرأ بلا دخول، فلا معنى لبطاقة الهوية ولا لزرّ
+     الخروج فيها. يُعلَن هنا قبل أوّل رسم فلا يومض شيء. */
+  if (d.toggleAttribute) d.toggleAttribute('data-signed', !!session());
+
   // الصفحة تُعرّف نفسها بـ data-gate. الاستدلال من المسار كان يخطئ
   // حيثما لم ينتهِ العنوان بـ index.html أو بشرطة مائلة، فتدور البوابة
   // على نفسها بلا نهاية.
@@ -63,6 +67,6 @@
   }
   if (onLogin && signedIn) {
     var next = new URLSearchParams(location.search).get('next');
-    location.replace(/^[a-z-]+\.html$/.test(next || '') ? next : 'app.html#/dashboard');
+    location.replace(/^[a-z-]+\.html$/.test(next || '') ? next : 'board.html#/dashboard');
   }
 })();

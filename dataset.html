@@ -18,7 +18,7 @@
 <div class="blueprint" aria-hidden="true"></div>
 
 <header class="topbar">
-  <a class="topbar__brand" href="app.html#/dashboard" aria-label="مرصاد">
+  <a class="topbar__brand" href="board.html#/dashboard" aria-label="مرصاد">
     <span class="topbar__mark" aria-hidden="true">
       <svg viewBox="0 0 100 52" width="30" height="16">
         <g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
@@ -38,6 +38,7 @@
   <h1 class="topbar__page" data-i18n="sc.ref">بيانات مرجعية</h1>
 
   <div class="topbar__tools">
+    <span class="who" id="whoAmI" title=""><i aria-hidden="true"></i><b></b><em class="who__role"></em></span>
 
     <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
       <span id="langLabel">EN</span>
@@ -54,6 +55,13 @@
       </svg>
     </button>
 
+    <button class="iconbtn" id="outBtn" data-i18n-attr="aria-label:a.logout" aria-label="تسجيل الخروج">
+      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+        <path d="M15 5.5V4a1.5 1.5 0 0 0-1.5-1.5h-8A1.5 1.5 0 0 0 4 4v16a1.5 1.5 0 0 0 1.5 1.5h8A1.5 1.5 0 0 0 15 20v-1.5"
+              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M9.5 12h11m0 0-3.2-3.2M20.5 12l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
 
     <button class="navtoggle" id="sideToggle" data-i18n-attr="aria-label:a11y.menu" aria-label="فتح القائمة" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -63,7 +71,7 @@
 
 <div class="shell">
   <nav class="sidenav" id="sidenav" aria-label="أقسام مرصاد">
-      <a class="sidenav__item" href="app.html#/dashboard"><i aria-hidden="true"></i><span data-i18n="sd.board">لوحة التحكم</span></a>
+      <a class="sidenav__item" href="board.html#/dashboard"><i aria-hidden="true"></i><span data-i18n="sd.board">لوحة التحكم</span></a>
       <a class="sidenav__item" href="home.html"><i aria-hidden="true"></i><span data-i18n="sd.home">نظرة عامة</span></a>
       <a class="sidenav__item" href="structures.html"><i aria-hidden="true"></i><span data-i18n="sd.assets">المنشآت</span></a>
       <a class="sidenav__item" href="map.html"><i aria-hidden="true"></i><span data-i18n="sd.map">الخريطة</span></a>
@@ -78,6 +86,10 @@
   </nav>
 
   <main class="page" id="page">
+<!-- صفحة البيانات المرجعية. كانت صفحةً قائمة بذاتها نُسخت قشرتُها
+     نسخًا، فصارت تُبنى من القالب نفسه كسائر الصفحات: قائمة واحدة
+     تتحدّث عن نفسها، ولا تفترق عن الموقع حين يتغيّر. ومتنها كما
+     كتبه صاحبه لم يُمَسّ. -->
 <div class="page__bar">
   <p class="page__lead" data-i18n="pg.refLead">مجموعة صور حقيقية لأسطح خرسانية، مصنّفة يدويًا، تُقاس عليها قدرة الوكيل الذكي على قراءة صور الفحص.</p>
 </div>
@@ -111,10 +123,15 @@
 <h2 class="page__h" data-i18n="ref.creditH">المصدر والرخصة</h2>
 <div class="refcredit" id="refCredit"></div>
 
+<script src="assets/dataset.js"></script>
+
   </main>
 </div>
+<script src="assets/facility-types.js"></script>
+<script src="assets/kuwait.js"></script>
+<script src="assets/facilities.js"></script>
 <script src="assets/i18n.js"></script>
 <script src="assets/chrome.js"></script>
-<script src="assets/dataset.js"></script>
+<script src="assets/map.js"></script>
 </body>
 </html>

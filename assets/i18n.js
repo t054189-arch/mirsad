@@ -150,6 +150,7 @@ window.MIRSAAD_EN = {
   'sc.about': 'About the project',
   'sd.results': 'Results',
   'sd.alerts': 'Notifications',
+  'sc.board': 'Dashboard',
   'sd.board': 'Dashboard',
   'sd.about': 'About',
   'a.logout': 'Sign out',

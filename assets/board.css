@@ -1,0 +1,35 @@
+/* مِرصاد — لوحة التحكم داخل قشرة الموقع.
+
+   الحزمة (app.js) ترسم لنفسها موقعًا كاملًا: قائمة جانبية وشريطًا
+   علويًّا وتذييلًا. وهي حزمة مصغّرة بلا مصدر، فلا سبيل إلى نزع ذلك
+   منها. فتُخفى قشرتها هنا ويبقى متنُها، وتتولّى قشرةُ الموقع الباقي —
+   فيصير الموقعان موقعًا واحدًا: شريط علويّ واحد، وقائمة واحدة،
+   وبوابة دخول واحدة.
+
+   ولا يُعدَّل app.css ولا app.js بحرف. */
+
+/* القشرة الخاصة بالحزمة */
+#root > div aside,
+#root > div > header,
+#root > div > footer{ display:none !important; }
+
+/* الحزمة تترك فراغًا بعرض قائمتها الجانبية، ولا قائمة لها هنا */
+#root > div.min-h-screen{
+  padding-inline-start:0 !important;
+  padding-inline-end:0 !important;
+  min-height:0 !important;
+  background:transparent !important;
+}
+
+/* متن الحزمة يتمدّد في عرض الصفحة، وحشوُه من الصفحة لا منه */
+#root > div > main{
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* الرسائل المنبثقة تعلو الشريط العلويّ للموقع */
+#root > div.fixed{ inset-block-start:calc(var(--bar, 64px) + 16px) !important; }
+
+/* خلفية الموقع تظهر من تحت اللوحة، فلا لونان متجاوران */
+#root, #root > div{ background:transparent !important; }

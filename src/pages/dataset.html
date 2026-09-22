@@ -1,0 +1,41 @@
+<!--slug: dataset--><!--nav: dataset--><!--key: sc.ref--><!--ar: بيانات مرجعية-->
+<!--public: yes-->
+<!--head: <link rel="stylesheet" href="assets/dataset.css" />-->
+<!-- صفحة البيانات المرجعية. كانت صفحةً قائمة بذاتها نُسخت قشرتُها
+     نسخًا، فصارت تُبنى من القالب نفسه كسائر الصفحات: قائمة واحدة
+     تتحدّث عن نفسها، ولا تفترق عن الموقع حين يتغيّر. ومتنها كما
+     كتبه صاحبه لم يُمَسّ. -->
+<div class="page__bar">
+  <p class="page__lead" data-i18n="pg.refLead">مجموعة صور حقيقية لأسطح خرسانية، مصنّفة يدويًا، تُقاس عليها قدرة الوكيل الذكي على قراءة صور الفحص.</p>
+</div>
+
+<div class="refwarn">
+  <b data-i18n="ref.warnH">هذه الصور ليست منشآت كويتية</b>
+  <span data-i18n="ref.warnB">التُقطت أثناء فحوصات فعلية لجسور وبنية تحتية في إقليم إيل-دو-فرانس بفرنسا، ضمن إطار التقييم الإنشائي الفرنسي IQOA. تُستخدم هنا لتطوير قدرة التحليل وقياسها على ظروف ميدانية حقيقية — إضاءة متغيّرة وظلال وتعرية — لا للحكم على أي منشأة كويتية بعينها. نتيجة مأخوذة منها لا تقول شيئًا عن أصل بعينه في الكويت.</span>
+</div>
+
+<div class="stats">
+  <div class="stat"><b>476</b><span data-i18n="ref.sImg">صورة</span></div>
+  <div class="stat"><b>238</b><span data-i18n="ref.sCrack">مشقّقة</span></div>
+  <div class="stat"><b>238</b><span data-i18n="ref.sOk">سليمة</span></div>
+  <div class="stat"><b dir="ltr">334 / 72 / 70</b><span data-i18n="ref.sSplit">تدريب / تحقّق / اختبار</span></div>
+</div>
+
+<div class="reffilters" id="refFilters">
+  <button class="ui ui--ghost" type="button" data-label="" aria-pressed="true" data-i18n="ref.fAll">الكل</button>
+  <button class="ui ui--ghost" type="button" data-label="cracked" aria-pressed="false" data-i18n="ref.fCrack">مشقّق</button>
+  <button class="ui ui--ghost" type="button" data-label="uncracked" aria-pressed="false" data-i18n="ref.fOk">سليم</button>
+</div>
+
+<p class="refstatus" id="refStatus" role="status" aria-live="polite"></p>
+
+<div class="refgrid" id="refGrid"></div>
+
+<div class="refmore" id="refMore" hidden>
+  <button class="ui ui--ghost" type="button" id="refMoreBtn">عرض المزيد</button>
+</div>
+
+<h2 class="page__h" data-i18n="ref.creditH">المصدر والرخصة</h2>
+<div class="refcredit" id="refCredit"></div>
+
+<script src="assets/dataset.js"></script>

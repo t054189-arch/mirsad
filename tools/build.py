@@ -17,7 +17,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / 'src'
 
 NAV = [
-    ('board',       'app.html#/dashboard', 'sd.board','لوحة التحكم'),
+    ('board',       'board.html#/dashboard', 'sd.board','لوحة التحكم'),
     ('home',        'home.html',        'sd.home',    'نظرة عامة'),
     ('structures',  'structures.html',  'sd.assets',  'المنشآت'),
     ('map',         'map.html',         'sd.map',     'الخريطة'),
@@ -27,6 +27,7 @@ NAV = [
     ('review',      'review.html',      'sd.review',  'المراجعة'),
     ('record',      'record.html',      'sd.rep',     'السجلات'),
     ('alerts',      'alerts.html',      'sd.alerts',  'الإشعارات'),
+    ('dataset',     'dataset.html',     'sd.ref',     'بيانات مرجعية'),
     ('about',       'about.html',       'sd.about',   'عن المشروع'),
 ]
 
@@ -55,10 +56,16 @@ def build(check=False):
     stale = []
     for frag in sorted((SRC / 'pages').glob('*.html')):
         meta, body = header(frag.read_text(encoding='utf-8'), frag.name)
+        # head: أصول تخصّ صفحةً بعينها.  public: صفحة تُقرأ بلا تسجيل دخول
+        head = meta.get('head', '')
+        head = (head + "\n") if head else ''
+        attr = ' data-public' if meta.get('public') == 'yes' else ''
         page = (layout
                 .replace('{{NAV}}', sidebar(meta['nav']))
                 .replace('{{TITLE_KEY}}', meta['key'])
                 .replace('{{TITLE_AR}}', meta['ar'])
+                .replace('{{HTMLATTR}}', attr)
+                .replace('{{HEAD}}', head)
                 .replace('{{BODY}}', body.rstrip() + "\n"))
         out = ROOT / f"{meta['slug']}.html"
         if check:
