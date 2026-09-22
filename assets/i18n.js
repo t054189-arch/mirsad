@@ -259,6 +259,9 @@ window.MIRSAAD_EN = {
   's.d3': 'The agent approves nothing by itself. Its output is a set of sourced suggestions; the decision stays with the responsible reviewer.',
 
   /* البيانات المرجعية */
+  /* البيانات المرجعية */
+  'a.refLink': 'Reference data — 476 inspection photographs, no sign-in',
+  'pg.refNote': 'The thumbnails are reference images from <a href="dataset.html">the dataset</a>, not photographs of these structures.',
   'sc.ref': 'Reference data',
   'sd.ref': 'Reference data',
   'pg.refLead': 'A real, hand-labelled set of concrete surface photographs, used to measure how well the agent reads inspection imagery.',
