@@ -1,0 +1,55 @@
+/* بيانات مرجعية — أنماط خاصة بصفحة مجموعة الصور.
+   منفصلة عن style.css كي لا تتعارض مع بقية العمل على الموقع. */
+
+/* تنبيه لا يمكن تفويته: هذه الصور ليست منشآت كويتية. */
+.refwarn{
+  display:grid; gap:8px; margin:18px 0 6px; padding:18px 20px;
+  border-radius:var(--r);
+  border:1px solid color-mix(in srgb, var(--mid) 45%, transparent);
+  background:color-mix(in srgb, var(--mid) 12%, transparent);
+}
+.refwarn b{ color:var(--mid); font-size:1rem; }
+.refwarn span{ color:var(--ink-soft); font-size:.9rem; max-width:80ch; }
+
+.reffilters{ display:flex; gap:10px; flex-wrap:wrap; margin:22px 0 6px; }
+.reffilters .ui{ padding:9px 18px; font-size:.86rem; }
+.reffilters .ui[aria-pressed="true"]{
+  background:var(--accent); color:var(--on-accent); border-color:var(--accent);
+}
+
+.refgrid{
+  display:grid; gap:12px; margin-top:16px;
+  grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+}
+.refcard{
+  position:relative; overflow:hidden; border-radius:var(--r);
+  border:1px solid var(--line); background:var(--bg-alt);
+  aspect-ratio:3 / 4;
+}
+.refcard img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  background:var(--bg-alt);
+}
+.refcard__tag{
+  position:absolute; inset-block-start:10px; inset-inline-start:10px;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+.refcard__id{
+  position:absolute; inset-block-end:0; inset-inline:0;
+  padding:16px 12px 8px; font-size:.72rem; letter-spacing:.02em;
+  color:#fff; font-family:var(--mono, ui-monospace, monospace);
+  background:linear-gradient(to top, rgba(0,0,0,.72), transparent);
+}
+
+.refmore{ display:flex; justify-content:center; margin-top:22px; }
+.refstatus{ color:var(--ink-soft); font-size:.88rem; margin-top:14px; }
+
+/* الإسناد شرط في رخصة CC BY — يظهر دائمًا مع الصور. */
+.refcredit{
+  margin-top:30px; padding:20px 22px; border-radius:var(--r);
+  border:1px solid var(--line); background:var(--bg-alt);
+  display:grid; gap:8px;
+}
+.refcredit b{ font-size:.95rem; }
+.refcredit p{ color:var(--ink-soft); font-size:.86rem; margin:0; max-width:80ch; }
+.refcredit a{ color:var(--accent); }

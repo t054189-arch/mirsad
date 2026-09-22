@@ -49,6 +49,12 @@
   // حيثما لم ينتهِ العنوان بـ index.html أو بشرطة مائلة، فتدور البوابة
   // على نفسها بلا نهاية.
   var onLogin = d.hasAttribute('data-gate');
+  // صفحة عامة تُعرّف نفسها بـ data-public: لا حارس يطردها ولا بوابة
+  // تجذبها، فتُقرأ بلا تسجيل دخول. نفس أسلوب data-gate، ولنفس السبب:
+  // الصفحة أدرى بنفسها من الاستدلال على المسار.
+  var isPublic = d.hasAttribute('data-public');
+  if (isPublic) return;
+
   var signedIn = !!session();
 
   if (!onLogin && !signedIn) {
