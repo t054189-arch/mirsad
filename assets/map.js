@@ -110,6 +110,63 @@
     return render;
   }
 
+  /* ---------- البلاطات ----------
+
+     في الوضع الداكن نستعمل خريطة داكنة جاهزة، لا خريطةً فاتحة نعتّمها:
+     التعتيم يخفض الورق والحبر معًا، فتبهت أسماء الشوارع والمناطق حتى
+     تكاد لا تُقرأ. وكلا المصدرين بلا مفتاح API. */
+  var TILES = {
+    dark: {
+      url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+      sub: 'abcd', maxZoom: 19,
+      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' +
+            ' &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    },
+    light: {
+      url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      sub: 'abc', maxZoom: 18,
+      attr: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }
+  };
+
+  function themeMode() {
+    return document.documentElement.getAttribute('data-mode') === 'light' ? 'light' : 'dark';
+  }
+
+  var tiles = null, tilesMode = null;
+
+  function setTiles(map, which) {
+    if (tilesMode === which) return;
+    tilesMode = which;
+
+    var spec = TILES[which];
+    var next = L.tileLayer(spec.url, {
+      subdomains: spec.sub,
+      maxZoom: spec.maxZoom,
+      minZoom: 7,
+      attribution: spec.attr
+    });
+
+    /* لو تعذّر مصدر الوضع الداكن، نرجع إلى OpenStreetMap: خريطة فاتحة
+       أوضح من إطار فارغ. بضع بلاطات ناقصة أمر عادي، فلا ننتقل إلا بعد
+       تكرارها. */
+    if (which === 'dark') {
+      var misses = 0;
+      next.on('tileerror', function () {
+        if (++misses < 6 || tilesMode !== 'dark') return;
+        next.off('tileerror');
+        setTiles(map, 'light');
+      });
+    }
+
+    next.addTo(map);
+    if (tiles) {
+      var previous = tiles;
+      setTimeout(function () { map.removeLayer(previous); }, 260);
+    }
+    tiles = next;
+  }
+
   /* ---------- الخريطة ---------- */
   function build() {
     var map = L.map(host, {
@@ -122,11 +179,11 @@
     });
     map.fitBounds(data.BOUNDS, { padding: [18, 18] });
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 7,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    setTiles(map, themeMode());
+
+    /* الثيم يتبدّل من الشريط العلوي، فتتبعه البلاطات حيّةً */
+    new MutationObserver(function () { setTiles(map, themeMode()); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
 
     // التكبير بعجلة الفأرة بعد الضغط فقط، فلا تختطف الخريطة تمرير الصفحة
     map.on('click', function () { map.scrollWheelZoom.enable(); });
