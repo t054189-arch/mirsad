@@ -1,0 +1,11 @@
+# The public pages stay findable. The signed-in area does not belong in
+# search results: indexing it only advertises the login surface.
+User-agent: *
+Disallow: /app.html
+Disallow: /inspection.html
+Disallow: /results.html
+Disallow: /review.html
+Disallow: /record.html
+Disallow: /alerts.html
+Disallow: /analysis.html
+Disallow: /structures.html

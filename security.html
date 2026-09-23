@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!-- لا تحمل data-gate: هذه صفحة لمن دخل، لا بوابة دخول. ووجود السمة
+     كان يجعل boot.js يردّ صاحب الجلسة عنها إلى اللوحة. -->
+<html lang="ar" dir="rtl" data-mode="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>أمان الحساب — مِرصاد · MIRSAAD</title>
+<meta name="description" content="أمان حسابك على مرصاد: تطبيق المصادقة، وسجلّ الدخول، وإنهاء الجلسات." />
+<meta name="theme-color" content="#0b0b0c" />
+<meta name="robots" content="noindex, nofollow" />
+<script src="assets/supabase.js"></script>
+<script src="assets/sb.js"></script>
+<script src="assets/audit.js"></script>
+<script src="guard.js"></script>
+<script src="assets/boot.js"></script>
+<link rel="stylesheet" href="assets/fonts.css" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="gate">
+
+<div class="blueprint" aria-hidden="true"></div>
+
+<div class="gate__tools">
+  <button class="iconbtn" id="langBtn" data-i18n-attr="aria-label:a11y.lang" aria-label="التبديل إلى الإنجليزية">
+    <span id="langLabel">EN</span>
+  </button>
+  <button class="iconbtn" id="modeBtn" data-i18n-attr="aria-label:a11y.mode" aria-label="تبديل الوضع الفاتح والداكن">
+    <svg class="ico ico--sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"
+            fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <svg class="ico ico--moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+      <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<main class="gate__wrap sec__wrap">
+  <section class="gate__card sec__card">
+
+    <p class="sec__kicker" data-i18n="s2.kicker">أمان الحساب</p>
+    <h1 class="sec__h" id="secWho">حسابك</h1>
+
+    <!-- ١) تطبيق المصادقة -->
+    <section class="sec__block">
+      <h2 class="sec__h2" data-i18n="s2.mfaH">تطبيق المصادقة</h2>
+      <p class="sec__p" data-i18n="s2.mfaIntro">
+        رمز يتغيّر كل ثلاثين ثانية داخل تطبيق على هاتفك. أمتن من رمز البريد،
+        لأنه لا يمرّ بصندوق بريد قد يُخترق.
+      </p>
+
+      <p class="sec__state" id="mfaState" data-i18n="s2.loading">يجري التحميل…</p>
+
+      <!-- حالة: غير مفعَّل -->
+      <div id="mfaOff" hidden>
+        <button class="ui ui--go" type="button" id="mfaStart" data-i18n="s2.mfaStart">تفعيل تطبيق المصادقة</button>
+
+        <div id="mfaSetup" hidden>
+          <p class="sec__p" data-i18n="s2.mfaScan">
+            امسح الرمز بتطبيق المصادقة — Google Authenticator أو ما يشبهه —
+            ثم أدخل الرمز الذي يظهر فيه.
+          </p>
+          <div class="sec__qr"><img id="mfaQr" alt="" width="180" height="180" /></div>
+          <p class="sec__secret">
+            <span data-i18n="s2.mfaManual">أو أدخله يدويًا:</span>
+            <code id="mfaSecret" dir="ltr"></code>
+          </p>
+
+          <form id="mfaForm" novalidate>
+            <div class="field">
+              <label for="mfaCode" data-i18n="m.code">رمز تطبيق المصادقة</label>
+              <input id="mfaCode" type="text" inputmode="numeric" dir="ltr"
+                     maxlength="6" pattern="[0-9]{6}" placeholder="------"
+                     autocomplete="one-time-code" aria-describedby="mfaErr" required />
+              <p class="field__err" id="mfaErr" role="alert"></p>
+            </div>
+            <button class="ui ui--go" type="submit" data-i18n="s2.mfaConfirm">تأكيد وتفعيل</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- رموز الاحتياط: تُعرض مرة واحدة بعد التفعيل -->
+      <div id="mfaCodes" hidden>
+        <h3 class="sec__h3" data-i18n="s2.codesH">رموز الاحتياط</h3>
+        <p class="sec__p" data-i18n="s2.codesLead">
+          احفظ هذه الرموز في مكان آمن بعيدًا عن هاتفك. إن فقدت هاتفك، كل رمز
+          منها يُدخلك مرة واحدة. لن تُعرض مرة أخرى.
+        </p>
+        <ul class="sec__codes" id="codesList"></ul>
+        <p class="sec__p sec__warn" data-i18n="s2.codesWarn">
+          من يملك رمزًا منها ومعه كلمة مرورك يدخل حسابك. عاملها كالمفاتيح.
+        </p>
+        <button class="ui ui--ghost" type="button" id="codesDone" data-i18n="s2.codesDone">حفظتها — أغلق</button>
+      </div>
+
+      <!-- حالة: مفعَّل -->
+      <div id="mfaOn" hidden>
+        <p class="sec__state" id="codesLeft"></p>
+        <button class="ui ui--ghost" type="button" id="codesNew" data-i18n="s2.codesNew">توليد رموز احتياط جديدة</button>
+        <button class="ui ui--ghost" type="button" id="mfaRemove" data-i18n="s2.mfaRemove">إيقاف تطبيق المصادقة</button>
+        <p class="field__err" id="mfaRemoveErr" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- ٢) الجلسات -->
+    <section class="sec__block">
+      <h2 class="sec__h2" data-i18n="s2.sessH">الجلسات على الأجهزة</h2>
+      <p class="sec__p" data-i18n="s2.sessIntro">
+        إن فقدت جهازًا، أو رأيت في السجلّ أدناه دخولًا ليس منك، أنهِ الجلسات
+        على كل الأجهزة. سيُطلب منك الدخول من جديد في كل مكان — وكذلك من أخذ
+        جهازك.
+      </p>
+      <button class="ui ui--ghost" type="button" id="killAll" data-i18n="s2.sessKill">إنهاء الجلسات على كل الأجهزة</button>
+    </section>
+
+    <!-- ٣) سجلّ الدخول -->
+    <section class="sec__block">
+      <h2 class="sec__h2" data-i18n="s2.logH">سجلّ الدخول</h2>
+      <p class="sec__p" data-i18n="s2.logIntro">
+        آخر ما جرى على حسابك. السطر يكتبه المتصفح عند الدخول، ولا يُعدَّل ولا
+        يُحذف بعد كتابته — فاقرأه إشارةً تنبّهك، لا دليلًا قاطعًا.
+      </p>
+      <ul class="sec__log" id="logList">
+        <li class="sec__logempty" data-i18n="s2.loading">يجري التحميل…</li>
+      </ul>
+    </section>
+
+    <p class="gate__swap">
+      <a class="linkb" href="board.html#/dashboard" data-i18n="s2.back">العودة إلى اللوحة</a>
+    </p>
+  </section>
+</main>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/chrome.js"></script>
+<script src="assets/account.js"></script>
+</body>
+</html>

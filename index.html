@@ -6,10 +6,10 @@
 <title>إنشاء حساب — مِرصاد · MIRSAAD</title>
 <meta name="description" content="مرصاد — منصة ذكية وآمنة لإدارة دورة فحص المنشآت للمكاتب الهندسية." />
 <meta name="theme-color" content="#0b0b0c" />
+<script src="assets/supabase.js"></script>
+<script src="assets/sb.js"></script>
 <script src="assets/boot.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/fonts.css" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body class="gate">
@@ -79,10 +79,41 @@
           <p class="field__err" id="passErr" role="alert"></p>
         </div>
 
+        <p class="field__aside">
+          <button type="button" class="linkb" id="goReset" data-i18n="r2.forgot">نسيت كلمة المرور؟</button>
+        </p>
+
+        <!-- تظهر بعد أي محاولة فاشلة، للجميع، فلا تدلّ على حساب بعينه -->
+        <p class="field__hint" id="loginHint" data-i18n="a.loginHint" hidden>
+          إن كنت أنشأت حسابك ولم تؤكّد بريدك بعد، فاستعمل «نسيت كلمة المرور؟» — يصلك رمز يؤكّد بريدك ويُدخلك.
+        </p>
+
         <label class="remember" for="remember">
           <input type="checkbox" id="remember" name="remember" />
           <span data-i18n="a.remember">تذكرني</span>
         </label>
+
+        <div class="field robot">
+          <label class="robot__box" for="notRobot">
+            <input type="checkbox" id="notRobot" name="notRobot"
+                   aria-describedby="notRobotErr" required />
+            <span class="robot__tick" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="13" height="13">
+                <path d="M5 12.5 10 17.5 19 7" fill="none" stroke="currentColor"
+                      stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="robot__text" data-i18n="a.notRobot">لست روبوتًا</span>
+          </label>
+          <p class="field__err" id="notRobotErr" role="alert"></p>
+        </div>
+
+        <!-- تحدّي Turnstile: لا يظهر إلا إذا كان المفتاح مضبوطًا في sb.js،
+             وعندها يختفي المربّع أعلاه لأنه صار بلا فائدة -->
+        <div class="field cfbox" id="inCaptcha" hidden>
+          <div class="cfbox__widget" id="inCaptchaWidget"></div>
+          <p class="field__err" id="inCaptchaErr" role="alert"></p>
+        </div>
 
         <button class="ui ui--go" type="submit" data-i18n="sc.signin">تسجيل الدخول</button>
       </form>
@@ -92,8 +123,10 @@
 
       <div class="demo">
         <p class="demo__h" data-i18n="a.demoH">الحساب التجريبي</p>
-        <div class="demo__row"><span data-i18n="a.email">البريد الإلكتروني</span><code>staff@mirsaad.kw</code></div>
-        <div class="demo__row"><span data-i18n="a.pass">كلمة المرور</span><code>mirsaad2026</code></div>
+        <p class="demo__note" data-i18n="a.demoNote2">
+          جولة في الواجهة ببيانات افتراضية. بلا كلمة مرور، وبلا وصول
+          إلى أي بيانات حقيقية، وتنتهي بعد ساعة.
+        </p>
         <button class="ui ui--ghost demo__btn" type="button" id="demoBtn" data-i18n="a.demoGo">الدخول بالحساب التجريبي</button>
       </div>
     </div>
@@ -106,7 +139,8 @@
         <div class="field">
           <label for="sName" data-i18n="g.name">الاسم الكامل</label>
           <input id="sName" name="name" type="text" autocomplete="name"
-                 placeholder="ريان العجمي" aria-describedby="sNameErr" required />
+                 data-i18n-attr="placeholder:g.namePh"
+                 placeholder="اكتب اسمك الكامل" aria-describedby="sNameErr" required />
           <p class="field__err" id="sNameErr" role="alert"></p>
         </div>
 
@@ -148,6 +182,11 @@
           <p class="field__err" id="sPass2Err" role="alert"></p>
         </div>
 
+        <div class="field cfbox" id="upCaptcha" hidden>
+          <div class="cfbox__widget" id="upCaptchaWidget"></div>
+          <p class="field__err" id="upCaptchaErr" role="alert"></p>
+        </div>
+
         <button class="ui ui--go" type="submit" data-i18n="g.create">إنشاء الحساب والدخول</button>
       </form>
 
@@ -155,8 +194,143 @@
         <button type="button" class="linkb" id="goIn" data-i18n="sc.signin">تسجيل الدخول</button></p>
     </div>
 
+    <!-- خطوة رمز التحقق: تظهر بعد إنشاء الحساب، ويرسل الرمز إلى البريد -->
+    <div id="paneOtp" hidden>
+      <p class="gate__sub" id="otpLead" data-i18n="o.lead">
+        أرسلنا رمزًا من ستة أرقام إلى بريدك. أدخله لتأكيد أن البريد بريدك.
+      </p>
+
+      <form id="otpForm" novalidate>
+        <div class="field">
+          <label for="otpCode" data-i18n="o.code">رمز التحقق</label>
+          <input id="otpCode" name="otp" type="text" inputmode="numeric"
+                 autocomplete="one-time-code" dir="ltr" maxlength="6"
+                 pattern="[0-9]{6}" placeholder="------"
+                 aria-describedby="otpErr" required />
+          <p class="field__err" id="otpErr" role="alert"></p>
+        </div>
+
+        <!-- لا تظهر إلا في التحقق بخطوتين عند الدخول، لا عند إنشاء الحساب -->
+        <label class="remember" id="otpTrustRow" for="otpTrust" hidden>
+          <input type="checkbox" id="otpTrust" name="otpTrust" />
+          <span data-i18n="o.trust">لا تسألني عن الرمز على هذا الجهاز لمدة ٣٠ يومًا</span>
+        </label>
+
+        <button class="ui ui--go" type="submit" data-i18n="o.verify">تأكيد الرمز</button>
+      </form>
+
+      <p class="gate__swap">
+        <button type="button" class="linkb" id="otpResend" data-i18n="o.resend">إعادة إرسال الرمز</button>
+        <span aria-hidden="true">·</span>
+        <button type="button" class="linkb" id="otpBack" data-i18n="o.back">رجوع</button>
+      </p>
+    </div>
+
+    <!-- استعادة كلمة المرور، خطوة أولى: إلى أي بريد نرسل الرمز -->
+    <div id="paneReset" hidden>
+      <p class="gate__sub" data-i18n="r2.lead">
+        أدخل بريدك، ونرسل إليه رمزًا من ستة أرقام. الرمز يثبت أن الصندوق صندوقك،
+        ثم تختار كلمة مرور جديدة.
+      </p>
+
+      <form id="resetForm" novalidate>
+        <div class="field">
+          <label for="rEmail" data-i18n="a.email">البريد الإلكتروني</label>
+          <input id="rEmail" name="email" type="email" inputmode="email"
+                 autocomplete="email" spellcheck="false"
+                 placeholder="name@company.com" aria-describedby="rEmailErr" required />
+          <p class="field__err" id="rEmailErr" role="alert"></p>
+        </div>
+
+        <button class="ui ui--go" type="submit" data-i18n="r2.send">أرسل رمز الاستعادة</button>
+      </form>
+
+      <p class="gate__swap">
+        <button type="button" class="linkb" id="resetBack" data-i18n="o.back">رجوع</button>
+      </p>
+    </div>
+
+    <!-- استعادة كلمة المرور، خطوة أخيرة: كلمة مرور جديدة -->
+    <div id="paneNewPass" hidden>
+      <p class="gate__sub" data-i18n="r2.setLead">
+        تم التحقق. اختر كلمة مرور جديدة.
+      </p>
+
+      <form id="newPassForm" novalidate>
+        <div class="field">
+          <label for="nPass" data-i18n="r2.newPass">كلمة المرور الجديدة</label>
+          <input id="nPass" type="password" autocomplete="new-password" minlength="8"
+                 placeholder="••••••••" aria-describedby="nPassErr" required />
+          <p class="field__hint" data-i18n="g.passRule">٨ أحرف فأكثر، وتحتوي حرفًا ورقمًا.</p>
+          <p class="field__err" id="nPassErr" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="nPass2" data-i18n="g.passConfirm">تأكيد كلمة المرور</label>
+          <input id="nPass2" type="password" autocomplete="new-password"
+                 placeholder="••••••••" aria-describedby="nPass2Err" required />
+          <p class="field__err" id="nPass2Err" role="alert"></p>
+        </div>
+
+        <button class="ui ui--go" type="submit" data-i18n="r2.save">حفظ والدخول</button>
+      </form>
+
+      <p class="gate__note" data-i18n="r2.kickNote">
+        بعد الحفظ تُنهى الجلسات على الأجهزة الأخرى — فمن كان داخلًا بكلمة المرور
+        القديمة يخرج.
+      </p>
+    </div>
+
+    <!-- خطوة تطبيق المصادقة: تحلّ محلّ رمز البريد لمن فعّله -->
+    <div id="paneTotp" hidden>
+      <p class="gate__sub" data-i18n="m.lead">
+        كلمة المرور صحيحة. افتح تطبيق المصادقة وأدخل الرمز المعروض فيه.
+      </p>
+
+      <form id="totpForm" novalidate>
+        <div class="field">
+          <label for="totpCode" data-i18n="m.code">رمز تطبيق المصادقة</label>
+          <input id="totpCode" name="totp" type="text" inputmode="numeric"
+                 autocomplete="one-time-code" dir="ltr" maxlength="6"
+                 pattern="[0-9]{6}" placeholder="------"
+                 aria-describedby="totpErr" required />
+          <p class="field__err" id="totpErr" role="alert"></p>
+        </div>
+
+        <label class="remember" for="totpTrust">
+          <input type="checkbox" id="totpTrust" name="totpTrust" />
+          <span data-i18n="o.trust">لا تسألني عن الرمز على هذا الجهاز لمدة ٣٠ يومًا</span>
+        </label>
+
+        <button class="ui ui--go" type="submit" data-i18n="o.verify">تأكيد الرمز</button>
+      </form>
+
+      <p class="gate__swap">
+        <button type="button" class="linkb" id="useBackup" data-i18n="b.use">فقدت هاتفي — استعمل رمز احتياط</button>
+        <span aria-hidden="true">·</span>
+        <button type="button" class="linkb" id="totpBack" data-i18n="o.back">رجوع</button>
+      </p>
+
+      <form id="backupForm" novalidate hidden>
+        <div class="field">
+          <label for="backupCode" data-i18n="b.code">رمز الاحتياط</label>
+          <input id="backupCode" type="text" dir="ltr" spellcheck="false"
+                 autocomplete="off" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX"
+                 aria-describedby="backupErr" required />
+          <p class="field__hint" data-i18n="b.hint">
+            أحد الرموز التي حفظتها عند تفعيل التطبيق. كل رمز يصلح مرة واحدة،
+            وباستعماله يُوقَف التطبيق حتى تسجّل هاتفًا جديدًا.
+          </p>
+          <p class="field__err" id="backupErr" role="alert"></p>
+        </div>
+        <button class="ui ui--go" type="submit" data-i18n="b.go">تأكيد الرمز</button>
+      </form>
+    </div>
+
     <p class="gate__note" data-i18n="a.demoNote">
-      نموذج عرض: التحقق يجري في المتصفح لا على خادم، والحسابات تُحفظ في متصفحك وحده.
+      الحسابات حقيقية: تُنشأ على خادم، وكلمة المرور لا تصل إلى هذه الصفحة.
+      ويُرسل إلى بريدك رمز من ستة أرقام — عند إنشاء الحساب للتأكد أن البريد
+      بريدك، وعند الدخول من جهاز جديد.
     </p>
 
     <p class="gate__note gate__note--link">
@@ -168,6 +342,8 @@
 <script src="assets/i18n.js"></script>
 <script src="assets/scene.js"></script>
 <script src="assets/chrome.js"></script>
+<script src="assets/secure.js"></script>
+<script src="assets/audit.js"></script>
 <script src="assets/auth.js"></script>
 </body>
 </html>
