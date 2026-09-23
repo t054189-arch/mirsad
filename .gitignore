@@ -8,3 +8,8 @@
 .DS_Store
 node_modules/
 .vercel/
+
+# Next.js build output
+.next/
+next-env.d.ts
+*.tsbuildinfo
