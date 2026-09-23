@@ -1,43 +1,70 @@
 /* مِرصاد — حارس التطبيق.
    يعمل قبل تحميل الحزمة: من لا جلسة له يعود إلى بوابة الدخول.
 
-   ينبغي التنبيه: هذا حارس في المتصفح، فهو يوجّه الزائر لا يمنعه.
-   الحماية الحقيقية تحتاج خادمًا يتحقق من الجلسة قبل إرسال الصفحة. */
+   ينبغي التنبيه: هذا حارس في المتصفح، فهو يوجّه الزائر لا يمنعه. ما
+   تغيّر أن الجلسة صارت رمزًا موقّعًا من خادم Supabase لا ملاحظة نكتبها
+   بأنفسنا، فمن يزوّرها يرى الواجهة وحدها. */
 (function () {
   'use strict';
-  var KEY = 'mirsaad.session';
 
-  var OURS = 'mirsaad-session';
-  function read(k) {
-    try { return sessionStorage.getItem(k) || localStorage.getItem(k); }
-    catch (e) { return null; }
-  }
-  /* الجلسة صحيحة فقط بوجود المفتاحين — القاعدة نفسها في assets/boot.js.
-     وجود أحدهما دون الآخر يعني خروجًا نصفيًا، ولو قبلناه لتقاذف المتصفح
-     بين البوابة واللوحة بلا نهاية. */
+  /* الصفحة العامة خارج ولاية الحارس: تُقرأ بلا حساب، فلا يطردها
+     ولا يضع فيها رابط أمان الحساب. */
+  if (document.documentElement.hasAttribute('data-public')) return;
+
   function session() {
-    var board = read(KEY), ours = read(OURS);
-    if (!board || !ours) return null;
-    try {
-      var s = JSON.parse(board);
-      return s && s.email ? s : null;
-    } catch (e) { return null; }
+    return window.MIRSAAD_SB ? window.MIRSAAD_SB.anySession() : null;
+  }
+
+  /* الحزمة المبنية تكتب مفتاحها الخاص وتمسحه عند الخروج من داخلها.
+     لا نملك مصدرها لنغيّره، فنعامل اختفاء المفتاح كطلب خروج، ونبطل
+     عندها جلسة Supabase نفسها — وإلا لبقي الرمز صالحًا بعد «الخروج». */
+  var APP_KEY = 'mirsaad.session';
+  function appFlag() {
+    try { return !!localStorage.getItem(APP_KEY); } catch (e) { return false; }
   }
 
   function leave() {
-    try {
-      localStorage.removeItem(KEY);
-      sessionStorage.removeItem(KEY);
-      localStorage.removeItem('mirsaad-session');
-      sessionStorage.removeItem('mirsaad-session');
-    } catch (e) { /* التخزين غير متاح */ }
-    location.replace('index.html');
+    /* السجلّ يُكتب قبل إبطال الجلسة: بعدها لا تبقى صلاحية للكتابة.
+       ولا ننتظره — خروج يتأخر بسبب سطر سجلّ خروجٌ سيّئ. */
+    if (window.MIRSAAD_AUDIT && !(window.MIRSAAD_SB && window.MIRSAAD_SB.demoSession())) {
+      window.MIRSAAD_AUDIT.log('sign_out');
+    }
+    try { localStorage.removeItem(APP_KEY); } catch (e) { /* لا شيء */ }
+    if (window.MIRSAAD_SB) { window.MIRSAAD_SB.demoEnd(); window.MIRSAAD_SB.clearIdle(); }
+    var sb = window.MIRSAAD_SB && window.MIRSAAD_SB.client();
+    var go = function () { location.replace('index.html'); };
+    if (!sb) { go(); return; }
+    try { sb.auth.signOut().then(go, go); } catch (e) { go(); }
   }
 
-  if (!session()) { leave(); return; }   // leave() يمسح المفتاحين
+  if (!session()) { leave(); return; }
 
-  // تسجيل الخروج داخل التطبيق يمسح الجلسة ولا ينتقل — فنلتقط ذلك
-  setInterval(function () { if (!session()) leave(); }, 1200);
+  /* ما سبق قراءةٌ من التخزين المحلي، وهي تُزوَّر بسطر واحد في وحدة
+     التحكم. فنسأل الخادم أيضًا: getUser يرسل الرمز ويطلب التحقق من
+     توقيعه وصلاحيته هناك، فلا ينفع رمز منتهٍ ولا ملفَّق ولا رمز حساب
+     حُذف أو أُوقف بعد دخوله.
+
+     الجولة التجريبية مستثناة: لا رمز لها أصلًا، ولا تصل إلى قاعدة
+     البيانات بحال. */
+  function verifyWithServer() {
+    var SB = window.MIRSAAD_SB;
+    if (!SB || SB.demoSession()) return;
+    var sb = SB.client();
+    if (!sb) return;
+    sb.auth.getUser().then(function (r) {
+      if (!r || r.error || !r.data || !r.data.user) leave();
+    }).catch(function () {
+      /* انقطاع شبكة لا يعني جلسة باطلة: لا نطرد أحدًا بسببه. */
+    });
+  }
+
+  verifyWithServer();
+  setInterval(verifyWithServer, 5 * 60 * 1000);
+
+  setInterval(function () {
+    if (!session()) { location.replace('index.html'); return; }
+    if (!appFlag()) leave();          // خروج من داخل اللوحة
+  }, 1200);
 
   document.addEventListener('click', function (e) {
     if (!e.target || !e.target.closest) return;
@@ -53,6 +80,26 @@
       location.href = 'inspection.html';
     }
   }, true);
+
+  /* حزمة اللوحة مبنية مسبقًا ولا نملك مصدرها، فلا سبيل إلى إضافة
+     بند في قائمتها. ونحتاج بابًا إلى صفحة الأمان، فنضع رابطًا صغيرًا
+     ثابتًا في زاوية الصفحة. الجولة التجريبية لا حساب لها فلا يظهر. */
+  function addSecurityLink() {
+    if (document.querySelector('.mirsaad-seclink')) return;
+    if (/security\.html$/.test(location.pathname)) return;
+    if (window.MIRSAAD_SB && window.MIRSAAD_SB.demoSession()) return;
+    var a = document.createElement('a');
+    a.className = 'mirsaad-seclink';
+    a.href = 'security.html';
+    a.textContent = document.documentElement.lang === 'en'
+      ? 'Account security' : 'أمان الحساب';
+    document.body.appendChild(a);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addSecurityLink);
+  } else {
+    addSecurityLink();
+  }
 
   // ومن يفتح معالج التطبيق بالعنوان مباشرةً يُحوَّل إلى الخطوات أيضًا
   function routeWizard() {

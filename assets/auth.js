@@ -1,24 +1,62 @@
-/* مِرصاد — بوابة الدخول: تسجيل دخول وإنشاء حساب.
+/* مِرصاد — بوابة الدخول: تسجيل دخول، إنشاء حساب، وتأكيد البريد برمز.
 
-   كل شيء هنا يجري في المتصفح: لا خادم يتحقق، والحسابات تُحفظ في
-   localStorage. كلمة المرور تُخزَّن مُجزّأة لا نصًا صريحًا، لكن التجزئة
-   بسيطة وقابلة للكسر — هذا تفادٍ لتخزينها ظاهرة، وليس تأمينًا.
-   لا يُرسل شيء من هذه البيانات إلى أي جهة. */
+   ما تغيّر عن النسخة السابقة:
+   لم تعد الحسابات تُحفظ في المتصفح، ولم تعد كلمة المرور تُجزَّأ هنا.
+   الحساب يُنشأ على خادم Supabase، وكلمة المرور تُخزَّن هناك مُجزّأة
+   بخوارزمية بطيئة مخصّصة لكلمات المرور، ولا تصل هذه الصفحة أبدًا.
+   والجلسة رمز موقّع من الخادم لا ملاحظة نكتبها بأنفسنا.
+
+   ورمز الأرقام الستة يثبت أن البريد بريد صاحبه: لا يكتمل الحساب حتى
+   يصل الرمز إلى الصندوق ويُعاد إدخاله هنا.
+
+   يبقى تحذير واحد: حراسة الصفحات تجري في المتصفح لأن الموقع ثابت بلا
+   خادم يقدّمه. من يزوّر الجلسة يرى الواجهة، لكنه لا ينال شيئًا من
+   قاعدة البيانات: الخادم يتحقق من توقيع الرمز عند كل طلب. */
 (function () {
   'use strict';
 
   var loginForm = document.getElementById('loginForm');
   var signupForm = document.getElementById('signupForm');
-  if (!loginForm || !signupForm) return;
+  var otpForm = document.getElementById('otpForm');
+  if (!loginForm || !signupForm || !otpForm) return;
 
-  var USERS = 'mirsaad-users';
+  var SB = window.MIRSAAD_SB;
+  var sb = SB && SB.client();
+  var SEC = window.MIRSAAD_SEC;
 
-  /* الحساب التجريبي — موجود دائمًا بجانب الحسابات المنشأة */
-  var DEMO = {
-    email: 'staff@mirsaad.kw', pass: 'mirsaad2026',
-    name: 'ريان العجمي', nameEn: 'Rayan Alajmi',
-    role: 'مراجِع', roleEn: 'Reviewer'
-  };
+  /* ---------- تحدّي الروبوتات ----------
+     بمفتاح Turnstile يصير التحدّي حقيقيًا، ويتحقق منه خادم Supabase
+     قبل قبول الطلب، فلا ينفع تجاوزه من المتصفح. وبلا مفتاح يبقى
+     المربّع القديم على حاله: يردّ النقر العابر لا برنامجًا آليًا. */
+  var CAPTCHA = !!(SEC && SEC.haveCaptcha());
+
+  if (CAPTCHA) {
+    var robotRow = document.querySelector('.robot');
+    if (robotRow) robotRow.hidden = true;
+    [['in', 'inCaptcha'], ['up', 'upCaptcha']].forEach(function (pair) {
+      var box = document.getElementById(pair[1]);
+      if (!box) return;
+      box.hidden = false;
+      SEC.mount(pair[0], document.getElementById(pair[1] + 'Widget'), function () {
+        document.getElementById(pair[1] + 'Err').textContent = '';
+      });
+    });
+  }
+
+  /* رمز التحدّي يُرفق بكل طلب مصادقة؛ بلا مفتاح يبقى الحقل فارغًا
+     ويتجاهله الخادم. */
+  function authOpts(which, extra) {
+    var o = extra || {};
+    if (CAPTCHA) o.captchaToken = SEC.token(which);
+    return o;
+  }
+  function captchaProblem(which) {
+    if (!CAPTCHA) return '';
+    return SEC.token(which) ? '' : t('e.captcha', 'أكمل التحقق من أنك لست روبوتًا.');
+  }
+  function captchaSpent(which) {
+    if (CAPTCHA) SEC.reset(which);
+  }
 
   var ROLES = {
     tech:  { ar: 'الفنّي الميداني',     en: 'Field technician' },
@@ -28,38 +66,12 @@
     admin: { ar: 'موظف إداري',          en: 'Administrator' }
   };
 
-  /* تجزئة بسيطة (FNV-1a) — لتفادي تخزين كلمة المرور نصًا صريحًا فقط */
-  function hash(str) {
-    var h = 0x811c9dc5, i;
-    for (i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-    }
-    return ('0000000' + h.toString(16)).slice(-8);
-  }
-
-  function readUsers() {
-    try { return JSON.parse(localStorage.getItem(USERS)) || []; }
-    catch (e) { return []; }
-  }
-  function writeUsers(list) {
-    try { localStorage.setItem(USERS, JSON.stringify(list)); return true; }
-    catch (e) { return false; }
-  }
-  function findUser(v) {
-    v = (v || '').trim().toLowerCase();
-    if (v === DEMO.email) return DEMO;
-    var list = readUsers(), i;
-    for (i = 0; i < list.length; i++) if (list[i].email === v) return list[i];
-    return null;
-  }
-
   function t(key, fallback) {
     var en = document.documentElement.lang === 'en' && window.MIRSAAD_EN;
     return en && key in window.MIRSAAD_EN ? window.MIRSAAD_EN[key] : fallback;
   }
 
-  /* ---------- التحقق ---------- */
+  /* ---------- التحقق من الصيغة ---------- */
   var RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,24}$/;
   var THROWAWAY = ['mailinator.com','tempmail.com','temp-mail.org','guerrillamail.com',
                    '10minutemail.com','yopmail.com','trashmail.com','sharklasers.com',
@@ -93,6 +105,17 @@
       return t('e.passWeak', 'اجعلها تحتوي حرفًا ورقمًا على الأقل.');
     return '';
   }
+  /* تنبيه: هذا التأكيد يجري في المتصفح، فهو يردّ النقر العابر لا برنامجًا
+     آليًا — من يرسل الطلب بنفسه يتجاوزه. المنع الحقيقي يحتاج خادمًا. */
+  function robotProblem(checked) {
+    return checked ? '' : t('e.robot', 'أكّد أنك لست روبوتًا.');
+  }
+  function otpProblem(v) {
+    v = (v || '').trim();
+    if (!v) return t('e.otpReq', 'أدخل الرمز المرسل إلى بريدك.');
+    if (!/^[0-9]{6}$/.test(v)) return t('e.otpFormat', 'الرمز ستة أرقام.');
+    return '';
+  }
 
   function setErr(input, box, msg) {
     box.textContent = msg;
@@ -101,34 +124,39 @@
     return !msg;
   }
 
-  /* ---------- الجلسة ---------- */
-  function signIn(user, remember) {
-    var store = remember ? localStorage : sessionStorage;
-    try {
-      store.setItem('mirsaad-session', JSON.stringify({
-        email: user.email, name: user.name, nameEn: user.nameEn,
-        role: user.role, roleEn: user.roleEn, at: new Date().toISOString()
-      }));
-      // ولوحة التحكم (board.html) تقرأ مفتاحها الخاص بشكله الخاص،
-      // فنكتبه أيضًا ليفتحها تسجيل الدخول نفسه
-      store.setItem('mirsaad.session', JSON.stringify({
-        userId: 'usr-001', email: user.email
-      }));
-    } catch (e) { return false; }
-    var next = new URLSearchParams(location.search).get('next');
-    var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'board.html#/dashboard';
-    document.body.classList.add('is-leaving');
-    setTimeout(function () { location.href = target; }, 260);
-    return true;
+  function busy(form, on) {
+    var b = form.querySelector('button[type="submit"]');
+    if (!b) return;
+    b.disabled = on;
+    b.classList.toggle('is-busy', on);
   }
 
-  /* ---------- التبويبان ---------- */
+  function offline(box) {
+    box.textContent = t('e.offline', 'تعذّر الاتصال بالخادم. تحقق من اتصالك ثم أعد المحاولة.');
+  }
+
+  /* ---------- التبويبات ---------- */
   var tabIn = document.getElementById('tabIn');
   var tabUp = document.getElementById('tabUp');
   var paneIn = document.getElementById('paneIn');
   var paneUp = document.getElementById('paneUp');
+  var paneOtp = document.getElementById('paneOtp');
+  var tabsw = document.querySelector('.tabsw');
+
+  var paneTotp = document.getElementById('paneTotp');
+  var paneReset = document.getElementById('paneReset');
+  var paneNewPass = document.getElementById('paneNewPass');
+
+  function hideExtras() {
+    if (paneTotp) paneTotp.hidden = true;
+    if (paneReset) paneReset.hidden = true;
+    if (paneNewPass) paneNewPass.hidden = true;
+  }
 
   function showTab(up) {
+    paneOtp.hidden = true;
+    hideExtras();
+    if (tabsw) tabsw.hidden = false;
     tabIn.classList.toggle('is-on', !up);
     tabUp.classList.toggle('is-on', up);
     tabIn.setAttribute('aria-selected', String(!up));
@@ -137,45 +165,236 @@
     paneUp.hidden = !up;
     (up ? document.getElementById('sName') : document.getElementById('email')).focus();
   }
+  /* شاشة الرمز نفسها تخدم حالتين: تأكيد بريد حساب جديد، والخطوة
+     الثانية عند الدخول. الفرق في نوع الرمز عند التحقق، وفي خيار
+     «لا تسألني على هذا الجهاز» الذي لا معنى له عند إنشاء الحساب. */
+  var otpMode = 'signup';
+  function showOtp() {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+    hideExtras();
+    var trustRow = document.getElementById('otpTrustRow');
+    if (trustRow) trustRow.hidden = otpMode !== 'login';
+    document.getElementById('otpCode').focus();
+  }
+
+  /* بعد رمز تطبيق المصادقة نمضي إلى اللوحة عادةً، وإلى شاشة كلمة
+     المرور الجديدة حين تكون هذه استعادة. */
+  var totpNext = 'enter';
+
+  function showTotp() {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = true;
+    hideExtras();
+    paneTotp.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+    pass.value = '';
+    document.getElementById('totpCode').focus();
+  }
+
+  function showReset() {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = true;
+    hideExtras();
+    paneReset.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+    var re = document.getElementById('rEmail');
+    re.value = email.value.trim();      /* ما كتبه في الدخول لا يُكتب مرتين */
+    re.focus();
+  }
+
+  function showNewPass() {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = true;
+    hideExtras();
+    paneNewPass.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+    document.getElementById('nPass').focus();
+  }
   tabIn.addEventListener('click', function () { showTab(false); });
   tabUp.addEventListener('click', function () { showTab(true); });
   document.getElementById('goUp').addEventListener('click', function () { showTab(true); });
   document.getElementById('goIn').addEventListener('click', function () { showTab(false); });
 
+  /* ---------- الانتقال بعد نجاح الدخول ---------- */
+  function enter() {
+    /* حزمة لوحة التحكم مبنية مسبقًا ولا نملك مصدرها، وهي تقرأ مفتاحها
+       الخاص لتعرف أن ثمة جلسة. نكتبه لها هنا حتى تعمل، ونجعل اختفاءه
+       علامة خروج في guard.js. الجلسة المعتبرة تبقى جلسة Supabase؛
+       هذا المفتاح إشارة للواجهة لا إثبات هوية. */
+    try {
+      var s = SB.sessionSync();
+      localStorage.setItem('mirsaad.session', JSON.stringify({
+        userId: 'usr-001',
+        email: (s && s.user && s.user.email) || ''
+      }));
+    } catch (e) { /* التخزين غير متاح */ }
+
+    var next = new URLSearchParams(location.search).get('next');
+    var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'board.html#/dashboard';
+    document.body.classList.add('is-leaving');
+    setTimeout(function () { location.href = target; }, 260);
+  }
+
+  /* ---------- العودة من رابط في البريد ----------
+     قالب الرسالة هو من يقرّر: `{{ .Token }}` يرسل رمزًا، و
+     `{{ .ConfirmationURL }}` يرسل رابطًا. والقالب الافتراضي يرسل
+     رابطًا، فمن ضغطه عاد إلى الصفحة ووجدها تطلب رمزًا لن يأتي.
+
+     فنقبل الطريقين: من عاد برابط تأكيد صحيح دخل، ومن معه رمز أدخله.
+     والشرط أن يكون العائد من نوع signup أو تأكيد بريد — لا استعادة
+     ولا غيرها — حتى لا يصير هذا طريقًا يلتفّ حول خطوة ثانية. */
+  (function () {
+    var back = location.hash || '';
+    if (!/access_token=/.test(back)) return;
+    if (!/type=(signup|email_change|magiclink)/.test(back)) return;
+    if (!sb) return;
+
+    sb.auth.onAuthStateChange(function (event, session) {
+      if (!session) return;
+      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return;
+      /* الرابط أثبت البريد كما يثبته الرمز تمامًا */
+      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
+      try { history.replaceState(null, '', location.pathname); } catch (e) { /* لا شيء */ }
+      enter();
+    });
+  })();
+
   /* ---------- تسجيل الدخول ---------- */
   var email = document.getElementById('email');
   var pass = document.getElementById('pass');
-  var remember = document.getElementById('remember');
+  var notRobot = document.getElementById('notRobot');
   var emailErr = document.getElementById('emailErr');
   var passErr = document.getElementById('passErr');
+  var notRobotErr = document.getElementById('notRobotErr');
+  var loginHint = document.getElementById('loginHint');
   var triedIn = false;
 
   email.addEventListener('input', function () { if (triedIn) setErr(email, emailErr, emailFormat(email.value)); });
   pass.addEventListener('input', function () { if (triedIn) setErr(pass, passErr, passProblem(pass.value)); });
+  notRobot.addEventListener('change', function () {
+    if (triedIn) setErr(notRobot, notRobotErr, robotProblem(notRobot.checked));
+  });
 
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
     triedIn = true;
     var ok = setErr(email, emailErr, emailFormat(email.value));
     ok = setErr(pass, passErr, passProblem(pass.value)) && ok;
-    if (!ok) { (emailErr.textContent ? email : pass).focus(); return; }
+    var capMsg = '';
+    if (CAPTCHA) {
+      capMsg = captchaProblem('in');
+      document.getElementById('inCaptchaErr').textContent = capMsg;
+      if (capMsg) ok = false;
+    } else {
+      ok = setErr(notRobot, notRobotErr, robotProblem(notRobot.checked)) && ok;
+    }
+    if (!ok) {
+      if (emailErr.textContent) email.focus();
+      else if (passErr.textContent) pass.focus();
+      else if (!CAPTCHA) notRobot.focus();
+      return;
+    }
+    if (!sb) { offline(emailErr); return; }
 
-    var user = findUser(email.value);
-    if (!user) {
-      setErr(email, emailErr, t('e.noAccount', 'لا يوجد حساب بهذا البريد — أنشئ حسابًا أو استخدم الحساب التجريبي.'));
-      email.focus();
-      return;
-    }
-    var given = user.hash ? hash(pass.value) : pass.value;
-    var stored = user.hash || user.pass;
-    if (given !== stored) {
-      setErr(pass, passErr, t('e.wrongPass', 'كلمة المرور غير صحيحة.'));
-      pass.select();
-      return;
-    }
-    if (!signIn(user, remember.checked))
-      setErr(email, emailErr, t('e.store', 'تعذّر حفظ الجلسة — فعّل تخزين المتصفح.'));
+    busy(loginForm, true);
+    sb.auth.signInWithPassword({
+      email: email.value.trim().toLowerCase(),
+      password: pass.value,
+      options: authOpts('in')
+    }).then(function (r) {
+      busy(loginForm, false);
+      captchaSpent('in');
+      if (r.error) {
+        /* رسالة واحدة لكل حالات الفشل: لا نكشف أي بريد مسجَّل وأيّه لا.
+           التمييز بين «لا حساب» و«كلمة مرور خاطئة» يعطي المهاجم قائمة. */
+        /* حساب لم يُؤكَّد بعد: نفتح شاشة الرمز ولا نرسل تلقائيًا.
+           الإرسال التلقائي كان يُبطل الرمز السابق ويستهلك حصة الإرسال،
+           فيبقى المستخدم بلا رمز صالح ولا رسالة جديدة. الإرسال الآن
+           بطلب صريح من المستخدم عبر «إعادة إرسال الرمز». */
+        /* كان الحساب غير المؤكَّد يفتح شاشة الرمز، وكان ذلك يفضح
+           وجوده: من جرّب بريدًا بأي كلمة مرور عرف من عندنا حساب ومن
+           ليس عنده. فصار الردّ واحدًا في كل حالات الفشل.
+
+           ومن لم يؤكّد بريده لا يضيع: الجملة الثانية تدلّه على
+           «نسيت كلمة المرور؟» — وهي تُرسل رمزًا يؤكّد البريد ويُدخله.
+           والجملة تُعرض للجميع، فلا تكشف شيئًا عن أحد. */
+        setErr(pass, passErr, t('e.badLogin', 'البريد أو كلمة المرور غير صحيحة.'));
+        loginHint.hidden = false;
+        pass.select();
+        return;
+      }
+
+      /* كلمة المرور صحيحة — وهذا وحده لا يكفي.
+         على جهاز لم يُوثَّق بعد نُنهي الجلسة التي فتحها الخادم للتو،
+         ونطلب رمزًا إلى البريد. فمن سرق كلمة المرور وحدها لا يبلغ
+         شيئًا ما لم يفتح صندوق البريد أيضًا. */
+      var addr = email.value.trim().toLowerCase();
+      pendingEmail = addr;
+
+      /* من فعّل تطبيق مصادقة فالخادم نفسه يعرف أن جلسته ناقصة حتى
+         يدخل رمز التطبيق (aal1 مقابل aal2). وهذا أمتن من رمز البريد:
+         لا يمرّ بصندوق بريد يمكن اختراقه. فإن وُجد، فهو الخطوة
+         الثانية ولا حاجة إلى غيره — حتى على جهاز «موثوق»، لأن التطبيق
+         في يد صاحبه دائمًا ولا كلفة عليه. */
+      sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
+        var d = lv && lv.data;
+        if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
+          showTotp();
+          return;
+        }
+        if (SEC && !SEC.deviceTrusted(addr)) { secondStep(addr); return; }
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_password');
+        enter();
+      }).catch(function () {
+        /* تعذّر السؤال عن مستوى التحقق: نعود إلى رمز البريد، ولا
+           نُدخل أحدًا بكلمة مرور وحدها. */
+        if (SEC && !SEC.deviceTrusted(addr)) { secondStep(addr); return; }
+        enter();
+      });
+    }).catch(function () { busy(loginForm, false); captchaSpent('in'); offline(emailErr); });
   });
+
+  /* الخطوة الثانية: إنهاء الجلسة ثم إرسال رمز إلى البريد. */
+  function secondStep(addr) {
+    pendingEmail = addr;
+    otpMode = 'login';
+    busy(loginForm, true);
+
+    sb.auth.signOut().then(function () {
+      return CAPTCHA ? SEC.freshToken('in') : '';
+    }).then(function (tk) {
+      return sb.auth.signInWithOtp({
+        email: addr,
+        options: CAPTCHA
+          ? { shouldCreateUser: false, captchaToken: tk }
+          : { shouldCreateUser: false }
+      });
+    }).then(function (r) {
+      busy(loginForm, false);
+      otpLead(addr);
+      showOtp();
+      pass.value = '';                 /* لا تبقى كلمة المرور في الحقل */
+      if (r && r.error) {
+        if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
+          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          return;
+        }
+        otpErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        return;
+      }
+      startWait();                     /* مهلة قبل السماح بطلب رمز آخر */
+    }).catch(function () {
+      busy(loginForm, false);
+      showOtp();
+      offline(otpErr);
+    });
+  }
 
   /* ---------- إنشاء حساب ---------- */
   var sName = document.getElementById('sName');
@@ -189,13 +408,8 @@
   var sPassErr = document.getElementById('sPassErr');
   var sPass2Err = document.getElementById('sPass2Err');
   var triedUp = false;
+  var pendingEmail = '';
 
-  function emailTaken(v) {
-    var fmt = emailFormat(v);
-    if (fmt) return fmt;
-    if (findUser(v)) return t('e.taken', 'هذا البريد مسجّل بالفعل — سجّل الدخول به.');
-    return '';
-  }
   function matchProblem() {
     if (!sPass2.value) return t('e.confirmReq', 'أعد كتابة كلمة المرور.');
     if (sPass2.value !== sPass.value) return t('e.mismatch', 'كلمتا المرور غير متطابقتين.');
@@ -203,7 +417,7 @@
   }
 
   sName.addEventListener('input', function () { if (triedUp) setErr(sName, sNameErr, nameProblem(sName.value)); });
-  sEmail.addEventListener('input', function () { if (triedUp) setErr(sEmail, sEmailErr, emailTaken(sEmail.value)); });
+  sEmail.addEventListener('input', function () { if (triedUp) setErr(sEmail, sEmailErr, emailFormat(sEmail.value)); });
   sRole.addEventListener('change', function () { if (triedUp) setErr(sRole, sRoleErr, sRole.value ? '' : t('e.roleReq', 'اختر دورك في المكتب.')); });
   sPass.addEventListener('input', function () {
     if (!triedUp) return;
@@ -216,42 +430,452 @@
     e.preventDefault();
     triedUp = true;
     var ok = setErr(sName, sNameErr, nameProblem(sName.value));
-    ok = setErr(sEmail, sEmailErr, emailTaken(sEmail.value)) && ok;
+    ok = setErr(sEmail, sEmailErr, emailFormat(sEmail.value)) && ok;
     ok = setErr(sRole, sRoleErr, sRole.value ? '' : t('e.roleReq', 'اختر دورك في المكتب.')) && ok;
     ok = setErr(sPass, sPassErr, newPassProblem(sPass.value)) && ok;
     ok = setErr(sPass2, sPass2Err, matchProblem()) && ok;
+    if (CAPTCHA) {
+      var upMsg = captchaProblem('up');
+      document.getElementById('upCaptchaErr').textContent = upMsg;
+      if (upMsg) ok = false;
+    }
     if (!ok) {
       var first = signupForm.querySelector('.field.is-bad input, .field.is-bad select');
       if (first) first.focus();
       return;
     }
+    if (!sb) { offline(sEmailErr); return; }
 
-    var role = ROLES[sRole.value];
-    var user = {
-      email: sEmail.value.trim().toLowerCase(),
-      name: sName.value.trim(),
-      nameEn: sName.value.trim(),
-      role: role.ar, roleEn: role.en,
-      hash: hash(sPass.value),
-      at: new Date().toISOString()
-    };
-    var list = readUsers();
-    list.push(user);
-    if (!writeUsers(list)) {
-      setErr(sEmail, sEmailErr, t('e.store', 'تعذّر حفظ الحساب — فعّل تخزين المتصفح.'));
-      return;
-    }
-    signIn(user, true);
+    busy(signupForm, true);
+
+    /* قبل إرسال شيء: هل هذه الكلمة معروفة للمهاجمين أصلًا؟
+       السؤال لا يكشفها — خمسة أحرف من بصمتها فقط تغادر المتصفح. ولو
+       تعذّر السؤال مضينا: خدمة خارجية معطّلة لا تقفل باب التسجيل. */
+    SEC.pwnedCount(sPass.value).then(function (n) {
+      if (n > 0) {
+        busy(signupForm, false);
+        setErr(sPass, sPassErr, t('e.pwned', 'هذه الكلمة ظهرت في تسريبات كلمات مرور معروفة — اختر غيرها.'));
+        sPass.focus();
+        return;
+      }
+      createAccount();
+    });
   });
 
-  /* ---------- الحساب التجريبي بضغطة ---------- */
+  function createAccount() {
+    var role = ROLES[sRole.value];
+    pendingEmail = sEmail.value.trim().toLowerCase();
+    otpMode = 'signup';
+
+    sb.auth.signUp({
+      email: pendingEmail,
+      password: sPass.value,
+      options: authOpts('up', {
+        data: {
+          full_name: sName.value.trim(),
+          role_key: sRole.value,
+          role_ar: role.ar,
+          role_en: role.en,
+          app: 'mirsaad'
+        }
+      })
+    }).then(function (r) {
+      busy(signupForm, false);
+      captchaSpent('up');
+      if (r.error) {
+        var m = r.error.message || '';
+        /* حدّ الإرسال: الخادم لم يرسل شيئًا. لا بد أن يظهر ذلك صريحًا،
+           وإلا انتظر المستخدم رسالة لن تأتي أبدًا. */
+        if (r.error.status === 429 || /rate limit/i.test(m)) {
+          setErr(sEmail, sEmailErr, t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.'));
+          return;
+        }
+        /* Supabase يبتلع نصّ الخطأ الآتي من الخادم ويردّ رسالة واحدة
+           عامة. والرفض عند الإنشاء سببه الوحيد الآن أن البريد مؤقّت
+           رفضه الخادم، فنعرض الرسالة عند حقل البريد لا في فراغ. */
+        if (r.error.status === 500 || /database error/i.test(m)) {
+          setErr(sEmail, sEmailErr, t('e.throwaway', 'استخدم بريدًا حقيقيًا، لا بريدًا مؤقتًا.'));
+          sEmail.focus();
+          return;
+        }
+        if (/password/i.test(m)) { setErr(sPass, sPassErr, t('e.passWeak', 'اجعلها تحتوي حرفًا ورقمًا على الأقل.')); return; }
+        setErr(sEmail, sEmailErr, t('e.signupFail', 'تعذّر إنشاء الحساب. تحقق من البريد ثم أعد المحاولة.'));
+        return;
+      }
+      /* Supabase يردّ بنجاح سواء كان البريد جديدًا أو مسجَّلًا من قبل،
+         فلا تكشف الصفحة أيّ الحالتين وقعت — وهذا مقصود. */
+      otpLead(pendingEmail);
+      showOtp();
+    }).catch(function () { busy(signupForm, false); captchaSpent('up'); offline(sEmailErr); });
+  }
+
+  /* ---------- رمز التحقق ---------- */
+  var otpCode = document.getElementById('otpCode');
+  var otpErr = document.getElementById('otpErr');
+  var otpLeadEl = document.getElementById('otpLead');
+  var triedOtp = false;
+
+  function otpLead(addr) {
+    var head, tail;
+    if (otpMode === 'login') {
+      head = t('o.stepTwo', 'كلمة المرور صحيحة. بقيت خطوة واحدة: أرسلنا رمزًا من ستة أرقام إلى ');
+      tail = t('o.leadTail2', '. أدخله لإتمام الدخول.');
+    } else if (otpMode === 'reset') {
+      head = t('o.leadTo', 'أرسلنا رمزًا من ستة أرقام إلى ');
+      tail = t('o.leadTail3', '. أدخله لتختار كلمة مرور جديدة. وإن لم يصلك شيء، فلا حساب على هذا البريد.');
+    } else {
+      head = t('o.leadTo', 'أرسلنا رمزًا من ستة أرقام إلى ');
+      tail = t('o.leadTail', '. أدخله لتأكيد أن البريد بريدك.');
+    }
+    otpLeadEl.textContent = head + addr + tail;
+  }
+
+  otpCode.addEventListener('input', function () {
+    otpCode.value = otpCode.value.replace(/[^0-9]/g, '').slice(0, 6);
+    if (triedOtp) setErr(otpCode, otpErr, otpProblem(otpCode.value));
+  });
+
+  otpForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    triedOtp = true;
+    if (!setErr(otpCode, otpErr, otpProblem(otpCode.value))) { otpCode.focus(); return; }
+    if (!sb) { offline(otpErr); return; }
+
+    busy(otpForm, true);
+    sb.auth.verifyOtp({
+      email: pendingEmail,
+      token: otpCode.value.trim(),
+      /* رمز تأكيد حساب جديد نوعه signup. أما الدخول بخطوتين
+         والاستعادة فنوعهما email — والخلط يردّه الخادم. */
+      type: otpMode === 'signup' ? 'signup' : 'email'
+    }).then(function (r) {
+      busy(otpForm, false);
+      if (r.error) {
+        setErr(otpCode, otpErr, t('e.otpBad', 'الرمز غير صحيح أو انتهت صلاحيته.'));
+        otpCode.select();
+        return;
+      }
+      /* استعادة: الرمز أثبت البريد، ولم يبقَ إلا كلمة المرور الجديدة.
+         ومن فعّل تطبيق المصادقة يُسأل عنه قبلها، فلا تصير الاستعادة
+         طريقًا حول الخطوة الثانية. */
+      if (otpMode === 'reset') {
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_reset_asked');
+        sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
+          var d = lv && lv.data;
+          if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
+            totpNext = 'newpass';
+            showTotp();
+            return;
+          }
+          showNewPass();
+        }).catch(function () { showNewPass(); });
+        return;
+      }
+
+      var trust = document.getElementById('otpTrust');
+      if (otpMode === 'login' && trust && trust.checked && SEC) {
+        SEC.trustDevice(pendingEmail);
+      }
+      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
+      enter();
+    }).catch(function () { busy(otpForm, false); offline(otpErr); });
+  });
+
+  /* ---------- رمز تطبيق المصادقة ----------
+     الجلسة قائمة لكنها عند aal1، والخادم لا يمنحها aal2 حتى يصحّ
+     الرمز. فما دامت ناقصة لا تصل إلى بيانات محميّة بـ aal2، ولا
+     ندخل بها التطبيق. */
+  var totpForm = document.getElementById('totpForm');
+  if (totpForm) {
+    var totpCode = document.getElementById('totpCode');
+    var totpErr = document.getElementById('totpErr');
+    var triedTotp = false;
+
+    totpCode.addEventListener('input', function () {
+      totpCode.value = totpCode.value.replace(/[^0-9]/g, '').slice(0, 6);
+      if (triedTotp) setErr(totpCode, totpErr, otpProblem(totpCode.value));
+    });
+
+    totpForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      triedTotp = true;
+      if (!setErr(totpCode, totpErr, otpProblem(totpCode.value))) { totpCode.focus(); return; }
+      if (!sb) { offline(totpErr); return; }
+
+      busy(totpForm, true);
+      sb.auth.mfa.listFactors().then(function (r) {
+        var list = (r && r.data && r.data.totp) || [];
+        if (!list.length) throw new Error('no-factor');
+        var factorId = list[0].id;
+        return sb.auth.mfa.challenge({ factorId: factorId }).then(function (c) {
+          if (!c || c.error) throw new Error('challenge');
+          return sb.auth.mfa.verify({
+            factorId: factorId,
+            challengeId: c.data.id,
+            code: totpCode.value.trim()
+          });
+        });
+      }).then(function (v) {
+        busy(totpForm, false);
+        if (v && v.error) {
+          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
+          setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
+          totpCode.select();
+          return;
+        }
+        if (totpNext === 'newpass') { totpNext = 'enter'; showNewPass(); return; }
+        var trust = document.getElementById('totpTrust');
+        if (trust && trust.checked && SEC) SEC.trustDevice(pendingEmail);
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_totp');
+        enter();
+      }).catch(function () {
+        busy(totpForm, false);
+        setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
+        totpCode.select();
+      });
+    });
+
+    /* الرجوع يعني التخلّي عن دخول لم يكتمل: تُنهى الجلسة الناقصة
+       ولا تُترك مفتوحة عند aal1. */
+    document.getElementById('totpBack').addEventListener('click', function () {
+      if (sb) sb.auth.signOut();
+      showTab(false);
+    });
+
+    /* ---------- رمز الاحتياط ----------
+       الجلسة قائمة لكنها ناقصة، أي أن كلمة المرور صحّت. فالرمز
+       الاحتياطي هو العامل الثاني بدل الهاتف المفقود. والخادم هو من
+       يتحقق منه ويزيل عامل التحقق؛ المتصفح لا يقرّر شيئًا. */
+    var backupForm = document.getElementById('backupForm');
+    var backupCode = document.getElementById('backupCode');
+    var backupErr = document.getElementById('backupErr');
+
+    document.getElementById('useBackup').addEventListener('click', function () {
+      backupForm.hidden = false;
+      this.hidden = true;
+      backupCode.focus();
+    });
+
+    backupCode.addEventListener('input', function () {
+      backupCode.value = backupCode.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    });
+
+    backupForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = backupCode.value.trim();
+      if (v.length < 8) {
+        backupErr.textContent = t('e.backupShape', 'أدخل رمز احتياط كاملًا.');
+        return;
+      }
+      if (!sb) { offline(backupErr); return; }
+
+      backupErr.textContent = '';
+      busy(backupForm, true);
+      sb.rpc('use_backup_code', { code: v }).then(function (r) {
+        busy(backupForm, false);
+        if (!r || r.error || r.data !== true) {
+          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
+          backupErr.textContent = t('e.backupBad', 'هذا الرمز غير صحيح أو استُعمل من قبل.');
+          backupCode.select();
+          return;
+        }
+        /* عامل التحقق أُزيل، فالحساب عاد إلى الخطوة الثانية بالبريد.
+           ولا نُدخله بهذه الجلسة: نبدأ الخطوة الثانية من جديد، فلا
+           يكفي رمز احتياط وحده بلا إثبات بريد. */
+        backupCode.value = '';
+        backupForm.hidden = true;
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_removed');
+        secondStep(pendingEmail);
+      }).catch(function () { busy(backupForm, false); offline(backupErr); });
+    });
+  }
+
+  /* كل إرسال جديد يُبطل الرمز السابق، فلا يُطلب إلا صراحةً.
+     ومهلة بين الطلبات: حصة الإرسال صغيرة ومشتركة على المشروع كله، فنقرة
+     متكررة تستهلكها فيُحرم منها من يسجّل بعدك. */
+  var resendBtn = document.getElementById('otpResend');
+  var RESEND_WAIT_MS = 60 * 1000;
+  var WAIT_KEY = 'mirsaad.resendAt';
+  var waitTimer = null;
+
+  /* المهلة محفوظة لا في الذاكرة وحدها: لو أُعيد تحميل الصفحة لبقيت
+     سارية، وإلا لكان تجاوزها بضغطة تحديث. */
+  function waitLeftMs() {
+    try {
+      var until = parseInt(localStorage.getItem(WAIT_KEY) || '0', 10);
+      return Math.max(0, until - Date.now());
+    } catch (e) { return 0; }
+  }
+  function paintWait() {
+    var left = waitLeftMs();
+    if (left <= 0) {
+      if (waitTimer) { clearInterval(waitTimer); waitTimer = null; }
+      resendBtn.disabled = false;
+      resendBtn.textContent = t('o.resend', 'إعادة إرسال الرمز');
+      return;
+    }
+    resendBtn.disabled = true;
+    resendBtn.textContent = t('o.resendIn', 'إعادة الإرسال بعد ') +
+                            Math.ceil(left / 1000) + t('o.sec', ' ثانية');
+    if (!waitTimer) waitTimer = setInterval(paintWait, 1000);
+  }
+  function startWait() {
+    try { localStorage.setItem(WAIT_KEY, String(Date.now() + RESEND_WAIT_MS)); }
+    catch (e) { /* التخزين غير متاح */ }
+    paintWait();
+  }
+  paintWait();                       /* مهلة سابقة قد تكون ما زالت سارية */
+
+  function resend() {
+    if (!sb || !pendingEmail || waitLeftMs() > 0) return;
+    otpErr.textContent = '';
+    startWait();
+
+    /* الطريقان مختلفان: تأكيد الحساب يُعاد بـ resend، ورمزا الدخول
+       بخطوتين والاستعادة يُطلبان بطلب دخول جديد. */
+    var ask = otpMode !== 'signup'
+      ? (CAPTCHA ? SEC.freshToken('in') : Promise.resolve('')).then(function (tk) {
+          return sb.auth.signInWithOtp({
+            email: pendingEmail,
+            options: CAPTCHA
+              ? { shouldCreateUser: false, captchaToken: tk }
+              : { shouldCreateUser: false }
+          });
+        })
+      : sb.auth.resend({ type: 'signup', email: pendingEmail });
+
+    ask.then(function (r) {
+      if (r && r.error) {
+        if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
+          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          return;
+        }
+        otpErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        return;
+      }
+      otpErr.textContent = t('o.sent', 'أُرسل رمز جديد. تحقق من بريدك ومن مجلد الرسائل غير المرغوب فيها.');
+    }).catch(function () { offline(otpErr); });
+  }
+
+  resendBtn.addEventListener('click', resend);
+  document.getElementById('otpBack').addEventListener('click', function () { showTab(false); });
+
+  /* ---------- استعادة كلمة المرور ----------
+     بلا هذا المسار يخرج من نسي كلمته من النظام إلى الأبد، فيُضطر
+     المكتب إلى تبديل الكلمات يدويًا — وتلك عادة أسوأ من المشكلة.
+
+     والاستعادة هنا بالرمز لا برابط: الموقع ثابت، والرابط يحتاج
+     عنوان عودة مسجَّلًا في لوحة Supabase، والرمز لا يحتاج شيئًا.
+
+     ولا تكون الاستعادة بابًا خلفيًا يتجاوز تطبيق المصادقة: من فعّله
+     يُسأل عنه هنا أيضًا. وإلا لكان من ملك البريد وحده قد أبطل
+     الخطوة الثانية كلها. */
+  var resetForm = document.getElementById('resetForm');
+  if (resetForm) {
+    var rEmail = document.getElementById('rEmail');
+    var rEmailErr = document.getElementById('rEmailErr');
+
+    document.getElementById('goReset').addEventListener('click', showReset);
+    document.getElementById('resetBack').addEventListener('click', function () { showTab(false); });
+
+    resetForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!setErr(rEmail, rEmailErr, emailFormat(rEmail.value))) { rEmail.focus(); return; }
+      if (!sb) { offline(rEmailErr); return; }
+
+      pendingEmail = rEmail.value.trim().toLowerCase();
+      otpMode = 'reset';
+      busy(resetForm, true);
+
+      (CAPTCHA ? SEC.freshToken('in') : Promise.resolve('')).then(function (tk) {
+        return sb.auth.signInWithOtp({
+          email: pendingEmail,
+          options: CAPTCHA
+            ? { shouldCreateUser: false, captchaToken: tk }
+            : { shouldCreateUser: false }
+        });
+      }).then(function (r) {
+        busy(resetForm, false);
+        /* الشاشة تُفتح سواء وُجد الحساب أو لم يوجد. الفرق بين الحالتين
+           لا يظهر للزائر، وإلا صارت هذه الصفحة أداةً لمعرفة من هو
+           مسجَّل عندنا ومن ليس كذلك. */
+        otpLead(pendingEmail);
+        showOtp();
+        startWait();
+        if (r && r.error && (r.error.status === 429 || /rate limit/i.test(r.error.message || ''))) {
+          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+        }
+      }).catch(function () {
+        busy(resetForm, false);
+        showOtp();
+        offline(otpErr);
+      });
+    });
+  }
+
+  /* ---------- كلمة المرور الجديدة ---------- */
+  var newPassForm = document.getElementById('newPassForm');
+  if (newPassForm) {
+    var nPass = document.getElementById('nPass');
+    var nPass2 = document.getElementById('nPass2');
+    var nPassErr = document.getElementById('nPassErr');
+    var nPass2Err = document.getElementById('nPass2Err');
+
+    newPassForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ok = setErr(nPass, nPassErr, newPassProblem(nPass.value));
+      var m = !nPass2.value
+        ? t('e.confirmReq', 'أعد كتابة كلمة المرور.')
+        : (nPass2.value !== nPass.value ? t('e.mismatch', 'كلمتا المرور غير متطابقتين.') : '');
+      ok = setErr(nPass2, nPass2Err, m) && ok;
+      if (!ok) { (nPassErr.textContent ? nPass : nPass2).focus(); return; }
+      if (!sb) { offline(nPassErr); return; }
+
+      busy(newPassForm, true);
+
+      /* الكلمة الجديدة تمرّ بالفحص نفسه: لا معنى لاستعادة تنتهي
+         بكلمة معروفة للمهاجمين. */
+      SEC.pwnedCount(nPass.value).then(function (n) {
+        if (n > 0) {
+          busy(newPassForm, false);
+          setErr(nPass, nPassErr, t('e.pwned', 'هذه الكلمة ظهرت في تسريبات كلمات مرور معروفة — اختر غيرها.'));
+          nPass.focus();
+          return;
+        }
+        return sb.auth.updateUser({ password: nPass.value }).then(function (r) {
+          if (r && r.error) {
+            busy(newPassForm, false);
+            setErr(nPass, nPassErr, t('e.passSaveFail', 'تعذّر حفظ كلمة المرور. أعد المحاولة.'));
+            return;
+          }
+          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_changed');
+          nPass.value = ''; nPass2.value = '';
+          /* من كان داخلًا بالكلمة القديمة يخرج. لو بقيت جلسته لبقي
+             المتطفّل داخلًا بعد الاستعادة التي قُصد بها طرده. */
+          return sb.auth.signOut({ scope: 'others' }).catch(function () { /* لا يمنع الدخول */ })
+            .then(function () { busy(newPassForm, false); enter(); });
+        });
+      }).catch(function () {
+        busy(newPassForm, false);
+        offline(nPassErr);
+      });
+    });
+  }
+
+  /* ---------- الحساب التجريبي ----------
+     لا كلمة مرور منشورة ولا حساب على الخادم: جولة في الواجهة وحدها.
+     الجلسة التجريبية لا تحمل رمز Supabase، فلا تصل إلى قاعدة البيانات
+     بحال — وهذا أمتن من حساب مشترك كلمته مكتوبة في الصفحة. */
   var demoBtn = document.getElementById('demoBtn');
   if (demoBtn) demoBtn.addEventListener('click', function () {
-    email.value = DEMO.email;
-    pass.value = DEMO.pass;
-    setErr(email, emailErr, '');
-    setErr(pass, passErr, '');
-    loginForm.requestSubmit ? loginForm.requestSubmit()
-      : loginForm.dispatchEvent(new Event('submit', { cancelable: true }));
+    if (!SB.demoStart()) {
+      setErr(email, emailErr, t('e.store', 'تعذّر بدء الجولة — فعّل تخزين المتصفح.'));
+      return;
+    }
+    try {
+      localStorage.setItem('mirsaad.session', JSON.stringify({ userId: 'usr-001', email: 'demo' }));
+    } catch (e) { /* التخزين غير متاح */ }
+    document.body.classList.add('is-leaving');
+    setTimeout(function () { location.href = 'board.html#/dashboard'; }, 260);
   });
 })();

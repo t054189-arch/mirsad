@@ -33,6 +33,16 @@
   else if (prefersLight.addListener) prefersLight.addListener(onSystem);
 
   /* ---------- اللغة ---------- */
+  /* النصوص تُكتب نصًّا لا شيفرة. innerHTML يجعل المتصفح يقرأ ما يوضع
+     فيه على أنه تعليمات؛ واليوم كل هذه النصوص من ملفات نملكها فلا خطر،
+     لكن يوم يأتي نصٌّ من قاعدة البيانات أو من اسم مكتب يكتبه عميل، يصير
+     ذلك السطر طريقًا لتشغيل شيفرة زائر في متصفح زائر آخر. فحُصر في
+     قائمة مغلقة: المفاتيح التي تحمل وسومًا بأيدينا، ولا شيء غيرها. */
+  var RICH = { 'p.b2': true };
+  function put(el, key, value) {
+    if (RICH[key]) el.innerHTML = value; else el.textContent = value;
+  }
+
   var EN = window.MIRSAAD_EN || {};
   var AR = {};
   var nodes = document.querySelectorAll('[data-i18n]');
@@ -40,11 +50,11 @@
 
   Array.prototype.forEach.call(nodes, function (el) {
     var k = el.getAttribute('data-i18n');
-    if (!(k in AR)) AR[k] = el.innerHTML;
+    if (!(k in AR)) AR[k] = RICH[k] ? el.innerHTML : el.textContent;
     /* وقد يشترك عنصران في مفتاح واحد ويختلف نصّهما العربي — عنوان
        الصفحة يحمل اسم المنصّة وترويستها لا تحمله. فالقاموس لا يكفي
        للعودة إلى العربية، ويحفظ كلُّ عنصر عربيَّته عند نفسه. */
-    if (!el.hasAttribute('data-ar')) el.setAttribute('data-ar', el.innerHTML);
+    if (!el.hasAttribute('data-ar')) el.setAttribute('data-ar', RICH[k] ? el.innerHTML : el.textContent);
   });
   Array.prototype.forEach.call(attrNodes, function (el) {
     var p = el.getAttribute('data-i18n-attr').split(':');
@@ -61,9 +71,9 @@
       var k = el.getAttribute('data-i18n');
       if (next !== 'en') {
         var own = el.getAttribute('data-ar');
-        if (own !== null) { el.innerHTML = own; return; }
+        if (own !== null) { put(el, k, own); return; }
       }
-      if (k in dict) el.innerHTML = dict[k];
+      if (k in dict) put(el, k, dict[k]);
     });
     Array.prototype.forEach.call(attrNodes, function (el) {
       var p = el.getAttribute('data-i18n-attr').split(':');

@@ -1111,3 +1111,83 @@ html:not([data-signed]) #outBtn{ display:none; }
 /* باب الصفحة العامة من البوابة — بلا خطّ فاصل ثانٍ فوقه. */
 .gate__note--link{ border-block-start:0; padding-block-start:0; margin-block-start:8px; }
 .gate__note--link a{ color:var(--accent); font-weight:600; }
+
+/* ===== بوابة الأمان: التحدّي، وصفحة أمان الحساب، ورموز الاحتياط ===== */
+/* display:flex أعلى تحديدًا من ورقة المتصفح، فلا تُخفيه سمة hidden
+   وحدها — وخيار «جهاز موثوق» يظهر في خطوة الدخول دون غيرها. */
+.remember[hidden]{ display:none; }
+/* تحدّي Turnstile. الإطار يأتي بمقاسه من Cloudflare، فلا نفرض عليه
+   عرضًا؛ نحاذيه في وسط البطاقة ونترك له مساحته. والصندوق مخفي حتى
+   يُضبط المفتاح، فالقاعدة تحترم سمة hidden. */
+.cfbox{ margin-block-end:20px; }
+.cfbox[hidden]{ display:none; }
+.cfbox__widget{ display:flex; justify-content:center; min-height:65px; }
+/* ===== صفحة أمان الحساب =====
+   البطاقة نفسها المستعملة في البوابة، لكنها هنا أعرض وأطول: محتواها
+   قراءة لا نموذج من خمسة حقول. */
+.sec__wrap{ padding-block:48px; }
+.sec__card{ max-width:620px; }
+.sec__kicker{
+  margin:0 0 4px; color:var(--accent); font-size:.72rem;
+  letter-spacing:.18em; text-transform:uppercase;
+}
+.sec__h{ margin:0 0 28px; font-size:1.5rem; font-weight:600; }
+.sec__block{
+  padding-block:24px; border-block-start:1px solid var(--line);
+}
+.sec__h2{ margin:0 0 8px; font-size:1.02rem; font-weight:600; }
+.sec__p{ margin:0 0 16px; color:var(--ink-soft); font-size:.86rem; line-height:1.8; }
+.sec__state{ margin:0 0 16px; font-size:.86rem; color:var(--ink); }
+.sec__qr{
+  display:flex; justify-content:center; margin-block:18px;
+  /* رمز QR يُقرأ بالتباين، فيبقى على أبيض في الوضعين */
+  padding:14px; background:#fff; border-radius:12px; width:fit-content;
+  margin-inline:auto;
+}
+.sec__qr img{ display:block; width:180px; height:180px; }
+.sec__secret{
+  margin:0 0 18px; text-align:center;
+  color:var(--ink-soft); font-size:.8rem;
+}
+.sec__secret code{
+  display:inline-block; margin-block-start:6px; padding:5px 10px;
+  border:1px solid var(--line); border-radius:8px;
+  font-size:.82rem; letter-spacing:.09em; word-break:break-all;
+}
+.sec__log{ margin:0; padding:0; list-style:none; }
+.sec__log li{
+  padding-block:11px; border-block-start:1px solid var(--line);
+  display:flex; flex-direction:column; gap:3px;
+}
+.sec__log li:first-child{ border-block-start:0; }
+.sec__logwhat{ font-size:.88rem; }
+.sec__logmeta{ color:var(--ink-soft); font-size:.76rem; }
+.sec__logempty{ color:var(--ink-soft); font-size:.82rem; }
+/* رابط الأمان الذي يُحقن في صفحات التطبيق المبنية مسبقًا */
+.mirsaad-seclink{
+  position:fixed; inset-block-end:18px; inset-inline-start:18px; z-index:60;
+  padding:8px 14px; border-radius:999px;
+  border:1px solid var(--line); background:var(--card);
+  color:var(--ink-soft); font:inherit; font-size:.78rem;
+  text-decoration:none; cursor:pointer;
+}
+.mirsaad-seclink:hover{ color:var(--ink); border-color:var(--accent); }
+/* رابط «نسيت كلمة المرور؟» تحت حقل الكلمة: صغير، محاذٍ للنهاية،
+   لا يزاحم الحقل ولا يختفي عمّن يحتاجه. */
+.field__aside{
+  margin:-8px 0 14px; text-align:end; font-size:.8rem;
+}
+/* رموز الاحتياط: تُقرأ وتُنسخ باليد، فالخط ثابت العرض والتباعد واسع */
+.sec__h3{ margin:0 0 8px; font-size:.95rem; font-weight:600; }
+.sec__codes{
+  margin:0 0 16px; padding:0; list-style:none;
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;
+}
+.sec__codes li{
+  padding:9px 10px; text-align:center;
+  border:1px solid var(--line); border-radius:9px;
+  background:var(--surface-2);
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.82rem; letter-spacing:.06em; direction:ltr;
+}
+.sec__warn{ color:var(--mid); }

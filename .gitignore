@@ -1,0 +1,10 @@
+# nothing secret belongs in this repository
+.env
+.env.*
+*.pem
+*.key
+
+# local noise
+.DS_Store
+node_modules/
+.vercel/
