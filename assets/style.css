@@ -1191,3 +1191,17 @@ html:not([data-signed]) #outBtn{ display:none; }
   font-size:.82rem; letter-spacing:.06em; direction:ltr;
 }
 .sec__warn{ color:var(--mid); }
+
+/* ===== شاشة «افتح بريدك واضغط» ===== */
+.wait__mark{ display:flex; justify-content:center; margin:6px 0 18px; color:var(--accent); }
+.wait__lead{ text-align:center; margin-bottom:14px; }
+.wait__hint{
+  margin:0 0 18px; text-align:center;
+  color:var(--ink-soft); font-size:.82rem; line-height:1.7;
+}
+.wait__spam{
+  margin:16px 0 0; padding-block-start:14px;
+  border-block-start:1px dashed var(--line);
+  text-align:center; color:var(--ink-soft); font-size:.76rem;
+}
+#paneWait .remember{ justify-content:center; }
