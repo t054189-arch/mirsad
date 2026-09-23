@@ -195,34 +195,60 @@
     </div>
 
     <!-- خطوة رمز التحقق: تظهر بعد إنشاء الحساب، ويرسل الرمز إلى البريد -->
-    <div id="paneOtp" hidden>
-      <p class="gate__sub" id="otpLead" data-i18n="o.lead">
-        أرسلنا رمزًا من ستة أرقام إلى بريدك. أدخله لتأكيد أن البريد بريدك.
+    <!-- بعد ضغط الرابط: لحظة تقول إنّ الأمر تمّ، ثم دخول بلا تسجيل ثانٍ -->
+    <div id="paneWelcome" hidden>
+      <div class="welcome__mark" aria-hidden="true">
+        <svg viewBox="0 0 44 44" width="56" height="56">
+          <circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M13 22.5 19.5 29 32 16" fill="none" stroke="currentColor"
+                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2 class="welcome__h" data-i18n="v.title">مرحبًا بك في مِرصاد</h2>
+      <p class="welcome__who" id="welcomeWho"></p>
+      <p class="welcome__sub" data-i18n="v.sub">
+        تأكّد بريدك وفُتحت جلستك. لن نطلب منك تسجيل الدخول مرة أخرى على هذا الجهاز.
       </p>
 
-      <form id="otpForm" novalidate>
-        <div class="field">
-          <label for="otpCode" data-i18n="o.code">رمز التحقق</label>
-          <input id="otpCode" name="otp" type="text" inputmode="numeric"
-                 autocomplete="one-time-code" dir="ltr" maxlength="6"
-                 pattern="[0-9]{6}" placeholder="------"
-                 aria-describedby="otpErr" required />
-          <p class="field__err" id="otpErr" role="alert"></p>
-        </div>
+      <button class="ui ui--go" type="button" id="welcomeGo" data-i18n="v.go">ادخل إلى مِرصاد</button>
+    </div>
 
-        <!-- لا تظهر إلا في التحقق بخطوتين عند الدخول، لا عند إنشاء الحساب -->
-        <label class="remember" id="otpTrustRow" for="otpTrust" hidden>
-          <input type="checkbox" id="otpTrust" name="otpTrust" />
-          <span data-i18n="o.trust">لا تسألني عن الرمز على هذا الجهاز لمدة ٣٠ يومًا</span>
-        </label>
+    <!-- التحقق برابط: نرسل رسالة، وضغطة واحدة فيها تُتمّ التحقق.
+         لا رمز يُنقل بيد ولا حقل يُملأ. -->
+    <div id="paneWait" hidden>
+      <div class="wait__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 34" width="52" height="37">
+          <rect x="1" y="1" width="46" height="32" rx="4" fill="none"
+                stroke="currentColor" stroke-width="1.6"/>
+          <path d="M2 3 24 19 46 3" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
 
-        <button class="ui ui--go" type="submit" data-i18n="o.verify">تأكيد الرمز</button>
-      </form>
+      <p class="gate__sub wait__lead" id="waitLead" data-i18n="w.lead">
+        أرسلنا رسالة إلى بريدك. افتحها واضغط زرّ التأكيد فيها، وينتهي الأمر.
+      </p>
+
+      <p class="wait__hint" data-i18n="w.hint">
+        اتركْ هذه الصفحة مفتوحة. حين تضغط الرابط تكمل هنا من تلقائها.
+      </p>
+
+      <label class="remember" id="waitTrustRow" for="waitTrust" hidden>
+        <input type="checkbox" id="waitTrust" name="waitTrust" />
+        <span data-i18n="w.trust">لا تسألني على هذا الجهاز لمدة ٣٠ يومًا</span>
+      </label>
+
+      <p class="field__err" id="waitErr" role="alert"></p>
 
       <p class="gate__swap">
-        <button type="button" class="linkb" id="otpResend" data-i18n="o.resend">إعادة إرسال الرمز</button>
+        <button type="button" class="linkb" id="otpResend" data-i18n="w.resend">إعادة إرسال الرسالة</button>
         <span aria-hidden="true">·</span>
         <button type="button" class="linkb" id="otpBack" data-i18n="o.back">رجوع</button>
+      </p>
+
+      <p class="wait__spam" data-i18n="w.spam">
+        لم تصل بعد؟ انظر في مجلد الرسائل غير المرغوب فيها.
       </p>
     </div>
 

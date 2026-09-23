@@ -17,8 +17,7 @@
 
   var loginForm = document.getElementById('loginForm');
   var signupForm = document.getElementById('signupForm');
-  var otpForm = document.getElementById('otpForm');
-  if (!loginForm || !signupForm || !otpForm) return;
+  if (!loginForm || !signupForm) return;
 
   var SB = window.MIRSAAD_SB;
   var sb = SB && SB.client();
@@ -140,14 +139,17 @@
   var tabUp = document.getElementById('tabUp');
   var paneIn = document.getElementById('paneIn');
   var paneUp = document.getElementById('paneUp');
-  var paneOtp = document.getElementById('paneOtp');
+  var paneOtp = document.getElementById('paneWait');
   var tabsw = document.querySelector('.tabsw');
 
   var paneTotp = document.getElementById('paneTotp');
   var paneReset = document.getElementById('paneReset');
   var paneNewPass = document.getElementById('paneNewPass');
 
+  var paneWelcome = document.getElementById('paneWelcome');
+
   function hideExtras() {
+    if (paneWelcome) paneWelcome.hidden = true;
     if (paneTotp) paneTotp.hidden = true;
     if (paneReset) paneReset.hidden = true;
     if (paneNewPass) paneNewPass.hidden = true;
@@ -168,16 +170,82 @@
   /* شاشة الرمز نفسها تخدم حالتين: تأكيد بريد حساب جديد، والخطوة
      الثانية عند الدخول. الفرق في نوع الرمز عند التحقق، وفي خيار
      «لا تسألني على هذا الجهاز» الذي لا معنى له عند إنشاء الحساب. */
+  /* شاشة واحدة تخدم ثلاث حالات: تأكيد حساب جديد، والخطوة الثانية عند
+     الدخول، واستعادة كلمة المرور. الفرق في نصّها وفيما يجري بعد ضغط
+     الرابط — لا في حقلٍ يُملأ، إذ لا حقل.
+
+     والنيّة تُحفظ في تخزين الجلسة لا في الذاكرة: من يضغط الرابط قد
+     يعود في لسان تبويب جديد، فتكون الصفحة قد حُمّلت من أوّلها. */
   var otpMode = 'signup';
+  var PENDING = 'mirsaad.pending';
+
+  function rememberPending(mode, addr, trust) {
+    try {
+      sessionStorage.setItem(PENDING, JSON.stringify({
+        mode: mode, email: addr || '', trust: !!trust
+      }));
+    } catch (e) { /* التخزين غير متاح: يعود إلى اللوحة، وهو المعتاد */ }
+  }
+  function readPending() {
+    try { return JSON.parse(sessionStorage.getItem(PENDING) || 'null'); }
+    catch (e) { return null; }
+  }
+  function clearPending() {
+    try { sessionStorage.removeItem(PENDING); } catch (e) { /* لا شيء */ }
+  }
+
+  var waitLead = document.getElementById('waitLead');
+  var waitErr  = document.getElementById('waitErr');
+
   function showOtp() {
     paneIn.hidden = true;
     paneUp.hidden = true;
     paneOtp.hidden = false;
     if (tabsw) tabsw.hidden = true;
     hideExtras();
-    var trustRow = document.getElementById('otpTrustRow');
+    var trustRow = document.getElementById('waitTrustRow');
     if (trustRow) trustRow.hidden = otpMode !== 'login';
-    document.getElementById('otpCode').focus();
+    rememberPending(otpMode, pendingEmail, false);
+    var trust = document.getElementById('waitTrust');
+    if (trust) trust.onchange = function () {
+      rememberPending(otpMode, pendingEmail, trust.checked);
+    };
+  }
+
+  /* لحظة بين ضغط الرابط والدخول. الجلسة قائمة بالفعل، فالزرّ لا
+     يسجّل دخولًا جديدًا — إنما يمضي. ومن أغلق الصفحة هنا يبقى داخلًا،
+     لأن الجلسة تُحفظ ويُجدَّد رمزها. */
+  function showWelcome(user) {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = true;
+    hideExtras();
+    paneWelcome.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+
+    var who = document.getElementById('welcomeWho');
+    var name = (SB && SB.nameOf) ? SB.nameOf(user) : '';
+    who.textContent = name ? t('v.hi', 'أهلًا، ') + name : '';
+
+    var go = document.getElementById('welcomeGo');
+    go.onclick = function () { enter(); };
+    go.focus();
+  }
+
+  /* نصّ الشاشة يقول ما جرى وما بقي، ويختلف باختلاف ما كان يفعله. */
+  function otpLead(addr) {
+    var msg;
+    if (otpMode === 'login') {
+      msg = t('w.leadLogin', 'كلمة المرور صحيحة. أرسلنا رسالة إلى ') + addr +
+            t('w.leadLoginTail', ' — اضغط زرّ التأكيد فيها ليكتمل دخولك.');
+    } else if (otpMode === 'reset') {
+      msg = t('w.leadReset', 'أرسلنا رسالة إلى ') + addr +
+            t('w.leadResetTail', ' — اضغط زرّ التأكيد فيها لتختار كلمة مرور جديدة. وإن لم تصلك رسالة فلا حساب على هذا البريد.');
+    } else {
+      msg = t('w.leadSignup', 'أرسلنا رسالة إلى ') + addr +
+            t('w.leadSignupTail', ' — اضغط زرّ التأكيد فيها ليكتمل حسابك. وإن كان لك حساب على هذا البريد فلن تصلك رسالة: سجّل دخولك بدل ذلك.');
+    }
+    if (waitLead) waitLead.textContent = msg;
   }
 
   /* بعد رمز تطبيق المصادقة نمضي إلى اللوحة عادةً، وإلى شاشة كلمة
@@ -241,27 +309,59 @@
     setTimeout(function () { location.href = target; }, 260);
   }
 
-  /* ---------- العودة من رابط في البريد ----------
-     قالب الرسالة هو من يقرّر: `{{ .Token }}` يرسل رمزًا، و
-     `{{ .ConfirmationURL }}` يرسل رابطًا. والقالب الافتراضي يرسل
-     رابطًا، فمن ضغطه عاد إلى الصفحة ووجدها تطلب رمزًا لن يأتي.
+  /* الرابط يجب أن يعيد الزائر إلى الموقع الذي سجّل منه — محليًا كان
+     أو منشورًا — لا إلى عنوان واحد مكتوب في لوحة Supabase. ويبقى
+     شرط: أن يكون هذا العنوان مسموحًا في قائمة Redirect URLs، وإلا
+     ردّه الخادم إلى Site URL. */
+  function backHere() {
+    return location.origin + location.pathname;
+  }
 
-     فنقبل الطريقين: من عاد برابط تأكيد صحيح دخل، ومن معه رمز أدخله.
-     والشرط أن يكون العائد من نوع signup أو تأكيد بريد — لا استعادة
-     ولا غيرها — حتى لا يصير هذا طريقًا يلتفّ حول خطوة ثانية. */
+  /* ---------- العودة من الرابط ----------
+     هنا يكتمل كل شيء. الرابط في الرسالة يعيد الزائر ومعه جلسة، فنُتمّ
+     ما كان يفعله: حسابٌ جديد أو دخولٌ أو استعادة.
+
+     ونوع العودة يُفحص: روابط التسجيل والدخول تُدخل، ورابط الاستعادة
+     لا يُدخل وحده بل يفتح شاشة كلمة المرور الجديدة. ولو قبلنا كل نوع
+     بلا تمييز لصار رابط الاستعادة بابًا يلتفّ حول الخطوة الثانية. */
   (function () {
     var back = location.hash || '';
     if (!/access_token=/.test(back)) return;
-    if (!/type=(signup|email_change|magiclink)/.test(back)) return;
+    if (!/type=(signup|email_change|magiclink|recovery)/.test(back)) return;
     if (!sb) return;
+
+    var pend = readPending() || {};
 
     sb.auth.onAuthStateChange(function (event, session) {
       if (!session) return;
       if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return;
-      /* الرابط أثبت البريد كما يثبته الرمز تمامًا */
-      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
+
       try { history.replaceState(null, '', location.pathname); } catch (e) { /* لا شيء */ }
-      enter();
+      clearPending();
+
+      pendingEmail = pend.email || (session.user && session.user.email) || '';
+
+      /* استعادة: الرابط أثبت البريد، وبقيت كلمة المرور الجديدة. ومن
+         فعّل تطبيق المصادقة يُسأل عنه قبلها. */
+      if (pend.mode === 'reset') {
+        otpMode = 'reset';
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_reset_asked');
+        sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
+          var d = lv && lv.data;
+          if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
+            totpNext = 'newpass'; showTotp(); return;
+          }
+          showNewPass();
+        }).catch(showNewPass);
+        return;
+      }
+
+      /* دخول بخطوتين: الجهاز يُوثَّق إن طُلب ذلك قبل فتح البريد */
+      if (pend.mode === 'login' && pend.trust && SEC && pendingEmail) {
+        SEC.trustDevice(pendingEmail);
+      }
+      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
+      showWelcome(session.user);
     });
   })();
 
@@ -372,8 +472,8 @@
       return sb.auth.signInWithOtp({
         email: addr,
         options: CAPTCHA
-          ? { shouldCreateUser: false, captchaToken: tk }
-          : { shouldCreateUser: false }
+          ? { shouldCreateUser: false, captchaToken: tk, emailRedirectTo: backHere() }
+          : { shouldCreateUser: false, emailRedirectTo: backHere() }
       });
     }).then(function (r) {
       busy(loginForm, false);
@@ -382,17 +482,18 @@
       pass.value = '';                 /* لا تبقى كلمة المرور في الحقل */
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
-          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
           return;
         }
-        otpErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        waitErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
         return;
       }
       startWait();                     /* مهلة قبل السماح بطلب رمز آخر */
     }).catch(function () {
       busy(loginForm, false);
+      otpLead(pendingEmail);
       showOtp();
-      offline(otpErr);
+      offline(waitErr);
     });
   }
 
@@ -471,6 +572,7 @@
       email: pendingEmail,
       password: sPass.value,
       options: authOpts('up', {
+        emailRedirectTo: backHere(),
         data: {
           full_name: sName.value.trim(),
           role_key: sRole.value,
@@ -510,186 +612,6 @@
   }
 
   /* ---------- رمز التحقق ---------- */
-  var otpCode = document.getElementById('otpCode');
-  var otpErr = document.getElementById('otpErr');
-  var otpLeadEl = document.getElementById('otpLead');
-  var triedOtp = false;
-
-  function otpLead(addr) {
-    var head, tail;
-    if (otpMode === 'login') {
-      head = t('o.stepTwo', 'كلمة المرور صحيحة. بقيت خطوة واحدة: أرسلنا رمزًا من ستة أرقام إلى ');
-      tail = t('o.leadTail2', '. أدخله لإتمام الدخول.');
-    } else if (otpMode === 'reset') {
-      head = t('o.leadTo', 'أرسلنا رمزًا من ستة أرقام إلى ');
-      tail = t('o.leadTail3', '. أدخله لتختار كلمة مرور جديدة. وإن لم يصلك شيء، فلا حساب على هذا البريد.');
-    } else {
-      head = t('o.leadTo', 'أرسلنا رمزًا من ستة أرقام إلى ');
-      tail = t('o.leadTail', '. أدخله لتأكيد أن البريد بريدك.');
-    }
-    otpLeadEl.textContent = head + addr + tail;
-  }
-
-  otpCode.addEventListener('input', function () {
-    otpCode.value = otpCode.value.replace(/[^0-9]/g, '').slice(0, 6);
-    if (triedOtp) setErr(otpCode, otpErr, otpProblem(otpCode.value));
-  });
-
-  otpForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    triedOtp = true;
-    if (!setErr(otpCode, otpErr, otpProblem(otpCode.value))) { otpCode.focus(); return; }
-    if (!sb) { offline(otpErr); return; }
-
-    busy(otpForm, true);
-    sb.auth.verifyOtp({
-      email: pendingEmail,
-      token: otpCode.value.trim(),
-      /* رمز تأكيد حساب جديد نوعه signup. أما الدخول بخطوتين
-         والاستعادة فنوعهما email — والخلط يردّه الخادم. */
-      type: otpMode === 'signup' ? 'signup' : 'email'
-    }).then(function (r) {
-      busy(otpForm, false);
-      if (r.error) {
-        setErr(otpCode, otpErr, t('e.otpBad', 'الرمز غير صحيح أو انتهت صلاحيته.'));
-        otpCode.select();
-        return;
-      }
-      /* استعادة: الرمز أثبت البريد، ولم يبقَ إلا كلمة المرور الجديدة.
-         ومن فعّل تطبيق المصادقة يُسأل عنه قبلها، فلا تصير الاستعادة
-         طريقًا حول الخطوة الثانية. */
-      if (otpMode === 'reset') {
-        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_reset_asked');
-        sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
-          var d = lv && lv.data;
-          if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
-            totpNext = 'newpass';
-            showTotp();
-            return;
-          }
-          showNewPass();
-        }).catch(function () { showNewPass(); });
-        return;
-      }
-
-      var trust = document.getElementById('otpTrust');
-      if (otpMode === 'login' && trust && trust.checked && SEC) {
-        SEC.trustDevice(pendingEmail);
-      }
-      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
-      enter();
-    }).catch(function () { busy(otpForm, false); offline(otpErr); });
-  });
-
-  /* ---------- رمز تطبيق المصادقة ----------
-     الجلسة قائمة لكنها عند aal1، والخادم لا يمنحها aal2 حتى يصحّ
-     الرمز. فما دامت ناقصة لا تصل إلى بيانات محميّة بـ aal2، ولا
-     ندخل بها التطبيق. */
-  var totpForm = document.getElementById('totpForm');
-  if (totpForm) {
-    var totpCode = document.getElementById('totpCode');
-    var totpErr = document.getElementById('totpErr');
-    var triedTotp = false;
-
-    totpCode.addEventListener('input', function () {
-      totpCode.value = totpCode.value.replace(/[^0-9]/g, '').slice(0, 6);
-      if (triedTotp) setErr(totpCode, totpErr, otpProblem(totpCode.value));
-    });
-
-    totpForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      triedTotp = true;
-      if (!setErr(totpCode, totpErr, otpProblem(totpCode.value))) { totpCode.focus(); return; }
-      if (!sb) { offline(totpErr); return; }
-
-      busy(totpForm, true);
-      sb.auth.mfa.listFactors().then(function (r) {
-        var list = (r && r.data && r.data.totp) || [];
-        if (!list.length) throw new Error('no-factor');
-        var factorId = list[0].id;
-        return sb.auth.mfa.challenge({ factorId: factorId }).then(function (c) {
-          if (!c || c.error) throw new Error('challenge');
-          return sb.auth.mfa.verify({
-            factorId: factorId,
-            challengeId: c.data.id,
-            code: totpCode.value.trim()
-          });
-        });
-      }).then(function (v) {
-        busy(totpForm, false);
-        if (v && v.error) {
-          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
-          setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
-          totpCode.select();
-          return;
-        }
-        if (totpNext === 'newpass') { totpNext = 'enter'; showNewPass(); return; }
-        var trust = document.getElementById('totpTrust');
-        if (trust && trust.checked && SEC) SEC.trustDevice(pendingEmail);
-        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_totp');
-        enter();
-      }).catch(function () {
-        busy(totpForm, false);
-        setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
-        totpCode.select();
-      });
-    });
-
-    /* الرجوع يعني التخلّي عن دخول لم يكتمل: تُنهى الجلسة الناقصة
-       ولا تُترك مفتوحة عند aal1. */
-    document.getElementById('totpBack').addEventListener('click', function () {
-      if (sb) sb.auth.signOut();
-      showTab(false);
-    });
-
-    /* ---------- رمز الاحتياط ----------
-       الجلسة قائمة لكنها ناقصة، أي أن كلمة المرور صحّت. فالرمز
-       الاحتياطي هو العامل الثاني بدل الهاتف المفقود. والخادم هو من
-       يتحقق منه ويزيل عامل التحقق؛ المتصفح لا يقرّر شيئًا. */
-    var backupForm = document.getElementById('backupForm');
-    var backupCode = document.getElementById('backupCode');
-    var backupErr = document.getElementById('backupErr');
-
-    document.getElementById('useBackup').addEventListener('click', function () {
-      backupForm.hidden = false;
-      this.hidden = true;
-      backupCode.focus();
-    });
-
-    backupCode.addEventListener('input', function () {
-      backupCode.value = backupCode.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-    });
-
-    backupForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var v = backupCode.value.trim();
-      if (v.length < 8) {
-        backupErr.textContent = t('e.backupShape', 'أدخل رمز احتياط كاملًا.');
-        return;
-      }
-      if (!sb) { offline(backupErr); return; }
-
-      backupErr.textContent = '';
-      busy(backupForm, true);
-      sb.rpc('use_backup_code', { code: v }).then(function (r) {
-        busy(backupForm, false);
-        if (!r || r.error || r.data !== true) {
-          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
-          backupErr.textContent = t('e.backupBad', 'هذا الرمز غير صحيح أو استُعمل من قبل.');
-          backupCode.select();
-          return;
-        }
-        /* عامل التحقق أُزيل، فالحساب عاد إلى الخطوة الثانية بالبريد.
-           ولا نُدخله بهذه الجلسة: نبدأ الخطوة الثانية من جديد، فلا
-           يكفي رمز احتياط وحده بلا إثبات بريد. */
-        backupCode.value = '';
-        backupForm.hidden = true;
-        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_removed');
-        secondStep(pendingEmail);
-      }).catch(function () { busy(backupForm, false); offline(backupErr); });
-    });
-  }
-
   /* كل إرسال جديد يُبطل الرمز السابق، فلا يُطلب إلا صراحةً.
      ومهلة بين الطلبات: حصة الإرسال صغيرة ومشتركة على المشروع كله، فنقرة
      متكررة تستهلكها فيُحرم منها من يسجّل بعدك. */
@@ -728,7 +650,7 @@
 
   function resend() {
     if (!sb || !pendingEmail || waitLeftMs() > 0) return;
-    otpErr.textContent = '';
+    waitErr.textContent = '';
     startWait();
 
     /* الطريقان مختلفان: تأكيد الحساب يُعاد بـ resend، ورمزا الدخول
@@ -738,23 +660,23 @@
           return sb.auth.signInWithOtp({
             email: pendingEmail,
             options: CAPTCHA
-              ? { shouldCreateUser: false, captchaToken: tk }
-              : { shouldCreateUser: false }
+              ? { shouldCreateUser: false, captchaToken: tk, emailRedirectTo: backHere() }
+              : { shouldCreateUser: false, emailRedirectTo: backHere() }
           });
         })
-      : sb.auth.resend({ type: 'signup', email: pendingEmail });
+      : sb.auth.resend({ type: 'signup', email: pendingEmail, options: { emailRedirectTo: backHere() } });
 
     ask.then(function (r) {
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
-          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
           return;
         }
-        otpErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        waitErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
         return;
       }
-      otpErr.textContent = t('o.sent', 'أُرسل رمز جديد. تحقق من بريدك ومن مجلد الرسائل غير المرغوب فيها.');
-    }).catch(function () { offline(otpErr); });
+      waitErr.textContent = t('o.sent', 'أُرسل رمز جديد. تحقق من بريدك ومن مجلد الرسائل غير المرغوب فيها.');
+    }).catch(function () { offline(waitErr); });
   }
 
   resendBtn.addEventListener('click', resend);
@@ -791,8 +713,8 @@
         return sb.auth.signInWithOtp({
           email: pendingEmail,
           options: CAPTCHA
-            ? { shouldCreateUser: false, captchaToken: tk }
-            : { shouldCreateUser: false }
+            ? { shouldCreateUser: false, captchaToken: tk, emailRedirectTo: backHere() }
+            : { shouldCreateUser: false, emailRedirectTo: backHere() }
         });
       }).then(function (r) {
         busy(resetForm, false);
@@ -803,12 +725,13 @@
         showOtp();
         startWait();
         if (r && r.error && (r.error.status === 429 || /rate limit/i.test(r.error.message || ''))) {
-          otpErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
         }
       }).catch(function () {
         busy(resetForm, false);
+        otpLead(pendingEmail);
         showOtp();
-        offline(otpErr);
+        offline(waitErr);
       });
     });
   }

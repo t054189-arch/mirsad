@@ -363,4 +363,24 @@ window.MIRSAAD_EN = {
   'e.assetReq': 'Choose the structure being inspected.',
   'e.fileBig': 'Each file must be 10 MB or smaller.',
   'e.fileMany': 'At most twenty files per visit.',
+
+  /* التحقق برابط */
+  'w.lead': 'We sent a message to your email. Open it, press the confirm button, and you are done.',
+  'w.hint': 'Leave this page open. It finishes by itself once you press the link.',
+  'w.trust': 'Do not ask again on this device for 30 days',
+  'w.resend': 'Send the message again',
+  'w.spam': 'Nothing yet? Look in your spam folder.',
+  'w.leadSignup': 'We sent a message to ',
+  'w.leadSignupTail': ' \u2014 press the confirm button in it to finish your account. If an account already exists on that address no message is sent: sign in instead.',
+  'w.leadLogin': 'Your password was correct. We sent a message to ',
+  'w.leadLoginTail': ' \u2014 press the confirm button in it to finish signing in.',
+  'w.leadReset': 'We sent a message to ',
+  'w.leadResetTail': ' \u2014 press the confirm button in it to choose a new password. If nothing arrives, there is no account on that address.',
+  'e.sendFail': 'Could not send the message. Try again shortly.',
+
+  /* لحظة الترحيب بعد ضغط الرابط */
+  'v.title': 'Welcome to Mirsaad',
+  'v.sub': 'Your email is confirmed and your session is open. You will not be asked to sign in again on this device.',
+  'v.go': 'Enter Mirsaad',
+  'v.hi': 'Hello, ',
 };

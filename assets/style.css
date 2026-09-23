@@ -675,6 +675,11 @@ a.rowcard--go:hover{ border-color:var(--accent); transform:translateY(-2px); }
 .tabsw__b:hover{ color:var(--ink); }
 .tabsw__b.is-on{ background:var(--surface); color:var(--accent); box-shadow:0 1px 3px rgba(0,0,0,.14); }
 
+/* شريط التبويبين يُخفى في الخطوات التي لا تبويب فيها — الرابط،
+   والترحيب، وكلمة المرور الجديدة. سمة hidden وحدها لا تكفي لأن
+   display:flex أعلى تحديدًا من ورقة المتصفح الافتراضية. */
+.tabsw[hidden]{ display:none; }
+
 .field select{
   width:100%; font:inherit; font-size:.92rem;
   color:var(--ink); background:var(--surface-2);
@@ -1191,3 +1196,37 @@ html:not([data-signed]) #outBtn{ display:none; }
   font-size:.82rem; letter-spacing:.06em; direction:ltr;
 }
 .sec__warn{ color:var(--mid); }
+
+/* ===== شاشة «افتح بريدك واضغط» ===== */
+.wait__mark{ display:flex; justify-content:center; margin:6px 0 18px; color:var(--accent); }
+.wait__lead{ text-align:center; margin-bottom:14px; }
+.wait__hint{
+  margin:0 0 18px; text-align:center;
+  color:var(--ink-soft); font-size:.82rem; line-height:1.7;
+}
+.wait__spam{
+  margin:16px 0 0; padding-block-start:14px;
+  border-block-start:1px dashed var(--line);
+  text-align:center; color:var(--ink-soft); font-size:.76rem;
+}
+#paneWait .remember{ justify-content:center; }
+
+/* ===== لحظة الترحيب بعد ضغط الرابط ===== */
+.welcome__mark{ display:flex; justify-content:center; margin:4px 0 16px; color:var(--ok); }
+.welcome__mark path{
+  stroke-dasharray:32; stroke-dashoffset:32;
+  animation:tick .5s var(--ease) .15s forwards;
+}
+@keyframes tick{ to{ stroke-dashoffset:0; } }
+.welcome__h{ text-align:center; font-size:1.3rem; margin:0 0 6px; }
+.welcome__who{
+  margin:0 0 12px; text-align:center;
+  color:var(--accent); font-size:1rem; min-height:1.2em;
+}
+.welcome__sub{
+  margin:0 0 22px; text-align:center;
+  color:var(--ink-soft); font-size:.86rem; line-height:1.75;
+}
+@media (prefers-reduced-motion:reduce){
+  .welcome__mark path{ animation:none; stroke-dashoffset:0; }
+}
