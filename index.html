@@ -195,6 +195,25 @@
     </div>
 
     <!-- خطوة رمز التحقق: تظهر بعد إنشاء الحساب، ويرسل الرمز إلى البريد -->
+    <!-- بعد ضغط الرابط: لحظة تقول إنّ الأمر تمّ، ثم دخول بلا تسجيل ثانٍ -->
+    <div id="paneWelcome" hidden>
+      <div class="welcome__mark" aria-hidden="true">
+        <svg viewBox="0 0 44 44" width="56" height="56">
+          <circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M13 22.5 19.5 29 32 16" fill="none" stroke="currentColor"
+                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <h2 class="welcome__h" data-i18n="v.title">مرحبًا بك في مِرصاد</h2>
+      <p class="welcome__who" id="welcomeWho"></p>
+      <p class="welcome__sub" data-i18n="v.sub">
+        تأكّد بريدك وفُتحت جلستك. لن نطلب منك تسجيل الدخول مرة أخرى على هذا الجهاز.
+      </p>
+
+      <button class="ui ui--go" type="button" id="welcomeGo" data-i18n="v.go">ادخل إلى مِرصاد</button>
+    </div>
+
     <!-- التحقق برابط: نرسل رسالة، وضغطة واحدة فيها تُتمّ التحقق.
          لا رمز يُنقل بيد ولا حقل يُملأ. -->
     <div id="paneWait" hidden>

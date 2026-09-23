@@ -377,4 +377,10 @@ window.MIRSAAD_EN = {
   'w.leadReset': 'We sent a message to ',
   'w.leadResetTail': ' \u2014 press the confirm button in it to choose a new password. If nothing arrives, there is no account on that address.',
   'e.sendFail': 'Could not send the message. Try again shortly.',
+
+  /* لحظة الترحيب بعد ضغط الرابط */
+  'v.title': 'Welcome to Mirsaad',
+  'v.sub': 'Your email is confirmed and your session is open. You will not be asked to sign in again on this device.',
+  'v.go': 'Enter Mirsaad',
+  'v.hi': 'Hello, ',
 };

@@ -146,7 +146,10 @@
   var paneReset = document.getElementById('paneReset');
   var paneNewPass = document.getElementById('paneNewPass');
 
+  var paneWelcome = document.getElementById('paneWelcome');
+
   function hideExtras() {
+    if (paneWelcome) paneWelcome.hidden = true;
     if (paneTotp) paneTotp.hidden = true;
     if (paneReset) paneReset.hidden = true;
     if (paneNewPass) paneNewPass.hidden = true;
@@ -207,6 +210,26 @@
     if (trust) trust.onchange = function () {
       rememberPending(otpMode, pendingEmail, trust.checked);
     };
+  }
+
+  /* لحظة بين ضغط الرابط والدخول. الجلسة قائمة بالفعل، فالزرّ لا
+     يسجّل دخولًا جديدًا — إنما يمضي. ومن أغلق الصفحة هنا يبقى داخلًا،
+     لأن الجلسة تُحفظ ويُجدَّد رمزها. */
+  function showWelcome(user) {
+    paneIn.hidden = true;
+    paneUp.hidden = true;
+    paneOtp.hidden = true;
+    hideExtras();
+    paneWelcome.hidden = false;
+    if (tabsw) tabsw.hidden = true;
+
+    var who = document.getElementById('welcomeWho');
+    var name = (SB && SB.nameOf) ? SB.nameOf(user) : '';
+    who.textContent = name ? t('v.hi', 'أهلًا، ') + name : '';
+
+    var go = document.getElementById('welcomeGo');
+    go.onclick = function () { enter(); };
+    go.focus();
   }
 
   /* نصّ الشاشة يقول ما جرى وما بقي، ويختلف باختلاف ما كان يفعله. */
@@ -334,15 +357,11 @@
       }
 
       /* دخول بخطوتين: الجهاز يُوثَّق إن طُلب ذلك قبل فتح البريد */
-      if (pend.mode === 'login') {
-        if (pend.trust && SEC && pendingEmail) SEC.trustDevice(pendingEmail);
-        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
-        enter();
-        return;
+      if (pend.mode === 'login' && pend.trust && SEC && pendingEmail) {
+        SEC.trustDevice(pendingEmail);
       }
-
       if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
-      enter();
+      showWelcome(session.user);
     });
   })();
 
