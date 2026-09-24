@@ -174,24 +174,30 @@
      الدخول، واستعادة كلمة المرور. الفرق في نصّها وفيما يجري بعد ضغط
      الرابط — لا في حقلٍ يُملأ، إذ لا حقل.
 
-     والنيّة تُحفظ في تخزين الجلسة لا في الذاكرة: من يضغط الرابط قد
-     يعود في لسان تبويب جديد، فتكون الصفحة قد حُمّلت من أوّلها. */
+     والنيّة تُحفظ في التخزين المحلي لا في تخزين الجلسة: رابط البريد
+     يُفتح في لسان تبويب جديد، وتخزين الجلسة خاصّ بكل لسان، فكان يضيع
+     عند العودة — فتصير الاستعادة دخولًا عاديًا بلا كلمة مرور جديدة.
+     ولها مهلة كمهلة الرابط نفسه، فلا تبقى نيّة قديمة تحكم دخولًا لاحقًا. */
   var otpMode = 'signup';
   var PENDING = 'mirsaad.pending';
+  var PENDING_MAX_MS = 60 * 60 * 1000;
 
   function rememberPending(mode, addr, trust) {
     try {
-      sessionStorage.setItem(PENDING, JSON.stringify({
-        mode: mode, email: addr || '', trust: !!trust
+      localStorage.setItem(PENDING, JSON.stringify({
+        mode: mode, email: addr || '', trust: !!trust, at: Date.now()
       }));
     } catch (e) { /* التخزين غير متاح: يعود إلى اللوحة، وهو المعتاد */ }
   }
   function readPending() {
-    try { return JSON.parse(sessionStorage.getItem(PENDING) || 'null'); }
-    catch (e) { return null; }
+    try {
+      var p = JSON.parse(localStorage.getItem(PENDING) || 'null');
+      if (!p || !p.at || Date.now() - p.at > PENDING_MAX_MS) return null;
+      return p;
+    } catch (e) { return null; }
   }
   function clearPending() {
-    try { sessionStorage.removeItem(PENDING); } catch (e) { /* لا شيء */ }
+    try { localStorage.removeItem(PENDING); } catch (e) { /* لا شيء */ }
   }
 
   var waitLead = document.getElementById('waitLead');
@@ -312,51 +318,83 @@
     return location.origin + location.pathname;
   }
 
-  /* ---------- العودة من الرابط ----------
-     هنا يكتمل كل شيء. الرابط في الرسالة يعيد الزائر ومعه جلسة، فنُتمّ
-     ما كان يفعله: حسابٌ جديد أو دخولٌ أو استعادة.
-
+  /* ---------- إتمام ما بدأه الرابط ----------
      ونوع العودة يُفحص: روابط التسجيل والدخول تُدخل، ورابط الاستعادة
-     لا يُدخل وحده بل يفتح شاشة كلمة المرور الجديدة. ولو قبلنا كل نوع
-     بلا تمييز لصار رابط الاستعادة بابًا يلتفّ حول الخطوة الثانية. */
-  (function () {
-    var back = location.hash || '';
-    if (!/access_token=/.test(back)) return;
-    if (!/type=(signup|email_change|magiclink|recovery)/.test(back)) return;
-    if (!sb) return;
+     لا يُدخل وحده بل يفتح شاشة كلمة المرور الجديدة. */
+  var linkDone = false;
 
-    var pend = readPending() || {};
+  function finishFromLink(session, pend) {
+    /* المكتبة تُطلق SIGNED_IN ثم INITIAL_SESSION للجلسة نفسها، فكان
+       كل شيء يجري مرتين: سطران في السجلّ وشاشتان متتاليتان. */
+    if (linkDone) return;
+    linkDone = true;
 
-    sb.auth.onAuthStateChange(function (event, session) {
-      if (!session) return;
-      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return;
+    try { history.replaceState(null, '', location.pathname); } catch (e) { /* لا شيء */ }
+    clearPending();
 
-      try { history.replaceState(null, '', location.pathname); } catch (e) { /* لا شيء */ }
-      clearPending();
+    pendingEmail = pend.email || (session.user && session.user.email) || '';
+    var reset = pend.mode === 'reset';
+    if (reset) {
+      otpMode = 'reset';
+      if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_reset_asked');
+    }
 
-      pendingEmail = pend.email || (session.user && session.user.email) || '';
-
-      /* استعادة: الرابط أثبت البريد، وبقيت كلمة المرور الجديدة. ومن
-         فعّل تطبيق المصادقة يُسأل عنه قبلها. */
-      if (pend.mode === 'reset') {
-        otpMode = 'reset';
-        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('password_reset_asked');
-        sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
-          var d = lv && lv.data;
-          if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
-            totpNext = 'newpass'; showTotp(); return;
-          }
-          showNewPass();
-        }).catch(showNewPass);
-        return;
-      }
-
+    function onward() {
+      /* استعادة: الرابط أثبت البريد، وبقيت كلمة المرور الجديدة. */
+      if (reset) { showNewPass(); return; }
       /* دخول بخطوتين: الجهاز يُوثَّق إن طُلب ذلك قبل فتح البريد */
       if (pend.mode === 'login' && pend.trust && SEC && pendingEmail) {
         SEC.trustDevice(pendingEmail);
       }
       if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_otp');
       showWelcome(session.user);
+    }
+
+    /* رابط البريد يثبت البريد وحده. من فعّل تطبيق المصادقة يُسأل عنه
+       هنا أيضًا، أيًّا كان نوع الرابط — وإلا لكان «نسيت كلمة المرور؟»
+       بابًا يدخل منه صاحب البريد بلا كلمة مرور ولا تطبيق. */
+    sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (lv) {
+      var d = lv && lv.data;
+      if (d && d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') {
+        totpNext = reset ? 'newpass' : 'enter';
+        showTotp();
+        return;
+      }
+      onward();
+    }).catch(function () {
+      /* تعذّر السؤال: لا نُدخل أحدًا بلا تحقق. نعيده إلى البداية. */
+      if (sb) sb.auth.signOut();
+      showTab(false);
+      offline(emailErr);
+    });
+  }
+
+  /* ---------- العودة من الرابط ----------
+     هنا يكتمل كل شيء. الرابط في الرسالة يعيد الزائر ومعه جلسة، فنُتمّ
+     ما كان يفعله: حسابٌ جديد أو دخولٌ أو استعادة. */
+  (function () {
+    if (!sb) return;
+    var back = location.hash || '';
+    var fromLink = /access_token=/.test(back) &&
+                   /type=(signup|email_change|magiclink|recovery)/.test(back);
+    var pend = fromLink ? (readPending() || {}) : null;
+
+    sb.auth.onAuthStateChange(function (event, session) {
+      if (!session) return;
+      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return;
+
+      if (fromLink) { finishFromLink(session, pend); return; }
+
+      /* اللسان الذي بقي ينتظر: الصفحة وعدت بأنه «يكمل من تلقائه» حين
+         يُضغط الرابط في لسان آخر، ولم يكن شيء يستمع لذلك. المكتبة
+         تبثّ الدخول إلى الألسنة الأخرى، فنلتقطه هنا. ونيّته في ذاكرته:
+         اللسان الآخر قد يكون مسح المحفوظ قبلنا. */
+      if (event === 'SIGNED_IN' && paneOtp && !paneOtp.hidden) {
+        var trust = document.getElementById('waitTrust');
+        finishFromLink(session, {
+          mode: otpMode, email: pendingEmail, trust: !!(trust && trust.checked)
+        });
+      }
     });
   })();
 
@@ -604,6 +642,115 @@
       otpLead(pendingEmail);
       showOtp();
     }).catch(function () { busy(signupForm, false); captchaSpent('up'); offline(sEmailErr); });
+  }
+
+  /* ---------- رمز تطبيق المصادقة ----------
+     الجلسة قائمة لكنها عند aal1، والخادم لا يمنحها aal2 حتى يصحّ
+     الرمز. فما دامت ناقصة لا تصل إلى بيانات محميّة بـ aal2، ولا
+     ندخل بها التطبيق. */
+  var totpForm = document.getElementById('totpForm');
+  if (totpForm) {
+    var totpCode = document.getElementById('totpCode');
+    var totpErr = document.getElementById('totpErr');
+    var triedTotp = false;
+
+    totpCode.addEventListener('input', function () {
+      totpCode.value = totpCode.value.replace(/[^0-9]/g, '').slice(0, 6);
+      if (triedTotp) setErr(totpCode, totpErr, otpProblem(totpCode.value));
+    });
+
+    totpForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      triedTotp = true;
+      if (!setErr(totpCode, totpErr, otpProblem(totpCode.value))) { totpCode.focus(); return; }
+      if (!sb) { offline(totpErr); return; }
+
+      busy(totpForm, true);
+      sb.auth.mfa.listFactors().then(function (r) {
+        var list = (r && r.data && r.data.totp) || [];
+        if (!list.length) throw new Error('no-factor');
+        var factorId = list[0].id;
+        return sb.auth.mfa.challenge({ factorId: factorId }).then(function (c) {
+          if (!c || c.error) throw new Error('challenge');
+          return sb.auth.mfa.verify({
+            factorId: factorId,
+            challengeId: c.data.id,
+            code: totpCode.value.trim()
+          });
+        });
+      }).then(function (v) {
+        busy(totpForm, false);
+        if (v && v.error) {
+          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
+          setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
+          totpCode.select();
+          return;
+        }
+        if (totpNext === 'newpass') { totpNext = 'enter'; showNewPass(); return; }
+        var trust = document.getElementById('totpTrust');
+        if (trust && trust.checked && SEC) SEC.trustDevice(pendingEmail);
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('sign_in_totp');
+        enter();
+      }).catch(function () {
+        busy(totpForm, false);
+        setErr(totpCode, totpErr, t('e.totpBad', 'الرمز غير صحيح. تحقق من التطبيق وأعد المحاولة.'));
+        totpCode.select();
+      });
+    });
+
+    /* الرجوع يعني التخلّي عن دخول لم يكتمل: تُنهى الجلسة الناقصة
+       ولا تُترك مفتوحة عند aal1. */
+    document.getElementById('totpBack').addEventListener('click', function () {
+      if (sb) sb.auth.signOut();
+      showTab(false);
+    });
+
+    /* ---------- رمز الاحتياط ----------
+       الجلسة قائمة لكنها ناقصة، أي أن كلمة المرور صحّت. فالرمز
+       الاحتياطي هو العامل الثاني بدل الهاتف المفقود. والخادم هو من
+       يتحقق منه ويزيل عامل التحقق؛ المتصفح لا يقرّر شيئًا. */
+    var backupForm = document.getElementById('backupForm');
+    var backupCode = document.getElementById('backupCode');
+    var backupErr = document.getElementById('backupErr');
+
+    document.getElementById('useBackup').addEventListener('click', function () {
+      backupForm.hidden = false;
+      this.hidden = true;
+      backupCode.focus();
+    });
+
+    backupCode.addEventListener('input', function () {
+      backupCode.value = backupCode.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    });
+
+    backupForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = backupCode.value.trim();
+      if (v.length < 8) {
+        backupErr.textContent = t('e.backupShape', 'أدخل رمز احتياط كاملًا.');
+        return;
+      }
+      if (!sb) { offline(backupErr); return; }
+
+      backupErr.textContent = '';
+      busy(backupForm, true);
+      sb.rpc('use_backup_code', { code: v }).then(function (r) {
+        busy(backupForm, false);
+        if (!r || r.error || r.data !== true) {
+          if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_failed');
+          backupErr.textContent = t('e.backupBad', 'هذا الرمز غير صحيح أو استُعمل من قبل.');
+          backupCode.select();
+          return;
+        }
+        /* عامل التحقق أُزيل، فالحساب عاد إلى الخطوة الثانية بالبريد.
+           ولا نُدخله بهذه الجلسة: نبدأ الخطوة الثانية من جديد، فلا
+           يكفي رمز احتياط وحده بلا إثبات بريد. */
+        backupCode.value = '';
+        backupForm.hidden = true;
+        if (window.MIRSAAD_AUDIT) window.MIRSAAD_AUDIT.log('mfa_removed');
+        secondStep(pendingEmail);
+      }).catch(function () { busy(backupForm, false); offline(backupErr); });
+    });
   }
 
   /* ---------- رمز التحقق ---------- */

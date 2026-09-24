@@ -56,7 +56,15 @@
     var sb = SB.client();
     if (!sb) return;
     sb.auth.getUser().then(function (r) {
-      if (!r || r.error || !r.data || !r.data.user) leave();
+      /* المكتبة لا ترمي عند انقطاع الشبكة: تعيد الخطأ في r.error كرفض
+         الخادم تمامًا. فكان أي تعثّر في الاتصال يُخرج صاحب الجلسة
+         السليمة. لا نخرج إلا حين يقول الخادم نفسه إن الرمز مرفوض. */
+      var err = r && r.error;
+      if (err) {
+        if (err.status === 401 || err.status === 403) leave();
+        return;
+      }
+      if (!r || !r.data || !r.data.user) leave();
     }).catch(function () {
       /* انقطاع شبكة لا يعني جلسة باطلة: لا نطرد أحدًا بسببه. */
     });
