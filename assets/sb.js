@@ -68,9 +68,23 @@
       var s = JSON.parse(raw);
       if (!s || !s.access_token || !s.user) return null;
       if (s.expires_at && s.expires_at * 1000 < Date.now()) return null;
+      if (needsSecondFactor(s)) return null;
       if (idleTooLong()) return null;
       return s;
     } catch (e) { return null; }
+  }
+
+  /* من فعّل تطبيق المصادقة تبقى جلسته ناقصة (aal1) بعد كلمة المرور
+     حتى يُدخل رمز التطبيق. كانت الحرّاس تعدّها جلسة تامة، فمن كتب
+     عنوان اللوحة وهو على شاشة الرمز دخل بلا رمز. */
+  function needsSecondFactor(s) {
+    var factors = (s.user && s.user.factors) || [];
+    var verified = factors.some(function (f) { return f && f.status === 'verified'; });
+    if (!verified) return false;
+    try {
+      var part = s.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(part)).aal !== 'aal2';
+    } catch (e) { return true; }
   }
 
   function nameOf(user) {
