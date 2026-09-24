@@ -113,6 +113,10 @@
   /* ---------- الخروج ---------- */
   var outBtn = document.getElementById('outBtn');
   if (outBtn) outBtn.addEventListener('click', function () {
+    /* الخروج الكامل في guard.js: يُبطل جلسة Supabase، وينهي الجولة
+       التجريبية، ويمسح مفتاح الحزمة، ويسجّل الخروج. وكان هنا نسخة
+       تمسح مفتاحين وتترك الجلسة قائمة، فيعود الزائر إلى مكانه. */
+    if (window.MirsaadSignOut) { window.MirsaadSignOut(); return; }
     try {
       localStorage.removeItem(K.session);
       sessionStorage.removeItem(K.session);

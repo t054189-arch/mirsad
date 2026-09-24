@@ -40,6 +40,36 @@
     };
   };
 
+  /* ---------- جسر الهوية إلى حزمة اللوحة ----------
+
+     حزمة اللوحة (app.js) مبنية مسبقًا، وتقرأ هويةَ صاحب الجلسة من
+     مفتاح ‎mirsaad.session‎ وحده. فيُكتب هنا من الجلسة المعتبرة — جلسة
+     Supabase أو الجولة التجريبية — قبل أوّل رسم وفي كل تحميل، فلا
+     يعرض المستخدمُ اسمَ غيره ولا اسمًا باقيًا من جلسة سابقة.
+
+     ولا اسم مكتوب هنا: ما يُكتب هو ما في الجلسة نفسها. وحين لا جلسة
+     يُمحى المفتاح، فلا تبقى هوية بعد الخروج. */
+  function bridge() {
+    var KEY = 'mirsaad.session';
+    try {
+      var who = window.MirsaadSession();
+      if (!who) {
+        localStorage.removeItem(KEY);
+        sessionStorage.removeItem(KEY);
+        return;
+      }
+      /* الحزمة تقرأ الاسم بلغتيه، وتقرأ المعرّف باسم userId — ولا
+         تُمسّ هويتُها الداخلية (id) فيبقى ربط بياناتها سليمًا. */
+      localStorage.setItem(KEY, JSON.stringify({
+        userId: who.email,
+        email: who.email,
+        name: { ar: who.name, en: who.nameEn || who.name }
+      }));
+    } catch (e) { /* التخزين غير متاح */ }
+  }
+  window.MirsaadBridge = bridge;
+  bridge();
+
   // الصفحة تُعرّف نفسها بـ data-gate. الاستدلال من المسار كان يخطئ
   // حيثما لم ينتهِ العنوان بـ index.html أو بشرطة مائلة، فتدور البوابة
   // على نفسها بلا نهاية.
