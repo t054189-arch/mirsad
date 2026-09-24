@@ -11,9 +11,9 @@
 (function () {
   'use strict';
 
-  var URL = 'https://kifcykrfcxlitarknsgs.supabase.co';
-  var KEY = 'sb_publishable_BUCYeO5j32bc-VLFRuVLpQ_LpiBEPDA';
-  var REF = 'kifcykrfcxlitarknsgs';
+  var URL = 'https://sbeftcrvveonvgxetcxq.supabase.co';
+  var KEY = 'sb_publishable_hxnJ5cFwbphhPjR5VCktlg_Er-ePKM-';
+  var REF = 'sbeftcrvveonvgxetcxq';
 
   /* مفتاح موقع Cloudflare Turnstile — تحدّي الروبوتات.
 
