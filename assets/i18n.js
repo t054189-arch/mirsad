@@ -383,4 +383,10 @@ window.MIRSAAD_EN = {
   'v.sub': 'Your email is confirmed and your session is open. You will not be asked to sign in again on this device.',
   'v.go': 'Enter Mirsaad',
   'v.hi': 'Hello, ',
+
+  /* روابط منتهية، وإرسال لم يتم */
+  'e.linkExpired': 'That link has expired or was already used. Ask for a new message with the button below.',
+  'e.linkBad': 'That link could not complete the check. Ask for a new message with the button below.',
+  'w.leadNotSent': 'No message was sent. See the reason below, then ask for a new one.',
+  'w.leadDead': 'The link you pressed is no longer valid. Ask for a new message, then press its link within the hour.',
 };

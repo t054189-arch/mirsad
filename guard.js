@@ -52,7 +52,12 @@
     var sb = SB.client();
     if (!sb) return;
     sb.auth.getUser().then(function (r) {
-      if (!r || r.error || !r.data || !r.data.user) leave();
+      if (!r || !r.data || !r.data.user) {
+        /* رمز لم يعد الخادم يعترف به: يُمسح، وإلا أُعيدت المحاولة به
+           عند كل تحميل وبقي الزائر يدور. */
+        if (r && SB.isStale && SB.isStale(r.error)) SB.dropStaleSession();
+        leave();
+      }
     }).catch(function () {
       /* انقطاع شبكة لا يعني جلسة باطلة: لا نطرد أحدًا بسببه. */
     });

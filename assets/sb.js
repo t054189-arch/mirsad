@@ -107,6 +107,32 @@
     try { localStorage.removeItem(DEMO_KEY); } catch (e) { /* لا شيء */ }
   }
 
+
+  /* جلسة محفوظة لم يعد الخادم يعترف بها.
+
+     يقع هذا حين تتبدّل مفاتيح توقيع المشروع: الرمز في المتصفح موقّع
+     بمفتاح قديم، فيردّ الخادم bad_jwt عند كل طلب. وقد ظهر ذلك فعلًا
+     في سجلّ المشروع. ومن غير معالجة يبقى الزائر عالقًا: واجهة تُرسم
+     ثم تُطرد، بلا سبب ظاهر.
+
+     فنمسحها مرّة واحدة ونعيده إلى البوابة نظيفًا. */
+  function dropStaleSession() {
+    try {
+      localStorage.removeItem('sb-' + REF + '-auth-token');
+      localStorage.removeItem('mirsaad.session');
+    } catch (e) { /* التخزين غير متاح */ }
+    clearIdle();
+  }
+
+  function isStale(err) {
+    if (!err) return false;
+    var code = err.code || '';
+    var msg = err.message || '';
+    return code === 'bad_jwt' ||
+           /unrecognized jwt|invalid jwt|token is unverifiable/i.test(msg) ||
+           /refresh_token_not_found|session_not_found/i.test(code + ' ' + msg);
+  }
+
   /* الحرّاس تسأل هذه: جلسة حقيقية أو جولة تجريبية */
   function anySession() {
     return sessionSync() || demoSession();
@@ -124,7 +150,9 @@
     clearIdle: clearIdle,
     idleMinutes: IDLE_MAX_MS / 60000,
     nameOf: nameOf,
-    turnstileKey: function () { return TURNSTILE_SITE_KEY; }
+    turnstileKey: function () { return TURNSTILE_SITE_KEY; },
+    isStale: isStale,
+    dropStaleSession: dropStaleSession
   };
 
   /* أي حركة حقيقية من المستخدم تُجدّد المهلة */

@@ -233,7 +233,14 @@
   }
 
   /* نصّ الشاشة يقول ما جرى وما بقي، ويختلف باختلاف ما كان يفعله. */
-  function otpLead(addr) {
+  function otpLead(addr, failed) {
+    if (failed) {
+      if (waitLead) {
+        waitLead.textContent = t('w.leadNotSent',
+          'لم تُرسل رسالة. راجع السبب أدناه، ثم اطلب رسالة جديدة.');
+      }
+      return;
+    }
     var msg;
     if (otpMode === 'login') {
       msg = t('w.leadLogin', 'كلمة المرور صحيحة. أرسلنا رسالة إلى ') + addr +
@@ -326,6 +333,30 @@
      بلا تمييز لصار رابط الاستعادة بابًا يلتفّ حول الخطوة الثانية. */
   (function () {
     var back = location.hash || '';
+
+    /* رابط انتهت صلاحيته، أو ضُغط مرتين — والثانية لا تصلح. يعود
+       الزائر بخطأ في العنوان لا بجلسة، وكان يقف أمام شاشة تقول له
+       «افتح بريدك» وهو قد فتحه للتوّ. */
+    if (/error=|error_code=/.test(back)) {
+      var code = (back.match(/error_code=([^&]+)/) || [])[1] || '';
+      try { history.replaceState(null, '', location.pathname); } catch (e) { /* لا شيء */ }
+      var pend0 = readPending() || {};
+      pendingEmail = pend0.email || '';
+      otpMode = pend0.mode || 'signup';
+      if (pendingEmail) {
+        showOtp();
+        /* لا نقول «اضغط الرابط» لمن ضغطه للتوّ ووجده ميّتًا. */
+        if (waitLead) {
+          waitLead.textContent = t('w.leadDead',
+            'الرابط الذي ضغطته لم يعد صالحًا. اطلب رسالة جديدة، ثم اضغط رابطها خلال ساعة.');
+        }
+      }
+      waitErr.textContent = /expired|otp_expired/.test(code)
+        ? t('e.linkExpired', 'انتهت صلاحية الرابط أو استُعمل من قبل. اطلب رسالة جديدة من الزرّ أدناه.')
+        : t('e.linkBad', 'تعذّر إتمام التحقق بهذا الرابط. اطلب رسالة جديدة من الزرّ أدناه.');
+      return;
+    }
+
     if (!/access_token=/.test(back)) return;
     if (!/type=(signup|email_change|magiclink|recovery)/.test(back)) return;
     if (!sb) return;
@@ -482,10 +513,12 @@
       pass.value = '';                 /* لا تبقى كلمة المرور في الحقل */
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          otpLead(pendingEmail, true);
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
           return;
         }
-        waitErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        otpLead(pendingEmail, true);
+        waitErr.textContent = t('e.sendFail', 'تعذّر إرسال الرسالة. أعد المحاولة بعد قليل.');
         return;
       }
       startWait();                     /* مهلة قبل السماح بطلب رمز آخر */
@@ -669,10 +702,12 @@
     ask.then(function (r) {
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          otpLead(pendingEmail, true);
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
           return;
         }
-        waitErr.textContent = t('e.resendFail', 'تعذّر إرسال الرمز. أعد المحاولة بعد قليل.');
+        otpLead(pendingEmail, true);
+        waitErr.textContent = t('e.sendFail', 'تعذّر إرسال الرسالة. أعد المحاولة بعد قليل.');
         return;
       }
       waitErr.textContent = t('o.sent', 'أُرسل رمز جديد. تحقق من بريدك ومن مجلد الرسائل غير المرغوب فيها.');
@@ -725,7 +760,8 @@
         showOtp();
         startWait();
         if (r && r.error && (r.error.status === 429 || /rate limit/i.test(r.error.message || ''))) {
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.');
+          otpLead(pendingEmail, true);
+          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
         }
       }).catch(function () {
         busy(resetForm, false);
