@@ -292,16 +292,11 @@
   /* ---------- الانتقال بعد نجاح الدخول ---------- */
   function enter() {
     /* حزمة لوحة التحكم مبنية مسبقًا ولا نملك مصدرها، وهي تقرأ مفتاحها
-       الخاص لتعرف أن ثمة جلسة. نكتبه لها هنا حتى تعمل، ونجعل اختفاءه
-       علامة خروج في guard.js. الجلسة المعتبرة تبقى جلسة Supabase؛
-       هذا المفتاح إشارة للواجهة لا إثبات هوية. */
-    try {
-      var s = SB.sessionSync();
-      localStorage.setItem('mirsaad.session', JSON.stringify({
-        userId: 'usr-001',
-        email: (s && s.user && s.user.email) || ''
-      }));
-    } catch (e) { /* التخزين غير متاح */ }
+       الخاص لتعرف أن ثمة جلسة ولتعرف صاحبها. كتابتُه في assets/boot.js
+       وحده — من الجلسة المعتبرة لا من اسم مكتوب — ويُستدعى هنا ليحمل
+       المفتاحُ هويةَ من دخل قبل أن ينتقل. الجلسة المعتبرة تبقى جلسة
+       Supabase؛ هذا المفتاح إشارة للواجهة لا إثبات هوية. */
+    if (window.MirsaadBridge) window.MirsaadBridge();
 
     var next = new URLSearchParams(location.search).get('next');
     var target = /^[a-z-]+\.html$/.test(next || '') ? next : 'board.html#/dashboard';
@@ -795,9 +790,7 @@
       setErr(email, emailErr, t('e.store', 'تعذّر بدء الجولة — فعّل تخزين المتصفح.'));
       return;
     }
-    try {
-      localStorage.setItem('mirsaad.session', JSON.stringify({ userId: 'usr-001', email: 'demo' }));
-    } catch (e) { /* التخزين غير متاح */ }
+    if (window.MirsaadBridge) window.MirsaadBridge();
     document.body.classList.add('is-leaving');
     setTimeout(function () { location.href = 'board.html#/dashboard'; }, 260);
   });
