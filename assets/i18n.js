@@ -389,4 +389,6 @@ window.MIRSAAD_EN = {
   'e.linkBad': 'That link could not complete the check. Ask for a new message with the button below.',
   'w.leadNotSent': 'No message was sent. See the reason below, then ask for a new one.',
   'w.leadDead': 'The link you pressed is no longer valid. Ask for a new message, then press its link within the hour.',
+  'e.rateLimitIn': 'The email allowance is spent \u2014 two an hour for the whole project. Try again in ',
+  'e.rateLimitMin': ' minutes.',
 };

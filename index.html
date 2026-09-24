@@ -235,7 +235,10 @@
       </p>
 
       <label class="remember" id="waitTrustRow" for="waitTrust" hidden>
-        <input type="checkbox" id="waitTrust" name="waitTrust" />
+        <!-- مؤشَّرة ابتداءً عن قصد: بدونها يكلّف كل دخول رسالة، وحصّة
+           المرسِل المدمج رسالتان في الساعة للمشروع كله — فدخولان
+           يستنفدانها. والتأشير لا يُفعّل إلا بعد تحقق ناجح. -->
+        <input type="checkbox" id="waitTrust" name="waitTrust" checked />
         <span data-i18n="w.trust">لا تسألني على هذا الجهاز لمدة ٣٠ يومًا</span>
       </label>
 

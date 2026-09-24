@@ -205,8 +205,8 @@
     hideExtras();
     var trustRow = document.getElementById('waitTrustRow');
     if (trustRow) trustRow.hidden = otpMode !== 'login';
-    rememberPending(otpMode, pendingEmail, false);
     var trust = document.getElementById('waitTrust');
+    rememberPending(otpMode, pendingEmail, !!(trust && trust.checked));
     if (trust) trust.onchange = function () {
       rememberPending(otpMode, pendingEmail, trust.checked);
     };
@@ -322,6 +322,40 @@
      ردّه الخادم إلى Site URL. */
   function backHere() {
     return location.origin + location.pathname;
+  }
+
+  /* حدّ الإرسال: ساعة من أول رفض.
+
+     «انتظر ساعة» جملة لا تُطمئن أحدًا — لا يدري أمضت خمس دقائق أم
+     خمسون. فنُسجّل لحظة الرفض ونعدّ منها تنازليًا. والعدّ تقدير: الخادم
+     لا يقول متى تنفتح الحصّة، لكن ساعة من أول رفض أقرب إلى الحقيقة من
+     لا شيء. */
+  var MAIL_BLOCK = 'mirsaad.mailBlocked';
+  var BLOCK_MS = 60 * 60 * 1000;
+
+  function markMailBlocked() {
+    /* لحظة أوّل رفض هي المرجع. ولو كتبناها عند كل محاولة لعاد العدّ
+       إلى ستين دقيقة كلما ضغط المستخدم، فلا ينقص أبدًا. */
+    if (mailBlockLeftMs() > 0) return;
+    try { localStorage.setItem(MAIL_BLOCK, String(Date.now())); } catch (e) { /* لا شيء */ }
+  }
+  function mailBlockLeftMs() {
+    try {
+      var at = parseInt(localStorage.getItem(MAIL_BLOCK) || '0', 10);
+      if (!at) return 0;
+      var left = at + BLOCK_MS - Date.now();
+      if (left <= 0) { localStorage.removeItem(MAIL_BLOCK); return 0; }
+      return left;
+    } catch (e) { return 0; }
+  }
+  function rateLimitText() {
+    var left = mailBlockLeftMs();
+    if (!left) {
+      return t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر قليلًا ثم أعد المحاولة.');
+    }
+    var mins = Math.ceil(left / 60000);
+    return t('e.rateLimitIn', 'حصّة الرسائل نفدت — رسالتان في الساعة للمشروع كله. جرّب بعد ')
+         + mins + t('e.rateLimitMin', ' دقيقة.');
   }
 
   /* ---------- العودة من الرابط ----------
@@ -513,8 +547,9 @@
       pass.value = '';                 /* لا تبقى كلمة المرور في الحقل */
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
+          markMailBlocked();
           otpLead(pendingEmail, true);
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
+          waitErr.textContent = rateLimitText();
           return;
         }
         otpLead(pendingEmail, true);
@@ -622,7 +657,8 @@
         /* حدّ الإرسال: الخادم لم يرسل شيئًا. لا بد أن يظهر ذلك صريحًا،
            وإلا انتظر المستخدم رسالة لن تأتي أبدًا. */
         if (r.error.status === 429 || /rate limit/i.test(m)) {
-          setErr(sEmail, sEmailErr, t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل. انتظر ساعة ثم أعد المحاولة.'));
+          markMailBlocked();
+          setErr(sEmail, sEmailErr, rateLimitText());
           return;
         }
         /* Supabase يبتلع نصّ الخطأ الآتي من الخادم ويردّ رسالة واحدة
@@ -702,8 +738,9 @@
     ask.then(function (r) {
       if (r && r.error) {
         if (r.error.status === 429 || /rate limit/i.test(r.error.message || '')) {
+          markMailBlocked();
           otpLead(pendingEmail, true);
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
+          waitErr.textContent = rateLimitText();
           return;
         }
         otpLead(pendingEmail, true);
@@ -760,8 +797,9 @@
         showOtp();
         startWait();
         if (r && r.error && (r.error.status === 429 || /rate limit/i.test(r.error.message || ''))) {
+          markMailBlocked();
           otpLead(pendingEmail, true);
-          waitErr.textContent = t('e.rateLimit', 'تجاوزنا حدّ إرسال الرسائل للمشروع كله. انتظر ساعة، أو اربط مزوّد بريد خاصًا بك.');
+          waitErr.textContent = rateLimitText();
         }
       }).catch(function () {
         busy(resetForm, false);
