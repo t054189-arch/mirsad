@@ -84,6 +84,10 @@
   /* ---------- قشرة الجولة ---------- */
   var ui = {};
   function chrome() {
+    /* قشرة واحدة لا غير: إن بقيت واحدة من تحميل سابق تُنزع أوّلًا */
+    var stale = document.querySelectorAll('.dmo');
+    for (var i = 0; i < stale.length; i++) stale[i].remove();
+
     var root = document.createElement('div');
     root.className = 'dmo';
     root.setAttribute('dir', d.getAttribute('dir') || 'rtl');
@@ -211,9 +215,23 @@
     return null;
   }
 
-  function go(p) {
+  /* انتقالٌ واحد لا غير من كل خطوة.
+
+     كان العطب هنا: خطوةٌ تضغط زرًّا حقيقيًّا فيبدأ الموقع انتقاله
+     (‎board.html#/dashboard‎ بعد جزء من الثانية)، وحلقةُ التشغيل لا
+     تنتظره فتقرأ الخطوة التالية وتنتقل هي أيضًا — إلى ‎board.html‎
+     بلا مسار. فيسبق انتقالُنا انتقالَه، وتفتح الحزمة صفحتَها
+     التعريفية داخل قشرة اللوحة: صفحتان في شاشة واحدة.
+
+     فكلّ ما يبدأ انتقالًا يُسكِت المحرّك عن هذه الصفحة. */
+  function handoff() {
+    stop = true;
     write(state);
-    location.href = p + '.html';
+  }
+
+  function go(p, hash) {
+    handoff();
+    location.href = p + '.html' + (hash || '');
   }
 
   /* ---------- لوح الأدلّة ----------
@@ -262,11 +280,10 @@
                     en: 'Signing in with the demo account — no published password, no access to real data.' }), b);
         await wait(2800);
         state.i++;
-        write(state);
-        if (b) b.click(); else go('board');
+        if (b) { handoff(); b.click(); } else { go('board', '#/dashboard'); }
       } },
 
-    { rail: 'board', page: 'board', run: async function () {
+    { rail: 'board', page: 'board', hash: '#/dashboard', run: async function () {
         say('', T({ ar: 'هذه هي لوحة التحكم، ومنها يصل المستخدم إلى منشآته وفحوصاته السابقة ويبدأ فحصًا جديدًا.',
                     en: 'This is the dashboard: structures, past inspections, and the start of a new one.' }));
         await wait(3600);
@@ -276,8 +293,7 @@
                     en: 'This is where a new inspection begins.' }), b);
         await wait(2600);
         state.i++;
-        write(state);
-        if (b) b.click(); else go('inspection');
+        if (b) { handoff(); b.click(); } else { go('inspection'); }
       } },
 
     { rail: 'new', page: 'inspection', run: async function () {
@@ -316,7 +332,6 @@
         say('', T({ ar: 'ثم يُسلّم الملفّ إلى الوكيل الذكي.', en: 'Then it goes to the agent.' }), b);
         await wait(2400);
         state.i++;
-        write(state);
         go('analysis');
       } },
 
@@ -333,7 +348,6 @@
         spot(g);
         await wait(1600);
         state.i++;
-        write(state);
         go('results');
       } },
 
@@ -347,7 +361,6 @@
                     en: 'Demo AI result — potential crack at pier 2.' }), row);
         await wait(3000);
         state.i++;
-        write(state);
         go('review');
       } },
 
@@ -371,8 +384,7 @@
         say('', T({ ar: 'وهنا يعتمد المراجِع الملاحظة.', en: 'The reviewer approves the finding.' }), ok);
         await wait(2400);
         state.i++;
-        write(state);
-        if (ok) ok.click(); else go('record');
+        if (ok) { handoff(); ok.click(); } else { go('record'); }
       } },
 
     { rail: 'report', page: 'record', run: async function () {
@@ -385,7 +397,6 @@
                     en: 'Every new inspection becomes data for the next one.' }), hist);
         await wait(4000);
         state.i++;
-        write(state);
         go('report');
       } },
 
@@ -413,7 +424,7 @@
     location.href = 'index.html';
   }
   function exit() {
-    stop = true;
+    teardown();
     write(null);
     if (ui.root) ui.root.remove();
     var ev = document.querySelector('.dmoev');
@@ -438,7 +449,7 @@
     var here = page();
     while (!stop && state.i < ACTS.length) {
       var a = ACTS[state.i];
-      if (a.page !== here) { go(a.page); return; }
+      if (a.page !== here) { go(a.page, a.hash); return; }
       paintRail();
       await a.run();
       paintRail();
@@ -446,16 +457,35 @@
     }
   }
 
+  var watcher = null;
+
   function boot() {
     if (!state || !state.on) return;
+    /* الجولة تبدأ مرّةً واحدة في الصفحة الواحدة مهما تكرّر تحميل الملفّ */
+    if (window.__mirsaadTour) return;
+    window.__mirsaadTour = true;
+
     document.body.classList.add('dmo-on');
     chrome();
     watchHands();
     setPaused(!!state.paused);
-    new MutationObserver(function () { paintRail(); paintBar(); })
-      .observe(d, { attributes: true, attributeFilter: ['lang'] });
-    window.addEventListener('resize', function () { ui.ring.hidden = true; });
+    watcher = new MutationObserver(function () { paintRail(); paintBar(); });
+    watcher.observe(d, { attributes: true, attributeFilter: ['lang'] });
+    window.addEventListener('resize', onResize);
+
+    /* عند مغادرة الصفحة: تُوقَف المؤقّتات والمراقبون ويُنزع ما رُسم،
+       فلا يبقى من خطوةٍ ماضية أثرٌ على الصفحة التالية. */
+    window.addEventListener('pagehide', teardown);
     run();
+  }
+
+  function onResize() { if (ui.ring) ui.ring.hidden = true; }
+
+  function teardown() {
+    stop = true;
+    if (watcher) { watcher.disconnect(); watcher = null; }
+    window.removeEventListener('resize', onResize);
+    window.__mirsaadTour = false;
   }
 
   window.MIRSAAD_DEMO = {
