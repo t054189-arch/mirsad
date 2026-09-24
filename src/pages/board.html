@@ -6,6 +6,13 @@
      assets/board.css و assets/board.js. -->
 <div id="root"></div>
 
+<script>
+  /* الحزمة تقرأ مسارها من ‎location.hash‎. وبلا مسار تفتح صفحتها
+     التعريفية — وهي تُرسم داخل قشرة اللوحة، فتبدو صفحتان في شاشة
+     واحدة. فيُثبَّت المسار قبل أن تُحمّل الحزمة، بلا إعادة تحميل. */
+  if (!location.hash) history.replaceState(null, '', location.pathname + '#/dashboard');
+</script>
+
 <script src="app.js"></script>
 <script src="ux.js"></script>
 <script src="assets/board.js"></script>
