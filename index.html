@@ -11,6 +11,7 @@
 <script src="assets/boot.js"></script>
 <link rel="stylesheet" href="assets/fonts.css" />
 <link rel="stylesheet" href="assets/style.css" />
+<link rel="stylesheet" href="assets/demo.css" />
 </head>
 <body class="gate">
 
@@ -51,6 +52,16 @@
   </section>
 
   <section class="gate__card">
+    <!-- الجولة المُرشدة: فوق التبويبين فتُرى أيًّا كان المفتوح منهما،
+         وبهيئة ثانوية فلا تزاحم زرّ الدخول. انظر assets/demo.js. -->
+    <button class="ui ui--ghost tourbtn" type="button" id="tourBtn">
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+        <circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M9.9 7.9v8.2l6.6-4.1-6.6-4.1Z" fill="currentColor"/>
+      </svg>
+      <span data-i18n="a.tourGo">شاهد كيف يعمل مرصاد</span>
+    </button>
+
     <div class="tabsw" role="tablist" aria-label="الدخول أو إنشاء حساب">
       <button class="tabsw__b" id="tabIn" role="tab" aria-selected="false"
               aria-controls="paneIn" data-i18n="sc.signin">تسجيل الدخول</button>
@@ -371,5 +382,6 @@
 <script src="assets/secure.js"></script>
 <script src="assets/audit.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/demo.js"></script>
 </body>
 </html>

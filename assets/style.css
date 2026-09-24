@@ -835,11 +835,67 @@ html:not([data-signed]) .who,
 html:not([data-signed]) #outBtn{ display:none; }
 
 /* ============================================================
+   التقرير النهائي — يجمع ما تفرّق في الصفحات، ويُطبع كما هو
+   ============================================================ */
+.rep{
+  border:1px solid var(--line); border-radius:var(--r);
+  background:var(--surface); box-shadow:var(--shadow);
+  padding:clamp(16px,2.4vw,26px); margin-block:16px;
+}
+.rep__top{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; flex-wrap:wrap;
+  padding-block-end:14px; margin-block-end:16px;
+  border-block-end:1px solid var(--line);
+}
+.rep__brand{ display:grid; line-height:1.15; }
+.rep__brand b{ font-size:1.15rem; }
+.rep__brand small{ font-size:.66rem; letter-spacing:.22em; color:var(--ink-soft); direction:ltr; }
+.rep__no{ display:grid; justify-items:end; line-height:1.3; }
+.rep__no small{ font-size:.72rem; color:var(--ink-soft); }
+.rep__no b{ font-size:.95rem; }
+
+.repshots{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-block:10px 4px; }
+.repshots img{
+  width:100%; height:130px; object-fit:cover;
+  border-radius:10px; border:1px solid var(--line); display:block;
+  background:var(--surface-2); color:transparent; font-size:0;
+}
+
+.rep__foot{
+  margin-block-start:20px; padding-block-start:14px;
+  border-block-start:1px solid var(--line);
+  color:var(--ink-soft); font-size:.8rem; line-height:1.7;
+}
+.rep__foot p{ margin:0 0 6px; }
+.rep__date b{ color:var(--ink); }
+
+.acts--end{ margin-block-start:18px; }
+
+/* الطباعة: الورقة وحدها، بلا قشرة الموقع ولا قشرة الجولة */
+@media print{
+  .topbar, .sidenav, .blueprint, .dmo, .page__bar, .acts, .refnote{ display:none !important; }
+  body::before{ display:none !important; }
+  .rep{ border:0; box-shadow:none; padding:0; }
+  .repshots img{ height:auto; max-height:200px; }
+}
+
+@media (max-width: 560px){
+  .repshots img{ height:96px; }
+}
+
+/* ============================================================
    الخريطة — مشهد ثلاثي الأبعاد للكويت
    لوحٌ مائل في فضاء ذي منظور: الماء تحته، والبلاد كتلةٌ لها سُمك،
    وفوقها أعمدة المنشآت. كلّه CSS و SVG في الصفحة — لا بلاطات ولا
    مزوّد ولا مكتبة ولا مفتاح. انظر assets/map.js و assets/kuwait.js.
    ============================================================ */
+.tourbtn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-block-end:14px;
+}
+.tourbtn svg{ flex:0 0 auto; }
+
 .mapbar{
   display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px;
   margin:18px 0 14px;

@@ -1,0 +1,72 @@
+<!--slug: report--><!--nav: record--><!--key: sc.report--><!--ar: التقرير النهائي-->
+<!-- تقرير الفحص النهائي. يجمع ما تفرّق في الصفحات: المنشأة والفحص،
+     وما استخرجه الوكيل، والمقارنة بالسابق، وقرار المراجِع، وسجلّ
+     المنشأة. ومكوّناته هي مكوّنات الموقع نفسها لا تصميم ثانٍ. -->
+<div class="page__bar">
+  <p class="page__lead" data-i18n="pg.reportLead">تقرير فحص مجمّع، جاهز للطباعة أو الحفظ.</p>
+  <span class="chipacc" data-i18n="rp.demo">بيانات عرض</span>
+</div>
+
+<div class="rep">
+  <header class="rep__top">
+    <span class="rep__brand">
+      <b data-i18n="brand.name">مرصاد</b>
+      <small data-i18n="brand.sub">MIRSAAD</small>
+    </span>
+    <span class="rep__no">
+      <small data-i18n="m8.b">رقم الفحص</small>
+      <b dir="ltr">INSP-2026-014</b>
+    </span>
+  </header>
+
+  <div class="panes">
+    <section class="pane">
+      <h2 class="pane__h" data-i18n="rp.about">بيانات المنشأة والفحص</h2>
+      <div class="pair"><span data-i18n="m3.d">المنشأة</span><b data-i18n="rp.site">جسر تجريبي – الكويت</b></div>
+      <div class="pair"><span data-i18n="a.governorate">المحافظة</span><b data-i18n="gv.capital">العاصمة</b></div>
+      <div class="pair"><span data-i18n="m3.f">نوع الفحص</span><b data-i18n="rp.type">فحص دوري</b></div>
+      <div class="pair"><span data-i18n="a.section">القطاع</span><b data-i18n="rp.part">سطح خرساني لجسر</b></div>
+      <div class="pair"><span data-i18n="m8.c">التاريخ</span><b dir="ltr">20 / 09 / 2026</b></div>
+      <div class="pair"><span data-i18n="a.engineer">الموظف المسؤول</span><b data-i18n="rp.user">مستخدم تجريبي</b></div>
+    </section>
+
+    <section class="pane">
+      <h2 class="pane__h" data-i18n="rp.verdict">الملاحظة وقرارها</h2>
+      <div class="pair"><span data-i18n="rp.finding">الملاحظة</span><b data-i18n="m6.c">احتمال وجود تشقق</b></div>
+      <div class="pair"><span data-i18n="rp.where">الموضع</span><b data-i18n="m6.d">الركيزة رقم ٢</b></div>
+      <div class="pair"><span data-i18n="rp.level">الأولوية</span><b data-i18n="lv.hi">عالية</b></div>
+      <div class="pair"><span data-i18n="a.decision">قرار المراجِع</span><b class="page__ok" data-i18n="rp.ok">معتمد</b></div>
+      <div class="cmp">
+        <span><small data-i18n="f.prev">الفحص السابق</small><b>0.6 مم</b></span>
+        <span class="cmp__ar arrow" aria-hidden="true">←</span>
+        <span><small data-i18n="f.curr">الفحص الحالي</small><b class="cmp__now">1.4 مم</b></span>
+      </div>
+    </section>
+  </div>
+
+  <h2 class="page__h" data-i18n="rp.agent">خلاصة الوكيل الذكي</h2>
+  <p class="page__lead" data-i18n="m7.a">٨٧٪ دقة التحليل · مقارنة بالسابق: ملاحظة مشابهة في فحص ٢٠٢٤</p>
+  <p class="page__lead" data-i18n="rp.agentNote">ملاحظة متكرّرة على الأرجح — تحتاج مراجعة المستخدم. النتيجة أعلاه مأخوذة من عرض ثابت الخطوات، موسومة «نتيجة عرض».</p>
+
+  <h2 class="page__h" data-i18n="rp.shots">صور الفحص</h2>
+  <p class="refnote" data-i18n="pg.refNote">الصور المعروضة صور مرجعية من <a href="dataset.html">مجموعة البيانات</a>، لا صور هذه المنشآت نفسها.</p>
+  <div class="repshots">
+    <img src="https://sbeftcrvveonvgxetcxq.supabase.co/storage/v1/object/public/reference-images/metricea-lab-380/cracked/IMG_1277.jpg" alt="" loading="lazy" decoding="async" width="768" height="1024" />
+    <img src="https://sbeftcrvveonvgxetcxq.supabase.co/storage/v1/object/public/reference-images/metricea-lab-380/cracked/IMG_1394.jpg" alt="" loading="lazy" decoding="async" width="768" height="1024" />
+    <img src="https://sbeftcrvveonvgxetcxq.supabase.co/storage/v1/object/public/reference-images/metricea-lab-380/uncracked/IMG_1935.jpg" alt="" loading="lazy" decoding="async" width="768" height="1024" />
+  </div>
+
+  <h2 class="page__h" data-i18n="a.history">سجل المنشأة</h2>
+  <div class="hist">
+    <span class="hist__i is-now"><b>20 / 09 / 2026</b><small data-i18n="a.h1">تشقق الركيزة ٢ — معتمد</small></span>
+    <span class="hist__i"><b>12 / 03 / 2026</b><small data-i18n="a.h2">رطوبة السطح السفلي — للمتابعة</small></span>
+    <span class="hist__i"><b>04 / 08 / 2024</b><small data-i18n="a.h3">تآكل حديد التسليح — مغلق</small></span>
+  </div>
+
+  <footer class="rep__foot">
+    <p data-i18n="rp.limit">نتائج الذكاء الاصطناعي معلومات مساندة للقرار، وتحتاج مراجعة المستخدم أو المختصّ. ولا يشهد مرصاد بسلامة أي منشأة.</p>
+    <p class="rep__date"><span data-i18n="rp.made">تاريخ التقرير</span> <b dir="ltr">24 / 09 / 2026</b></p>
+  </footer>
+</div>
+
+<a class="ui ui--ghost page__go" href="record.html" data-i18n="rp.back">العودة إلى السجل</a>
