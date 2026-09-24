@@ -931,6 +931,13 @@
      لا كلمة مرور منشورة ولا حساب على الخادم: جولة في الواجهة وحدها.
      الجلسة التجريبية لا تحمل رمز Supabase، فلا تصل إلى قاعدة البيانات
      بحال — وهذا أمتن من حساب مشترك كلمته مكتوبة في الصفحة. */
+  /* «شاهد كيف يعمل مرصاد»: الجولة المُرشدة تقود الموقع نفسه، وتدخل
+     بالحساب التجريبي نفسه — لا مسار دخول ثانٍ. انظر assets/demo.js. */
+  var tourBtn = document.getElementById('tourBtn');
+  if (tourBtn) tourBtn.addEventListener('click', function () {
+    if (window.MIRSAAD_DEMO) window.MIRSAAD_DEMO.start();
+  });
+
   var demoBtn = document.getElementById('demoBtn');
   if (demoBtn) demoBtn.addEventListener('click', function () {
     if (!SB.demoStart()) {

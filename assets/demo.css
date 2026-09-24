@@ -1,0 +1,146 @@
+/* مِرصاد — قشرة الجولة المُرشدة.
+
+   طبقة فوق الموقع لا تغيّر منه شيئًا: حلقة إبراز، وبطاقة شرح، وشريط
+   مراحل، ولوح تحكّم. كلّها من ألوان الهوية وخطوطها، وتتبع الاتجاه
+   والوضعين، وتنكمش على الهاتف. */
+
+.dmo{ position:fixed; inset:0; z-index:200; pointer-events:none; font:inherit; }
+.dmo > *{ pointer-events:auto; }
+
+/* ---------- حلقة الإبراز ---------- */
+.dmo__ring{
+  position:fixed; border-radius:14px; pointer-events:none;
+  border:2px solid var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent),
+             0 0 0 9999px rgba(0,0,0,.42);
+  transition:top .32s var(--ease), left .32s var(--ease),
+             width .32s var(--ease), height .32s var(--ease);
+}
+[data-mode="light"] .dmo__ring{ box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent),
+                                           0 0 0 9999px rgba(43,36,29,.30); }
+
+/* ---------- بطاقة الشرح ---------- */
+.dmo__say{
+  /* التوسيط مادّيّ: ‎inset-inline-start‎ ينقلب مع الاتجاه بينما
+     ‎translateX‎ لا ينقلب، فتخرج البطاقة عن الشاشة في العربية. */
+  position:fixed; left:50%; right:auto;
+  transform:translateX(-50%);
+  max-width:min(460px, calc(100vw - 32px));
+  background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:13px 16px;
+  animation:dmoIn .3s var(--ease) both;
+}
+.dmo__say--mid{ inset-block-start:50%; transform:translate(-50%,-50%); }
+/* حين لا عنصر يُشرح، تقف البطاقة أسفل الشاشة فوق لوح التحكّم
+   ولا تتوسّط فتحجب الصفحة كلَّها. */
+.dmo__say--low{ inset-block-start:auto; inset-block-end:76px; }
+@keyframes dmoIn{ from{ opacity:0; transform:translateX(-50%) translateY(6px); }
+                  to{ opacity:1; } }
+.dmo__tag{
+  display:inline-block; margin-bottom:6px;
+  font-size:.66rem; font-weight:700; letter-spacing:.14em;
+  color:var(--accent); direction:ltr;
+}
+.dmo__txt{ margin:0; font-size:.92rem; line-height:1.65; }
+
+/* ---------- شريط المراحل ---------- */
+.dmo__rail{
+  position:fixed; inset-block-start:calc(var(--bar, 64px) + 12px);
+  inset-inline-end:16px;
+  display:grid; gap:3px;
+  background:color-mix(in srgb, var(--surface) 88%, transparent);
+  border:1px solid var(--line); border-radius:14px;
+  padding:9px 11px; backdrop-filter:blur(8px);
+  max-width:min(240px, 46vw);
+}
+.dmo__step{
+  display:flex; align-items:center; gap:8px;
+  font-size:.74rem; color:var(--ink-soft); opacity:.62;
+  transition:opacity .25s var(--ease), color .25s var(--ease);
+}
+.dmo__step i{
+  font-style:normal; font-variant-numeric:tabular-nums; direction:ltr;
+  font-size:.66rem; opacity:.75; min-width:1.4em;
+}
+.dmo__step b{ font-weight:500; }
+.dmo__step.is-done{ opacity:.8; }
+.dmo__step.is-done i::after{ content:" ✓"; color:var(--ok); }
+.dmo__step.is-now{ opacity:1; color:var(--ink); }
+.dmo__step.is-now b{ font-weight:700; }
+
+/* ---------- لوح التحكّم ---------- */
+.dmo__bar{
+  position:fixed; inset-block-end:16px; left:50%; right:auto;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+  justify-content:center;
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  border:1px solid var(--line); border-radius:999px;
+  padding:7px 9px; box-shadow:var(--shadow); backdrop-filter:blur(8px);
+}
+.dmo__mode{
+  font-size:.7rem; font-weight:700; letter-spacing:.04em;
+  color:var(--on-accent); background:var(--accent);
+  border-radius:999px; padding:4px 11px;
+}
+.dmo__b{
+  font:inherit; font-size:.78rem; cursor:pointer;
+  color:var(--ink); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:999px;
+  padding:6px 13px; min-height:34px;
+}
+.dmo__b:hover{ border-color:var(--accent); color:var(--accent); }
+.dmo__b--x:hover{ border-color:var(--hi); color:var(--hi); }
+.dmo.is-paused .dmo__ring{ border-style:dashed; }
+
+/* ---------- لوح أدلّة العرض ---------- */
+.dmoev{
+  border:1px dashed var(--line); border-radius:var(--r);
+  padding:14px 16px; margin-block:12px;
+  background:color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.dmoev__h{ margin:0 0 10px; font-size:.95rem; font-weight:700; }
+.dmoev__tag{
+  font-size:.66rem; font-weight:700; letter-spacing:.04em;
+  color:var(--on-accent); background:var(--accent);
+  border-radius:999px; padding:3px 9px; margin-inline-end:6px;
+}
+.dmoev__g{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+.dmoev__g img{
+  width:100%; height:92px; object-fit:cover;
+  border-radius:10px; border:1px solid var(--line); display:block;
+  /* صورة لم تصل تبقى مربّعًا هادئًا لا أيقونة مكسورة */
+  background:var(--surface-2); color:transparent; font-size:0;
+}
+.dmoev__n{ margin:10px 0 12px; font-size:.78rem; color:var(--ink-soft); line-height:1.6; }
+.dmoev__r{
+  display:flex; justify-content:space-between; gap:14px;
+  padding-block:6px; border-block-start:1px dashed var(--line); font-size:.84rem;
+}
+.dmoev__r span{ color:var(--ink-soft); flex:0 0 auto; }
+.dmoev__r b{ font-weight:600; text-align:end; }
+
+/* ---------- الشاشات الضيّقة ---------- */
+@media (max-width: 720px){
+  .dmo__rail{
+    inset-block-start:auto; inset-block-end:70px;
+    inset-inline:12px; max-width:none;
+    grid-template-columns:repeat(4, 1fr); gap:2px 8px;
+  }
+  .dmo__step b{ display:none; }
+  .dmo__step{ justify-content:center; font-size:.68rem; }
+  .dmo__step.is-now b{ display:inline; }
+  .dmo__step.is-now{ grid-column:1 / -1; justify-content:flex-start; }
+  .dmo__say{ max-width:calc(100vw - 24px); padding:11px 13px; }
+  .dmo__txt{ font-size:.86rem; }
+  .dmo__bar{ inset-block-end:10px; gap:5px; padding:6px 7px; }
+  .dmo__b{ font-size:.72rem; padding:5px 10px; }
+  .dmoev__g{ grid-template-columns:repeat(3, 1fr); }
+  .dmoev__g img{ height:66px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .dmo__ring{ transition:none; }
+  .dmo__say{ animation:none; }
+}
