@@ -13,7 +13,22 @@
 (function () {
   'use strict';
 
+  /* ---------------------------------------------------------------
+     مفتاح التشغيل.
+
+     الجولة موقوفة حتى يُطلب تشغيلها. وسببُ الوقف عطبٌ لزم إصلاحه:
+     كانت حالتها تُحفظ في ‎localStorage‎ بلا مدّة ولا حدّ، فمن بدأها ثم
+     أغلق اللسان أو حدّث الصفحة بقيت حالتُه مكتوبة — فيعود إلى الموقع
+     فتُمسك به الجولة عند كل تحميل وتنقله إلى حيث بلغت، لا إلى حيث
+     طلب. يبدو ذلك تجمّدًا وتراكبَ صفحتين، وهو ليس خللًا في التوجيه.
+
+     والعلاج تحته: الحالة صارت لِلسان واحد وتنتهي بمهلة. ويبقى هذا
+     المفتاح مغلقًا حتى يُطمأنّ إلى التنقّل العادي، فيُفتح بسطر واحد.
+     --------------------------------------------------------------- */
+  var ENABLED = false;
+
   var KEY = 'mirsaad.tour';
+  var STALE_MS = 10 * 60 * 1000;          /* جولة مهجورة تسقط بعد عشر دقائق */
   var d = document.documentElement;
   function en() { return d.getAttribute('lang') === 'en'; }
   function T(o) { return en() ? o.en : o.ar; }
@@ -44,14 +59,37 @@
     return n.replace('.html', '') || 'index';
   }
 
-  /* ---------- الحالة ---------- */
+  /* ---------- الحالة ----------
+
+     في ‎sessionStorage‎ لا ‎localStorage‎: تعبر تنقّل الصفحات في اللسان
+     الواحد — وهو ما تحتاجه الجولة — وتموت بموته، فلا تلاحق صاحبها إلى
+     زيارة أخرى. ومعها ختمُ وقت: جولةٌ تُركت ولم تتقدّم تسقط وحدها. */
   function read() {
-    try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; }
+    try {
+      var s = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+      if (!s) return null;
+      if (!s.t || Date.now() - s.t > STALE_MS) { forget(); return null; }
+      return s;
+    } catch (e) { return null; }
   }
   function write(s) {
-    try { s ? localStorage.setItem(KEY, JSON.stringify(s)) : localStorage.removeItem(KEY); }
-    catch (e) { /* التخزين غير متاح */ }
+    try {
+      if (!s) return forget();
+      s.t = Date.now();
+      sessionStorage.setItem(KEY, JSON.stringify(s));
+    } catch (e) { /* التخزين غير متاح */ }
   }
+  function forget() {
+    try {
+      sessionStorage.removeItem(KEY);
+      /* ومن علِقت عنده الحالة القديمة في التخزين الدائم، تُمحى عنه */
+      localStorage.removeItem(KEY);
+    } catch (e) { /* التخزين غير متاح */ }
+  }
+
+  /* حالةٌ قديمة باقية من قبل الإصلاح تُمحى عند أوّل تحميل، فلا يبقى
+     أحدٌ ممسوكًا بجولة بدأها في زيارة ماضية. */
+  try { if (localStorage.getItem(KEY)) localStorage.removeItem(KEY); } catch (e) { /* لا شيء */ }
 
   var state = read();
   var stop = false;                       /* أُلغيت الجولة في هذه الصفحة */
@@ -460,6 +498,7 @@
   var watcher = null;
 
   function boot() {
+    if (!ENABLED) { hideButton(); return; }
     if (!state || !state.on) return;
     /* الجولة تبدأ مرّةً واحدة في الصفحة الواحدة مهما تكرّر تحميل الملفّ */
     if (window.__mirsaadTour) return;
@@ -489,13 +528,21 @@
   }
 
   window.MIRSAAD_DEMO = {
+    enabled: function () { return ENABLED; },
     start: function () {
+      if (!ENABLED) return false;
       state = { on: true, i: 0, paused: false };
       write(state);
       if (page() === 'index') { location.reload(); } else { location.href = 'index.html'; }
+      return true;
     },
     running: function () { var s = read(); return !!(s && s.on); }
   };
+
+  function hideButton() {
+    var b = document.getElementById('tourBtn');
+    if (b) b.hidden = true;
+  }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
