@@ -91,7 +91,10 @@
   padding:6px 13px; min-height:34px;
 }
 .dmo__b:hover{ border-color:var(--accent); color:var(--accent); }
-.dmo__b--x:hover{ border-color:var(--hi); color:var(--hi); }
+/* زرّ الخروج ظاهرٌ بذاته لا بالمرور عليه: للمُقيّم مخرجٌ يراه في كل
+   لحظة من الجولة، فيتركها متى شاء ويعود إلى الموقع كما هو. */
+.dmo__b--x{ border-color:var(--hi); color:var(--hi); font-weight:700; }
+.dmo__b--x:hover{ background:var(--hi); color:var(--on-accent, #fff); }
 .dmo.is-paused .dmo__ring{ border-style:dashed; }
 
 /* ---------- لوح أدلّة العرض ---------- */
