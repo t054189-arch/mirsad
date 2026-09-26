@@ -16,16 +16,20 @@
   /* ---------------------------------------------------------------
      مفتاح التشغيل.
 
-     الجولة موقوفة حتى يُطلب تشغيلها. وسببُ الوقف عطبٌ لزم إصلاحه:
-     كانت حالتها تُحفظ في ‎localStorage‎ بلا مدّة ولا حدّ، فمن بدأها ثم
-     أغلق اللسان أو حدّث الصفحة بقيت حالتُه مكتوبة — فيعود إلى الموقع
-     فتُمسك به الجولة عند كل تحميل وتنقله إلى حيث بلغت، لا إلى حيث
-     طلب. يبدو ذلك تجمّدًا وتراكبَ صفحتين، وهو ليس خللًا في التوجيه.
+     كان مغلقًا حتى يُطمأنّ إلى التنقّل العادي، وقد اطمُئنّ إليه، فهو
+     مفتوح. والعطب الذي أغلقه أوّلًا: حالة الجولة كانت في ‎localStorage‎
+     بلا مدّة ولا حدّ، فمن بدأها ثمّ حدّث الصفحة أو عاد في زيارة أخرى
+     تُمسك به عند كل تحميل وتنقله إلى حيث بلغت لا إلى حيث طلب — يبدو
+     ذلك تجمّدًا وتراكبَ صفحتين، وليس خللًا في التوجيه.
 
-     والعلاج تحته: الحالة صارت لِلسان واحد وتنتهي بمهلة. ويبقى هذا
-     المفتاح مغلقًا حتى يُطمأنّ إلى التنقّل العادي، فيُفتح بسطر واحد.
+     ودونه الآن ثلاثة أقفال، فلا يعود:
+       · الحالة في ‎sessionStorage‎ وحده — لِلسان واحد، تموت بموته.
+       · ومعها ختمُ وقت: جولةٌ تُركت عشر دقائق تسقط وحدها.
+       · ولا تُستأنف إلا على انتقالٍ وقّعته الجولة نفسها (‎expect‎)،
+         فالتحديث وصولٌ بلا توقيع: يُنهيها ولا يعيدها.
+     ولا تبدأ إلا من ضغطة الزرّ: لا شيء يشغّلها عند تحميل الصفحة.
      --------------------------------------------------------------- */
-  var ENABLED = false;
+  var ENABLED = true;
 
   var KEY = 'mirsaad.tour';
   var STALE_MS = 10 * 60 * 1000;          /* جولة مهجورة تسقط بعد عشر دقائق */
@@ -175,7 +179,8 @@
     ui.play.textContent = state.paused ? T({ ar: '▶ متابعة', en: '▶ Continue' })
                                        : T({ ar: '⏸ إيقاف مؤقت', en: '⏸ Pause' });
     ui.root.querySelector('[data-a="again"]').textContent = T({ ar: '↻ إعادة العرض', en: '↻ Restart' });
-    ui.root.querySelector('[data-a="exit"]').textContent = T({ ar: '✕ خروج', en: '✕ Exit' });
+    ui.root.querySelector('[data-a="exit"]').textContent =
+      T({ ar: '✕ إنهاء الجولة', en: '✕ Exit demo' });
   }
 
   function setPaused(v) {
@@ -262,13 +267,17 @@
      التعريفية داخل قشرة اللوحة: صفحتان في شاشة واحدة.
 
      فكلّ ما يبدأ انتقالًا يُسكِت المحرّك عن هذه الصفحة. */
-  function handoff() {
+  function handoff(next) {
     stop = true;
+    /* كل انتقالٍ تصنعه الجولة يُوقَّع باسم الصفحة المقصودة. ويُقرأ
+       التوقيع مرّةً واحدة عند الوصول ثمّ يُمحى، فتحديثُ الصفحة — وهو
+       وصولٌ بلا توقيع — يُنهي الجولة ولا يستأنفها ولا يعيد تشغيلها. */
+    state.expect = next || null;
     write(state);
   }
 
   function go(p, hash) {
-    handoff();
+    handoff(p);
     location.href = p + '.html' + (hash || '');
   }
 
@@ -318,7 +327,7 @@
                     en: 'Signing in with the demo account — no published password, no access to real data.' }), b);
         await wait(2800);
         state.i++;
-        if (b) { handoff(); b.click(); } else { go('board', '#/dashboard'); }
+        if (b) { handoff('board'); b.click(); } else { go('board', '#/dashboard'); }
       } },
 
     { rail: 'board', page: 'board', hash: '#/dashboard', run: async function () {
@@ -331,7 +340,7 @@
                     en: 'This is where a new inspection begins.' }), b);
         await wait(2600);
         state.i++;
-        if (b) { handoff(); b.click(); } else { go('inspection'); }
+        if (b) { handoff('inspection'); b.click(); } else { go('inspection'); }
       } },
 
     { rail: 'new', page: 'inspection', run: async function () {
@@ -422,7 +431,7 @@
         say('', T({ ar: 'وهنا يعتمد المراجِع الملاحظة.', en: 'The reviewer approves the finding.' }), ok);
         await wait(2400);
         state.i++;
-        if (ok) { handoff(); ok.click(); } else { go('record'); }
+        if (ok) { handoff('record'); ok.click(); } else { go('record'); }
       } },
 
     { rail: 'report', page: 'record', run: async function () {
@@ -457,29 +466,40 @@
 
   /* ---------- التحكّم ---------- */
   function restart() {
-    state = { on: true, i: 0, paused: false };
+    state = { on: true, i: 0, paused: false, expect: 'index' };
     write(state);
     location.href = 'index.html';
   }
+
+  /* الخروج يمحو الجولة محوًا: تُنزع قشرتُها ولوحُ أدلّتها من الصفحة،
+     وتُفكّ مؤقّتاتها ومراقبوها ومستمعوها، ويُمحى مفتاحها من التخزين
+     (وكذلك المفتاح القديم إن بقي). فلا يبقى منها شيء يُستأنف. */
   function exit() {
     teardown();
     write(null);
-    if (ui.root) ui.root.remove();
+    state = { on: false, done: true, paused: false };
+    if (ui.root) { ui.root.remove(); ui = {}; }
     var ev = document.querySelector('.dmoev');
     if (ev) ev.remove();
     document.body.classList.remove('dmo-on');
   }
 
-  /* أيّ لمسة من المُقيّم توقف التلقائية وتترك له الموقع */
+  /* أيّ لمسة من المُقيّم توقف التلقائية وتترك له الموقع.
+
+     والمستمعُ محفوظٌ في متغيّر لا مجهولًا في مكانه، ليُنزع كما رُكّب
+     حين تنتهي الجولة — فلا يبقى بعدها مستمعٌ يلتقط لمسات الموقع. */
+  var HANDS = ['pointerdown', 'keydown', 'wheel'];
+  function onHand(e) {
+    if (!state || state.paused || state.done) return;
+    if (e.target && e.target.closest && e.target.closest('.dmo')) return;
+    if (e.isTrusted === false) return;
+    setPaused(true);
+  }
   function watchHands() {
-    ['pointerdown', 'keydown', 'wheel'].forEach(function (type) {
-      window.addEventListener(type, function (e) {
-        if (state.paused || state.done) return;
-        if (e.target && e.target.closest && e.target.closest('.dmo')) return;
-        if (e.isTrusted === false) return;
-        setPaused(true);
-      }, true);
-    });
+    HANDS.forEach(function (t) { window.addEventListener(t, onHand, true); });
+  }
+  function unwatchHands() {
+    HANDS.forEach(function (t) { window.removeEventListener(t, onHand, true); });
   }
 
   /* ---------- التشغيل ---------- */
@@ -500,6 +520,15 @@
   function boot() {
     if (!ENABLED) { hideButton(); return; }
     if (!state || !state.on) return;
+
+    /* لا تُستأنف الجولة إلا على انتقالٍ وقّعته بنفسها. فإن وصلنا إلى
+       صفحةٍ غير التي وقّعت — أو بلا توقيع أصلًا، وذلك حالُ التحديث —
+       فليست هذه خطوةَ جولة: تُمحى الحالة ويُترك الموقع كما هو. */
+    var hop = state.expect;
+    if (hop !== page()) { forget(); state = null; return; }
+    state.expect = null;
+    write(state);
+
     /* الجولة تبدأ مرّةً واحدة في الصفحة الواحدة مهما تكرّر تحميل الملفّ */
     if (window.__mirsaadTour) return;
     window.__mirsaadTour = true;
@@ -521,21 +550,29 @@
   function onResize() { if (ui.ring) ui.ring.hidden = true; }
 
   function teardown() {
-    stop = true;
+    stop = true;                            /* تقف المؤقّتات عند أوّل نبضة */
     if (watcher) { watcher.disconnect(); watcher = null; }
+    unwatchHands();
     window.removeEventListener('resize', onResize);
+    window.removeEventListener('pagehide', teardown);
     window.__mirsaadTour = false;
   }
 
   window.MIRSAAD_DEMO = {
     enabled: function () { return ENABLED; },
+    /* المدخل الوحيد: ضغطةُ الزرّ في البوابة. ولا يُستدعى من تلقاء
+       التحميل بحال. وإن كانت جولةٌ قائمة فُكّت أوّلًا، فلا تجتمع
+       جولتان في لسان واحد. */
     start: function () {
       if (!ENABLED) return false;
-      state = { on: true, i: 0, paused: false };
+      teardown();
+      stop = false;
+      state = { on: true, i: 0, paused: false, expect: 'index' };
       write(state);
       if (page() === 'index') { location.reload(); } else { location.href = 'index.html'; }
       return true;
     },
+    exit: function () { exit(); },
     running: function () { var s = read(); return !!(s && s.on); }
   };
 
